@@ -5,6 +5,7 @@ import static org.team5557.subsystems.swerve.SwerveSubsystemConstants.*;
 
 import java.util.Map;
 
+import org.library.team6328.util.TunableNumber;
 import org.littletonrobotics.junction.Logger;
 import org.team5557.subsystems.gyro.GyroIO;
 import org.team5557.subsystems.gyro.GyroIOInputsAutoLogged;
@@ -56,6 +57,7 @@ public class Swerve extends SubsystemBase {
 
     private final GenericEntry motorOutputPercentageLimiterEntry;
     private double motorOutputLimiter;
+    private final TunableNumber skidVelocityDifference;
     
     public Swerve() {
         frontLeftModule = new SwerveModule(
@@ -141,6 +143,7 @@ public class Swerve extends SubsystemBase {
         motorOutputPercentageLimiterEntry = tab.add("Motor Percentage", 100.0).withWidget(BuiltInWidgets.kNumberSlider)
             .withProperties(Map.of("min", 0.0, "max", 100.0, "Block increment", 10.0)).withPosition(0, 3)
             .getEntry();
+        skidVelocityDifference = new TunableNumber("Swerve/SkidVelocityDifference", 1.0);
 
         if (DEBUGGING) {
             tab.add(SUBSYSTEM_NAME, this);
@@ -175,7 +178,7 @@ public class Swerve extends SubsystemBase {
     
         //ORBIT 1690 SKID Detection implementation...
         for(int i = 0; i < 4; i++) {
-            if(currentStates[i].speedMetersPerSecond - desiredStates[i].speedMetersPerSecond > SKID_VELOCITY_DIFFERENCE) {
+            if(currentStates[i].speedMetersPerSecond - desiredStates[i].speedMetersPerSecond > skidVelocityDifference.get()) {//SKID_VELOCITY_DIFFERENCE) {
                 currentStates[i].speedMetersPerSecond = 0.0;
                 currentPositions[i].distanceMeters = previousPositions[i].distanceMeters;
             }
@@ -215,6 +218,11 @@ public class Swerve extends SubsystemBase {
                 backRightModule.setDesiredState(desiredStates[3], true, false);
         }
 
+        Logger.getInstance().recordOutput("Swerve/Estimator/Pose", estimator.getEstimatedPosition());
+        Logger.getInstance().recordOutput("Swerve/Drive Mode", getDriveMode().toString());
+        Logger.getInstance().recordOutput("Swerve/Vx", currentVelocity.vxMetersPerSecond);
+        Logger.getInstance().recordOutput("Swerve/Vx", currentVelocity.vyMetersPerSecond);
+        Logger.getInstance().recordOutput("Swerve/V0", currentVelocity.omegaRadiansPerSecond);
     }
 
 
