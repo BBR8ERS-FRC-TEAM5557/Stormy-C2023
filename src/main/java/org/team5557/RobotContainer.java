@@ -4,26 +4,18 @@
 
 package org.team5557;
 
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+import org.library.team6328.util.Alert;
+import org.library.team6328.util.Alert.AlertType;
+import org.team5557.auto.AutonomousChooser;
+import org.team5557.auto.AutonomousTrajectories;
+import org.team5557.commands.swerve.TeleopDrive;
+import org.team5557.subsystems.swerve.RawControllers;
+import org.team5557.subsystems.swerve.Swerve;
+import org.team5557.subsystems.swerve.SwerveSubsystemConstants;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import org.team5557.commands.DriveWithFlywheelAuto;
-import org.team5557.commands.SpinAuto;
-import org.team5557.subsystems.drive.Drive;
-import org.team5557.subsystems.drive.DriveIO;
-import org.team5557.subsystems.drive.DriveIOSim;
-import org.team5557.subsystems.drive.DriveIOSparkMax;
-import org.team5557.subsystems.flywheel.Flywheel;
-import org.team5557.subsystems.flywheel.FlywheelIO;
-import org.team5557.subsystems.flywheel.FlywheelIOSim;
-import org.team5557.subsystems.flywheel.FlywheelIOSparkMax;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -34,21 +26,27 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
  */
 public class RobotContainer {
   // Subsystems
-  public static Drive drive;
-  public static Flywheel flywheel;
+  public static final Swerve swerve = new Swerve();
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+  public static final XboxController primary_controller = new XboxController(Constants.ports.primary_controller);
 
-  // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto Choices");
-  private final LoggedDashboardNumber flywheelSpeedInput = new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+  // Dashboard inputs / Util
+  private final AutonomousChooser autonomous_chooser = new AutonomousChooser(new AutonomousTrajectories());
+  public static final RawControllers raw_controllers = new RawControllers();
+    //private final LoggedDashboardNumber flywheelSpeedInput = new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+  
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    switch (Constants.currentMode) {
+    if (Constants.tuning_mode) {
+      new Alert("Tuning mode active, expect decreased network performance.",
+          AlertType.INFO).set(true);
+    }
+    /*
+    switch (Constants.robot_mode) {
       // Real robot, instantiate hardware IO implementations
       case REAL:
         drive = new Drive(new DriveIOSparkMax());
@@ -70,14 +68,9 @@ public class RobotContainer {
         flywheel = new Flywheel(new FlywheelIO() {
         });
         break;
-    }
+    } */
 
-    // Set up auto routines
-    autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
-    autoChooser.addOption("Spin", new SpinAuto(drive));
-    autoChooser.addOption("Drive With Flywheel", new DriveWithFlywheelAuto(drive, flywheel));
-
-    // Configure the button bindings
+    CommandScheduler.getInstance().registerSubsystem(swerve);
     configureButtonBindings();
   }
 
@@ -88,18 +81,42 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    drive.setDefaultCommand(
-        new RunCommand(() -> drive.driveArcade(-controller.getLeftY(), controller.getLeftX()), drive));
-    controller.a()
-        .whileTrue(new StartEndCommand(() -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
+    swerve.setDefaultCommand(new TeleopDrive(this::getForwardInput, this::getStrafeInput, this::getRotationInput));
   }
 
   /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
+   * Use this to pass the autonomous chooser to the main {@link Robot} class.
    *
-   * @return the command to run in autonomous
+   * @return the autonomous chooser that determines what to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    return autoChooser.get();
+  public AutonomousChooser getAutonomousChooser() {
+    return autonomous_chooser;
+  }
+
+  private static double deadband(double value, double tolerance) {
+    if (Math.abs(value) < tolerance)
+        return 0.0;
+
+    return Math.copySign(value, (value - tolerance) / (1.0 - tolerance));
+  }
+
+  private static double square(double value) {
+      return Math.copySign(value * value, value);
+  }
+
+  public double getForwardInput() {
+      return -square(deadband(primary_controller.getLeftY(), 0.1)) * SwerveSubsystemConstants.MAX_VELOCITY_METERS_PER_SECOND;
+  }
+
+  public double getStrafeInput() {
+      return -square(deadband(primary_controller.getLeftX(), 0.1)) * SwerveSubsystemConstants.MAX_VELOCITY_METERS_PER_SECOND;
+  }
+
+  public double getRotationInput() {
+      return -square(deadband(primary_controller.getRightX(), 0.1)) * SwerveSubsystemConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
+  }
+
+  private double getRightStickAngle() {
+      return Math.atan2(primary_controller.getRightX(), -primary_controller.getRightY());
   }
 }

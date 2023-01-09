@@ -52,7 +52,7 @@ public class Robot extends LoggedRobot {
     }
 
     // Set up data receivers & replay source
-    switch (Constants.currentMode) {
+    switch (Constants.robot_mode) {
       // Running on a real robot, log to a USB stick
       case REAL:
         logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
@@ -109,7 +109,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void autonomousInit() {
-    autonomousCommand = robotContainer.getAutonomousCommand();
+    autonomousCommand = robotContainer.getAutonomousChooser().getCommand();
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
