@@ -1,28 +1,15 @@
-package com.team254.frc2019.subsystems;
-
-import com.ctre.phoenix.motorcontrol.*;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.team254.frc2019.Constants;
-import com.team254.frc2019.loops.ILooper;
-import com.team254.frc2019.loops.Loop;
-import com.team254.lib.drivers.TalonSRXFactory;
-import com.team254.lib.drivers.SparkMaxUtil;
-import com.team254.lib.motion.MotionProfileConstraints;
-import com.team254.lib.motion.MotionProfileGoal;
-import com.team254.lib.motion.MotionState;
-import com.team254.lib.motion.SetpointGenerator;
-import com.team254.lib.motion.SetpointGenerator.Setpoint;
-import com.team254.lib.util.ReflectingCSVWriter;
-import com.team254.lib.util.Util;
+package org.team5557.subsystems;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.drive.RobotDriveBase.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * Abstract base class for a subsystem with a single sensored servo-mechanism.
  */
-public abstract class ServoSubsystemRev extends Subsystem {
+public abstract class ServoSubsystemRev extends SubsystemBase {
     private static final int kMotionProfileSlot = 0;
     private static final int kPositionPIDSlot = 1;
 
@@ -75,13 +62,13 @@ public abstract class ServoSubsystemRev extends Subsystem {
     }
 
     protected final ServoMotorSubsystemConstants mConstants;
-    protected final TalonSRX mMaster;
-    protected final TalonSRX[] mSlaves;
+    protected final CANSparkMax mMaster;
+    protected final CANSparkMax[] mSlaves;
 
     protected final int mForwardSoftLimitTicks;
     protected final int mReverseSoftLimitTicks;
 
-    protected ServoMotorSubsystem(final ServoMotorSubsystemConstants constants) {
+    protected ServoSubsystemRev(final ServoMotorSubsystemConstants constants) {
         mConstants = constants;
         mMaster = new CANSparkMax(mConstants.kMasterConstants.id, MotorType.kBrushless);
         mSlaves = new CANSparkMax[mConstants.kSlaveConstants.length];

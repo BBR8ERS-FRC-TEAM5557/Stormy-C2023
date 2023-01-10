@@ -1,8 +1,7 @@
 package org.library.team254.drivers;
 
-import com.revrobotics.REVLibError;
-
 import edu.wpi.first.wpilibj.DriverStation;
+import com.REVRobotics.REVLibError.*;
 
 public class SparkMaxUtil {
     // Checks the specified error code for issues.
