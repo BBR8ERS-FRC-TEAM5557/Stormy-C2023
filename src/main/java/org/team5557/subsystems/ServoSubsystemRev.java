@@ -37,8 +37,8 @@ public abstract class ServoSubsystemRev extends Subsystem {
     public static class ServoMotorSubsystemConstants {
         public String kName = "ERROR_ASSIGN_A_NAME";
 
-        public SparkMaxConstants kMasterConstants = new TalonSRXConstants();
-        public SparkMaxConstants[] kSlaveConstants = new TalonSRXConstants[0];
+        public SparkMaxConstants kMasterConstants = new SparkMaxConstants();
+        public SparkMaxConstants[] kSlaveConstants = new SparkMaxConstants[0];
 
         public double kHomePosition = 0.0; // Units
         public double kTicksPerUnitDistance = 1.0;
