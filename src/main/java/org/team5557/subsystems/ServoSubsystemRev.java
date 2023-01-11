@@ -18,6 +18,24 @@ public abstract class ServoSubsystemRev extends SubsystemBase {
         public int id = -1;
         public boolean invert_motor = false;
         public boolean invert_sensor_phase = false;
+        public int getId() {
+            return id;
+        }
+        public void setId(int id) {
+            this.id = id;
+        }
+        public boolean isInvert_motor() {
+            return invert_motor;
+        }
+        public void setInvert_motor(boolean invert_motor) {
+            this.invert_motor = invert_motor;
+        }
+        public boolean isInvert_sensor_phase() {
+            return invert_sensor_phase;
+        }
+        public void setInvert_sensor_phase(boolean invert_sensor_phase) {
+            this.invert_sensor_phase = invert_sensor_phase;
+        }
     }
 
     // Recommend initializing in a static block!
@@ -84,7 +102,7 @@ public abstract class ServoSubsystemRev extends SubsystemBase {
         SparkMaxUtil.checkError(
                 mMaster.setSoftLimit(mForwardSoftLimitTicks, Constants.kLongCANTimeoutMs),
                 mConstants.kName + ": Could not set forward soft limit: ");
-
+                
         SparkMaxUtil.checkError(mConstants.kMaxUnitsLimit-mConstants.kHomePosition
                 mConstants.kName + ": Could not enable forward soft limit: ");
 
