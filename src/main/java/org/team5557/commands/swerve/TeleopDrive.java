@@ -34,6 +34,11 @@ public class TeleopDrive extends CommandBase {
     }
 
     @Override
+    public void initialize() {
+        swerve.setDriveMode(DriveMode.OPEN_LOOP);
+    }
+
+    @Override
     public void execute() {
         /*
         if (input_checker.update(m_rotationSupplier.getAsDouble() == 0.0)) {
@@ -53,12 +58,14 @@ public class TeleopDrive extends CommandBase {
         //FIX ME: don't run PID stuff when you don't even know if a module will work
         double rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
 
+        rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
+
         swerve.drive(
             new ChassisSpeeds(
                 m_translationXSupplier.getAsDouble() * swerve.getMotorOutputLimiter(),
                 m_translationYSupplier.getAsDouble() * swerve.getMotorOutputLimiter(),
                 rotationalVelocity),
-            DriveMode.OPEN_LOOP, true,
+            DriveMode.OPEN_LOOP, false,
             Constants.superstructure.center_of_rotation
         );
     }

@@ -13,22 +13,22 @@ public final class SwerveSubsystemConstants {
         public static final int FL_DRIVE_MOTOR = 1;
         public static final int FL_STEER_MOTOR = 2;
         public static final int FL_CANCODER = 3;
-        public static final double FL_OFFSET = 0.0;
+        public static final double FL_OFFSET = -74.267 -180;
 
         public static final int FR_DRIVE_MOTOR = 4;
         public static final int FR_STEER_MOTOR = 5;
         public static final int FR_CANCODER = 6;
-        public static final double FR_OFFSET = 0.0;
+        public static final double FR_OFFSET = -8.876 - 180;
 
         public static final int BL_DRIVE_MOTOR = 7;
         public static final int BL_STEER_MOTOR = 8;
         public static final int BL_CANCODER = 9;
-        public static final double BL_OFFSET = 0.0;
+        public static final double BL_OFFSET = -53.173 - 180;
 
         public static final int BR_DRIVE_MOTOR = 10;
         public static final int BR_STEER_MOTOR = 11;
         public static final int BR_CANCODER = 12;
-        public static final double BR_OFFSET = 0.0;
+        public static final double BR_OFFSET = -2.54 - 180;
 
         public static final SwerveModuleState[] X_OUT_STATES = {
                         new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45)),

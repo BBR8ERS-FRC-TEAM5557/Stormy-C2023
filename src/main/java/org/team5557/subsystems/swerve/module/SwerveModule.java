@@ -1,6 +1,8 @@
 package org.team5557.subsystems.swerve.module;
 
 
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
 import org.team5557.Constants;
 import org.team5557.subsystems.swerve.Conversions;
 import org.team5557.subsystems.swerve.module.SwerveModuleIO.SwerveModuleIOInputs;
@@ -24,7 +26,7 @@ public class SwerveModule {
     private double maxVelocity;
 
     private static final String SUBSYSTEM_NAME = Constants.shuffleboard.swerve_readout_key;
-    private static final boolean DEBUGGING = false;
+    private static final boolean DEBUGGING = true;
 
     /**
      * Create a new swerve module.
@@ -53,6 +55,7 @@ public class SwerveModule {
             container.addNumber("Mod " + this.moduleNumber + ": Cancoder", () -> inputs.angleAbsolutePositionDeg);
             container.addNumber("Mod " + this.moduleNumber + ": Integrated", () -> Units.radiansToDegrees(inputs.anglePositionRad));
             container.addNumber("Mod " + this.moduleNumber + ": Velocity", () -> inputs.driveVelocityMetersPerSec);
+            container.addNumber("Mod " + this.moduleNumber + ": Applied Velocity", () -> inputs.driveAppliedPercentage);
         }
     }
 
@@ -156,7 +159,7 @@ public class SwerveModule {
      */
     public void updateAndProcessInputs() {
         io.updateInputs(inputs);
-        // Logger.getInstance().processInputs("Mod" + moduleNumber, inputs);
+        Logger.getInstance().processInputs("Mod" + moduleNumber, (LoggableInputs) inputs);
     }
 
     /**

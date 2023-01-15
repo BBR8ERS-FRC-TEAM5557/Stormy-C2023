@@ -22,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -47,10 +48,15 @@ public class Swerve extends SubsystemBase {
     private final SwerveModule backLeftModule;
     private final SwerveModule backRightModule;
 
-    private SwerveModuleState[] desiredStates;
-    private SwerveModulePosition[] previousPositions;
+    private SwerveModuleState[] desiredStates = {new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(),new SwerveModuleState()};
+    
+    private SwerveModuleState[] currentStates = {new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(),new SwerveModuleState()};
+    private SwerveModuleState[] lastStates = this.currentStates;
+    private SwerveModulePosition[] currentPositions = {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()};
+    private SwerveModulePosition[] lastPositions = this.currentPositions;
 
-    private DriveMode driveMode;
+
+    private DriveMode driveMode = DriveMode.OPEN_LOOP;
     private ChassisSpeeds currentVelocity = new ChassisSpeeds();
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
     private Translation2d centerOfRotation = new Translation2d();
@@ -78,7 +84,7 @@ public class Swerve extends SubsystemBase {
                 FR_STEER_MOTOR, 
                 FR_CANCODER, 
                 FR_OFFSET), 
-            0, 
+            1, 
             MAX_VELOCITY_METERS_PER_SECOND
         );
 
@@ -89,7 +95,7 @@ public class Swerve extends SubsystemBase {
                 BL_STEER_MOTOR, 
                 BL_CANCODER, 
                 BL_OFFSET), 
-            0, 
+            2, 
             MAX_VELOCITY_METERS_PER_SECOND
         );
 
@@ -100,7 +106,7 @@ public class Swerve extends SubsystemBase {
                 BR_STEER_MOTOR, 
                 BR_CANCODER, 
                 BR_OFFSET), 
-            0, 
+            3, 
             MAX_VELOCITY_METERS_PER_SECOND
         );
 
@@ -166,38 +172,42 @@ public class Swerve extends SubsystemBase {
         // update and log gyro inputs
         gyroIO.updateInputs(gyroInputs);
         Logger.getInstance().processInputs("Swerve/Gyro", gyroInputs);
-        motorOutputLimiter = motorOutputPercentageLimiterEntry.getDouble(0.0) / 100;
 
         // update and log the swerve moudles inputs
+        this.desiredStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds, centerOfRotation);
         for (SwerveModule swerveModule : swerveModules) {
+            int moduleID = swerveModule.getModuleNumber();
             swerveModule.updateAndProcessInputs();
+            this.currentStates[moduleID] = swerveModule.getState();
+            this.currentPositions[moduleID] = swerveModule.getPosition();
         }
+        
 
-        SwerveModuleState[] currentStates = getModuleStates();
-        SwerveModulePosition[] currentPositions = getModulePositions();
+        motorOutputLimiter = motorOutputPercentageLimiterEntry.getDouble(0.0) / 100;
     
+        /*
         //ORBIT 1690 SKID Detection implementation...
         for(int i = 0; i < 4; i++) {
-            if(currentStates[i].speedMetersPerSecond - desiredStates[i].speedMetersPerSecond > skidVelocityDifference.get()) {//SKID_VELOCITY_DIFFERENCE) {
+            if(Math.abs(currentStates[i].speedMetersPerSecond - desiredStates[i].speedMetersPerSecond) > skidVelocityDifference.get()) {//SKID_VELOCITY_DIFFERENCE) {
                 currentStates[i].speedMetersPerSecond = 0.0;
-                currentPositions[i].distanceMeters = previousPositions[i].distanceMeters;
+                currentPositions[i].distanceMeters = lastPositions[i].distanceMeters;
             }
-        }
-        this.previousPositions = currentPositions;
+        }*/
+        this.lastStates = currentStates;
+        this.lastPositions = currentPositions;
         this.currentVelocity = KINEMATICS.toChassisSpeeds(currentStates);
 
         estimator.update(getGyroscopeAzimuth(), currentPositions);
 
         switch (driveMode) {
             case OPEN_LOOP:
-                this.desiredStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds, centerOfRotation);
                 SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, MAX_VELOCITY_METERS_PER_SECOND);
-                frontLeftModule.setDesiredState(desiredStates[0], true, false);
+                //frontLeftModule.setDesiredState(desiredStates[0], true, false);
                 frontRightModule.setDesiredState(desiredStates[1], true, false);
-                backLeftModule.setDesiredState(desiredStates[2], true, false);
-                backRightModule.setDesiredState(desiredStates[3], true, false);
+                //System.out.println(desiredStates[1].toString());
+                //backLeftModule.setDesiredState(desiredStates[2], true, false);
+                //backRightModule.setDesiredState(desiredStates[3], true, false);
             case CLOSED_LOOP:
-                this.desiredStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds, centerOfRotation);
                 SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, MAX_VELOCITY_METERS_PER_SECOND);
                 frontLeftModule.setDesiredState(desiredStates[0], false, false);
                 frontRightModule.setDesiredState(desiredStates[1], false, false);
@@ -209,19 +219,12 @@ public class Swerve extends SubsystemBase {
                 frontRightModule.setDesiredState(desiredStates[1], true, true);
                 backLeftModule.setDesiredState(desiredStates[2], true, true);
                 backRightModule.setDesiredState(desiredStates[3], true, true);
-            default:
-                this.desiredStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds, centerOfRotation);
-                SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, MAX_VELOCITY_METERS_PER_SECOND);
-                frontLeftModule.setDesiredState(desiredStates[0], true, false);
-                frontRightModule.setDesiredState(desiredStates[1], true, false);
-                backLeftModule.setDesiredState(desiredStates[2], true, false);
-                backRightModule.setDesiredState(desiredStates[3], true, false);
         }
 
         Logger.getInstance().recordOutput("Swerve/Estimator/Pose", estimator.getEstimatedPosition());
         Logger.getInstance().recordOutput("Swerve/Drive Mode", getDriveMode().toString());
         Logger.getInstance().recordOutput("Swerve/Vx", currentVelocity.vxMetersPerSecond);
-        Logger.getInstance().recordOutput("Swerve/Vx", currentVelocity.vyMetersPerSecond);
+        Logger.getInstance().recordOutput("Swerve/Vy", currentVelocity.vyMetersPerSecond);
         Logger.getInstance().recordOutput("Swerve/V0", currentVelocity.omegaRadiansPerSecond);
     }
 
@@ -276,16 +279,14 @@ public class Swerve extends SubsystemBase {
 
     /* MODULE STATES/POSITIONS */
     public SwerveModulePosition[] getModulePositions() {
-        SwerveModulePosition[] swerveModulePositions = {frontLeftModule.getPosition(), frontRightModule.getPosition(), backLeftModule.getPosition(), backRightModule.getPosition()};
-        return swerveModulePositions;
+        return currentPositions;
     }
 
-    private SwerveModuleState[] getModuleStates() {
-        SwerveModuleState[] swerveModuleStates = {frontLeftModule.getState(), frontRightModule.getState(), backLeftModule.getState(), backRightModule.getState()};
-        return swerveModuleStates;
+    public SwerveModuleState[] getModuleStates() {
+        return currentStates;
     }
 
-    private SwerveModuleState[] getDesiredStates() {
+    public SwerveModuleState[] getDesiredStates() {
         return desiredStates;
     }
 
@@ -315,8 +316,7 @@ public class Swerve extends SubsystemBase {
     public enum DriveMode {
         OPEN_LOOP,
         CLOSED_LOOP,
-        X_OUT,
-        TANK,
+        X_OUT
     }
 
     /*
