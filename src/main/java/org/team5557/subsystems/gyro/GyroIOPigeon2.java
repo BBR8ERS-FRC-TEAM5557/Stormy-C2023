@@ -9,7 +9,7 @@ public class GyroIOPigeon2 implements GyroIO {
   private final double[] xyzDps = new double[3];
 
   public GyroIOPigeon2(int id) {
-    gyro = new Pigeon2(id, Constants.ports.canbus_name);
+    gyro = new Pigeon2(id);
   }
 
   @Override

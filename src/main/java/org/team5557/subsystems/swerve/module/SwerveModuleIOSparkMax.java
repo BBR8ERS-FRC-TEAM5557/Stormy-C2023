@@ -109,10 +109,10 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         // SparkMaxUtil.checkError(mAngleMotor.getEncoder().setPositionConversionFactor(360
         // / ANGLE_GEAR_RATIO), null);
 
-        SparkMaxUtil.checkError(mAngleMotorPID.setP(turnKp.get()), "Motor ID " + angleMotorID + ": failed to set P");
-        SparkMaxUtil.checkError(mAngleMotorPID.setI(turnKi.get()), "Motor ID " + angleMotorID + ": failed to set I");
-        SparkMaxUtil.checkError(mAngleMotorPID.setD(turnKd.get()), "Motor ID " + angleMotorID + ": failed to set D");
-        SparkMaxUtil.checkError(mAngleMotorPID.setFF(ANGLE_KF), "Motor ID " + angleMotorID + ": failed to set FF");
+        SparkMaxUtil.checkError(mAngleMotorPID.setP(turnKp.get(), SLOT_INDEX), "Motor ID " + angleMotorID + ": failed to set P");
+        SparkMaxUtil.checkError(mAngleMotorPID.setI(turnKi.get(), SLOT_INDEX), "Motor ID " + angleMotorID + ": failed to set I");
+        SparkMaxUtil.checkError(mAngleMotorPID.setD(turnKd.get(), SLOT_INDEX), "Motor ID " + angleMotorID + ": failed to set D");
+        SparkMaxUtil.checkError(mAngleMotorPID.setFF(ANGLE_KF, SLOT_INDEX), "Motor ID " + angleMotorID + ": failed to set FF");
         SparkMaxUtil.checkError(mAngleMotorPID.setFeedbackDevice(mAngleMotorEncoder), "Motor ID " + angleMotorID + ": failed to set NEO PID feedback device");
 
         SparkMaxUtil.checkError(mAngleMotorEncoder.setPositionConversionFactor(2.0 * Math.PI / ANGLE_GEAR_RATIO),
@@ -124,6 +124,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
                                                              // Units.degreesToRadians(angleOffsetDeg);
         SparkMaxUtil.checkError(mAngleMotor.getEncoder().setPosition(absolutePosition),
                 "Motor ID " + angleMotorID + ": failed to set encoder offset");
+        SparkMaxUtil.checkError(mAngleMotor.burnFlash(), "Motor ID " + angleMotorID + ": failed to set burn flash");
     }
 
     private void configDriveMotor(int driveMotorID) {
@@ -148,10 +149,10 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         // SparkMaxUtil.checkError(mAngleMotor.getEncoder().setPositionConversionFactor(360
         // / ANGLE_GEAR_RATIO), null);
 
-        SparkMaxUtil.checkError(mDriveMotorPID.setP(driveKp.get()), "Motor ID " + driveMotorID + ": failed to set P");
-        SparkMaxUtil.checkError(mDriveMotorPID.setI(driveKi.get()), "Motor ID " + driveMotorID + ": failed to set I");
-        SparkMaxUtil.checkError(mDriveMotorPID.setD(driveKd.get()), "Motor ID " + driveMotorID + ": failed to set D");
-        SparkMaxUtil.checkError(mDriveMotorPID.setFF(DRIVE_KF), "Motor ID " + driveMotorID + ": failed to set FF");
+        SparkMaxUtil.checkError(mDriveMotorPID.setP(driveKp.get(), SLOT_INDEX), "Motor ID " + driveMotorID + ": failed to set P");
+        SparkMaxUtil.checkError(mDriveMotorPID.setI(driveKi.get(), SLOT_INDEX), "Motor ID " + driveMotorID + ": failed to set I");
+        SparkMaxUtil.checkError(mDriveMotorPID.setD(driveKd.get(), SLOT_INDEX), "Motor ID " + driveMotorID + ": failed to set D");
+        SparkMaxUtil.checkError(mDriveMotorPID.setFF(DRIVE_KF, SLOT_INDEX), "Motor ID " + driveMotorID + ": failed to set FF");
 
         mDriveMotorEncoder.setPosition(0);
     }
@@ -201,12 +202,12 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
                 || turnKp.hasChanged()
                 || turnKi.hasChanged()
                 || turnKd.hasChanged()) {
-            mDriveMotorPID.setP(driveKp.get());
-            mDriveMotorPID.setI(driveKi.get());
-            mDriveMotorPID.setD(driveKd.get());
-            mAngleMotorPID.setP(turnKp.get());
-            mAngleMotorPID.setI(turnKi.get());
-            mAngleMotorPID.setD(turnKd.get());
+            mDriveMotorPID.setP(driveKp.get(), SLOT_INDEX);
+            mDriveMotorPID.setI(driveKi.get(), SLOT_INDEX);
+            mDriveMotorPID.setD(driveKd.get(), SLOT_INDEX);
+            mAngleMotorPID.setP(turnKp.get(), SLOT_INDEX);
+            mAngleMotorPID.setI(turnKi.get(), SLOT_INDEX);
+            mAngleMotorPID.setD(turnKd.get(), SLOT_INDEX);
         }
     }
 
@@ -224,7 +225,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
                 SwerveModuleConstants.WHEEL_CIRCUMFERENCE,
                 SwerveModuleConstants.DRIVE_GEAR_RATIO);
 
-        mDriveMotorPID.setReference(rotationsPerMinute, ControlType.kVelocity, 0, calculateFeedforward(velocity),
+        mDriveMotorPID.setReference(rotationsPerMinute, ControlType.kVelocity, SLOT_INDEX, calculateFeedforward(velocity),
                 ArbFFUnits.kPercentOut);
     }
 

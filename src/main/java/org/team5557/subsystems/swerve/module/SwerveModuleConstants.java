@@ -31,7 +31,7 @@ public class SwerveModuleConstants {
     public static final double CLOSED_LOOP_RAMP = 0.0;
 
     /* Swerve Current Limiting */
-    public static final int ANGLE_CONTINUOUS_CURRENT_LIMIT = 25;
+    public static final int ANGLE_CONTINUOUS_CURRENT_LIMIT = 40;
     public static final int ANGLE_PEAK_CURRENT_LIMIT = 40;
     public static final double ANGLE_PEAK_CURRENT_DURATION = 0.1;
     public static final boolean ANGLE_ENABLE_CURRENT_LIMIT = true;
