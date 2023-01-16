@@ -24,17 +24,10 @@ public class RobotStateSupervisor extends SubsystemBase {
     private final Swerve swerve = RobotContainer.swerve;
     private final VisionManager vision_manager = new VisionManager();
     //private final GoalPlanner goal_planner = new GoalPlanner();
-    private final SwerveDrivePoseEstimator estimator;
+    //private final SwerveDrivePoseEstimator estimator;
 
     public RobotStateSupervisor() {
-        ShuffleboardTab tab = Shuffleboard.getTab(Constants.shuffleboard.swerve_readout_key);
-
-        tab.addNumber("Pose Est X", () -> getPose().getX());
-        tab.addNumber("Pose Est Y", () -> getPose().getY());
-        tab.addNumber("Pose Est Theta", () -> getPose().getRotation().getDegrees());
-
-        
-        estimator = new SwerveDrivePoseEstimator(
+        /*estimator = new SwerveDrivePoseEstimator(
             KINEMATICS, 
             RobotContainer.swerve.getGyroscopeAzimuth(), 
             DEFAULT_POSITIONS, 
@@ -52,13 +45,13 @@ public class RobotStateSupervisor extends SubsystemBase {
         robot_state.visionTargets = vision_manager.getTargets();
         //add them to the pose estimator
         for (VisionTarget target : robot_state.visionTargets) {
-            estimator.addVisionMeasurement(target.measuredPose, target.timestamp);
+            RobotContainer.swerve.getEstimator().addVisionMeasurement(target.measuredPose, target.timestamp);
         }
 
         //recieve data from swerve
 
         //add data to pose estimator
-        estimator.update(swerve.getGyroscopeAzimuth(), swerve.getModulePositions());
+        RobotContainer.swerve.getEstimator().update(swerve.getGyroscopeAzimuth(), swerve.getModulePositions());
     }
     
 
@@ -72,18 +65,20 @@ public class RobotStateSupervisor extends SubsystemBase {
         Pose2d currentPose;
         LocalizationSatus localizationStatus;
     }
-
+ 
     /* POSES AND ESTIMATOR */
+    /*
     public SwerveDrivePoseEstimator getEstimator() {
         return estimator;
-    }
+    }*/
 
     /**
      * Returns the position of the robot
      */
+    /*
     public Pose2d getPose() {
         return estimator.getEstimatedPosition();
-    }
+    }*/
 
     /**
      * Sets the position of the robot to the position passed in with the current
