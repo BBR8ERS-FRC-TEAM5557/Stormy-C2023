@@ -9,6 +9,7 @@ import org.library.team6328.util.Alert.AlertType;
 import org.team5557.auto.AutonomousChooser;
 import org.team5557.auto.AutonomousTrajectories;
 import org.team5557.commands.swerve.TeleopDrive;
+import org.team5557.state.RobotStateSupervisor;
 import org.team5557.subsystems.swerve.RawControllers;
 import org.team5557.subsystems.swerve.Swerve;
 import org.team5557.subsystems.swerve.SwerveSubsystemConstants;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class RobotContainer {
   // Subsystems
+  public static final RobotStateSupervisor state_supervisor = new RobotStateSupervisor();
   public static final Swerve swerve = new Swerve();
 
   // Controller
