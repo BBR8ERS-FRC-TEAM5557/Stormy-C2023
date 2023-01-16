@@ -27,10 +27,14 @@ public class VisionManager extends SubsystemBase {
 
     public VisionManager() {
 <<<<<<< HEAD
+<<<<<<< HEAD
         this.photonCamera = new PhotonCameraExtension("Arducam_OV9281_USB_Camera", new Transform3d());
 =======
         this.photonCamera = new PhotonCameraExtension("Arducam", new Transform3d());
 >>>>>>> ab9dbbc (vision testing - 1/16)
+=======
+        this.photonCamera = new PhotonCameraExtension("Arducam_OV9281_USB_Camera", new Transform3d());
+>>>>>>> 8d64100 (vision test corrected)
         camera_list = Collections.unmodifiableList(
             List.of(
                 photonCamera
