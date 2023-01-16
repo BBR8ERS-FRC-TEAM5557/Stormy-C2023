@@ -38,7 +38,6 @@ public class Swerve extends SubsystemBase {
     private static final boolean TESTING = true;
     private static final boolean DEBUGGING = true;
 
-    private final SwerveDrivePoseEstimator estimator;
     private final GyroIO gyroIO = new GyroIOPigeon2(Constants.ports.pigeon);
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
     private double pitchOffset = 0.0;
@@ -118,14 +117,6 @@ public class Swerve extends SubsystemBase {
         swerveModules[1] = frontRightModule;
         swerveModules[2] = backLeftModule;
         swerveModules[3] = backRightModule;
-
-        estimator = new SwerveDrivePoseEstimator(
-            KINEMATICS, 
-            getGyroscopeAzimuth(), 
-            DEFAULT_POSITIONS, 
-            new Pose2d(),
-            Constants.estimator.stateStdDevs, // estimator values (x, y, rotation) std-devs
-            Constants.estimator.normalVisionStdDevs); // Vision (x, y, rotation) std-devs*/
             
         //potentially takeout so that we are super stable on the charging station??
         new Trigger(RobotState::isEnabled).onTrue(new StartEndCommand(() -> {
@@ -157,6 +148,7 @@ public class Swerve extends SubsystemBase {
 
         if (DEBUGGING) {
             tab.add(SUBSYSTEM_NAME, this);
+<<<<<<< HEAD
             tab.addNumber("vxm", () -> this.getMeasuredVelocity().vxMetersPerSecond);
             tab.addNumber("vym", () -> this.getMeasuredVelocity().vyMetersPerSecond);
             tab.addNumber("vxf", () -> this.getFilteredVelocity().vxMetersPerSecond);
@@ -164,6 +156,13 @@ public class Swerve extends SubsystemBase {
             tab.addNumber("Pose Est X", () -> getPose().getX());
             tab.addNumber("Pose Est Y", () -> getPose().getY());
             tab.addNumber("Pose Est Theta", () -> getPose().getRotation().getDegrees());
+=======
+            tab.addNumber("vx", () -> this.getCurrentVelocity().vxMetersPerSecond);
+            tab.addNumber("vy", () -> this.getCurrentVelocity().vyMetersPerSecond);
+            //tab.addNumber("Pose Est X", () -> getPose().getX());
+            //tab.addNumber("Pose Est Y", () -> getPose().getY());
+            //tab.addNumber("Pose Est Theta", () -> getPose().getRotation().getDegrees());
+>>>>>>> ab9dbbc (vision testing - 1/16)
         }
         
         if (TESTING) {
@@ -204,7 +203,11 @@ public class Swerve extends SubsystemBase {
         this.filteredVelocity = KINEMATICS.toChassisSpeeds(filteredStates);
         RobotContainer.state_supervisor.addSkidMeasurement(this.measuredVelocity, this.filteredVelocity);
 
+<<<<<<< HEAD
         estimator.update(getGyroscopeAzimuth(), filteredPositions);
+=======
+        //estimator.update(getGyroscopeAzimuth(), currentPositions);
+>>>>>>> ab9dbbc (vision testing - 1/16)
 
         switch (driveMode) {
             case OPEN_LOOP:
@@ -229,7 +232,7 @@ public class Swerve extends SubsystemBase {
                 frontLeftModule.setVoltageForCharacterization(characterizationVolts);
         }
 
-        Logger.getInstance().recordOutput("Swerve/Estimator/Pose", estimator.getEstimatedPosition());
+        //Logger.getInstance().recordOutput("Swerve/Estimator/Pose", estimator.getEstimatedPosition());
         Logger.getInstance().recordOutput("Swerve/Drive Mode", getDriveMode().toString());
         Logger.getInstance().recordOutput("Swerve/Vx", filteredVelocity.vxMetersPerSecond);
         Logger.getInstance().recordOutput("Swerve/Vy", filteredVelocity.vyMetersPerSecond);
@@ -252,26 +255,6 @@ public class Swerve extends SubsystemBase {
 
     public void zeroGyroscopePitch() {
         this.pitchOffset = gyroInputs.pitchDeg;
-    }
-
-    /* POSES AND ESTIMATOR */
-    public SwerveDrivePoseEstimator getEstimator() {
-        return estimator;
-    }
-
-    /**
-     * Returns the position of the robot
-     */
-    public Pose2d getPose() {
-        return estimator.getEstimatedPosition();
-    }
-
-    /**
-     * Sets the position of the robot to the position passed in with the current
-     * gyroscope rotation.
-     */
-    public void setPose(Pose2d pose) {
-        estimator.resetPosition(getGyroscopeAzimuth(), getModulePositions(), pose);
     }
 
     
@@ -309,7 +292,7 @@ public class Swerve extends SubsystemBase {
         this.centerOfRotation = centerOfRotation;
         if (fieldRelative) {
             this.chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond, getPose().getRotation());
+                chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond, Rotation2d.fromDegrees(0.0));//getPose().getRotation());
         } else {
             this.chassisSpeeds = new ChassisSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond);
         }

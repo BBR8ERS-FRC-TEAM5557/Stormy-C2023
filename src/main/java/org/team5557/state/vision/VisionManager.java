@@ -15,13 +15,22 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.apriltag.*;
 
+<<<<<<< HEAD
 public class VisionManager {
+=======
+public class VisionManager extends SubsystemBase {
+    //private final AprilTagFieldLayout tag_layout = new AprilTagFieldLayout(Path.of("asdf;lkajsdf.json"));
+>>>>>>> ab9dbbc (vision testing - 1/16)
     private final PhotonCameraExtension photonCamera;
     private final List<PhotonCameraExtension> camera_list;
     private ArrayList<VisionTarget> visibleTargets;
 
     public VisionManager() {
+<<<<<<< HEAD
         this.photonCamera = new PhotonCameraExtension("Arducam_OV9281_USB_Camera", new Transform3d());
+=======
+        this.photonCamera = new PhotonCameraExtension("Arducam", new Transform3d());
+>>>>>>> ab9dbbc (vision testing - 1/16)
         camera_list = Collections.unmodifiableList(
             List.of(
                 photonCamera
@@ -34,7 +43,12 @@ public class VisionManager {
             .withPosition(4, 0);
     }
 
+<<<<<<< HEAD
     public void update() {
+=======
+    @Override
+    public void periodic() {
+>>>>>>> ab9dbbc (vision testing - 1/16)
         int camID = 0;
         visibleTargets.clear();
 
