@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class RobotContainer {
   // Subsystems
-  public static final RobotStateSupervisor state_supervisor = new RobotStateSupervisor();
   public static final Swerve swerve = new Swerve();
 
   // Controller
@@ -43,29 +42,30 @@ public class RobotContainer {
           AlertType.INFO).set(true);
     }
     /*
-    switch (Constants.robot_mode) {
-      // Real robot, instantiate hardware IO implementations
-      case REAL:
-        drive = new Drive(new DriveIOSparkMax());
-        flywheel = new Flywheel(new FlywheelIOSparkMax());
-        // drive = new Drive(new DriveIOFalcon500());
-        // flywheel = new Flywheel(new FlywheelIOFalcon500());
-        break;
-
-      // Sim robot, instantiate physics sim IO implementations
-      case SIM:
-        drive = new Drive(new DriveIOSim());
-        flywheel = new Flywheel(new FlywheelIOSim());
-        break;
-
-      // Replayed robot, disable IO implementations
-      default:
-        drive = new Drive(new DriveIO() {
-        });
-        flywheel = new Flywheel(new FlywheelIO() {
-        });
-        break;
-    } */
+     * switch (Constants.robot_mode) {
+     * // Real robot, instantiate hardware IO implementations
+     * case REAL:
+     * drive = new Drive(new DriveIOSparkMax());
+     * flywheel = new Flywheel(new FlywheelIOSparkMax());
+     * // drive = new Drive(new DriveIOFalcon500());
+     * // flywheel = new Flywheel(new FlywheelIOFalcon500());
+     * break;
+     * 
+     * // Sim robot, instantiate physics sim IO implementations
+     * case SIM:
+     * drive = new Drive(new DriveIOSim());
+     * flywheel = new Flywheel(new FlywheelIOSim());
+     * break;
+     * 
+     * // Replayed robot, disable IO implementations
+     * default:
+     * drive = new Drive(new DriveIO() {
+     * });
+     * flywheel = new Flywheel(new FlywheelIO() {
+     * });
+     * break;
+     * }
+     */
 
     CommandScheduler.getInstance().registerSubsystem(swerve);
     configureButtonBindings();
@@ -112,6 +112,6 @@ public class RobotContainer {
   }
 
   private double getRightStickAngle() {
-      return Math.atan2(primary_controller.getRightX(), -primary_controller.getRightY());
+    return Math.atan2(primary_controller.getRightX(), -primary_controller.getRightY());
   }
 }
