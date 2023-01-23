@@ -1,6 +1,8 @@
 package org.team5557.subsystems.swerve;
 
 import org.team5557.Constants;
+import org.team5557.RobotContainer;
+
 import static org.team5557.subsystems.swerve.SwerveSubsystemConstants.*;
 
 import java.util.Map;
@@ -22,7 +24,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -50,14 +51,16 @@ public class Swerve extends SubsystemBase {
 
     private SwerveModuleState[] desiredStates = {new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(),new SwerveModuleState()};
     
-    private SwerveModuleState[] currentStates = {new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(),new SwerveModuleState()};
-    private SwerveModuleState[] lastStates = this.currentStates;
-    private SwerveModulePosition[] currentPositions = {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()};
-    private SwerveModulePosition[] lastPositions = this.currentPositions;
+    private SwerveModuleState[] measuredStates = {new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(),new SwerveModuleState()};
+    private SwerveModuleState[] filteredStates = this.measuredStates;
+    private SwerveModulePosition[] measuredPositions = {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()};
+    private SwerveModulePosition[] prevMeasuredPositions = this.measuredPositions;
+    private SwerveModulePosition[] filteredPositions = this.measuredPositions;
 
 
     private DriveMode driveMode = DriveMode.OPEN_LOOP;
-    private ChassisSpeeds currentVelocity = new ChassisSpeeds();
+    private ChassisSpeeds measuredVelocity = new ChassisSpeeds();
+    private ChassisSpeeds filteredVelocity = this.measuredVelocity;
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
     private Translation2d centerOfRotation = new Translation2d();
 
@@ -149,12 +152,14 @@ public class Swerve extends SubsystemBase {
         motorOutputPercentageLimiterEntry = tab.add("Motor Percentage", 100.0).withWidget(BuiltInWidgets.kNumberSlider)
             .withProperties(Map.of("min", 0.0, "max", 100.0, "Block increment", 10.0)).withPosition(0, 3)
             .getEntry();
-        skidVelocityDifference = new TunableNumber("Swerve/SkidVelocityDifference", 1.0);
+        skidVelocityDifference = new TunableNumber(Constants.shuffleboard.tunable_readout_key, 0.25);
 
         if (DEBUGGING) {
             tab.add(SUBSYSTEM_NAME, this);
-            tab.addNumber("vx", () -> this.getCurrentVelocity().vxMetersPerSecond);
-            tab.addNumber("vy", () -> this.getCurrentVelocity().vyMetersPerSecond);
+            tab.addNumber("vxm", () -> this.getMeasuredVelocity().vxMetersPerSecond);
+            tab.addNumber("vym", () -> this.getMeasuredVelocity().vyMetersPerSecond);
+            tab.addNumber("vxf", () -> this.getFilteredVelocity().vxMetersPerSecond);
+            tab.addNumber("vyf", () -> this.getFilteredVelocity().vyMetersPerSecond);
             tab.addNumber("Pose Est X", () -> getPose().getX());
             tab.addNumber("Pose Est Y", () -> getPose().getY());
             tab.addNumber("Pose Est Theta", () -> getPose().getRotation().getDegrees());
@@ -169,6 +174,7 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic() {
+        motorOutputLimiter = motorOutputPercentageLimiterEntry.getDouble(0.0) / 100;
         // update and log gyro inputs
         gyroIO.updateInputs(gyroInputs);
         Logger.getInstance().processInputs("Swerve/Gyro", gyroInputs);
@@ -178,35 +184,34 @@ public class Swerve extends SubsystemBase {
         for (SwerveModule swerveModule : swerveModules) {
             int moduleID = swerveModule.getModuleNumber();
             swerveModule.updateAndProcessInputs();
-            this.currentStates[moduleID] = swerveModule.getState();
-            this.currentPositions[moduleID] = swerveModule.getPosition();
-        }
-        
+            this.measuredStates[moduleID] = swerveModule.getState();
+            this.measuredPositions[moduleID] = swerveModule.getPosition();
 
-        motorOutputLimiter = motorOutputPercentageLimiterEntry.getDouble(0.0) / 100;
-    
-        /*
-        //ORBIT 1690 SKID Detection implementation...
-        for(int i = 0; i < 4; i++) {
-            if(Math.abs(currentStates[i].speedMetersPerSecond - desiredStates[i].speedMetersPerSecond) > skidVelocityDifference.get()) {//SKID_VELOCITY_DIFFERENCE) {
-                currentStates[i].speedMetersPerSecond = 0.0;
-                currentPositions[i].distanceMeters = lastPositions[i].distanceMeters;
+            this.filteredStates[moduleID] = this.measuredStates[moduleID];
+            this.filteredPositions[moduleID] = this.measuredPositions[moduleID];
+
+            if(Math.abs(measuredStates[moduleID].speedMetersPerSecond - desiredStates[moduleID].speedMetersPerSecond) > skidVelocityDifference.get()) {
+                this.filteredStates[moduleID].speedMetersPerSecond = 0.0;
+                this.filteredPositions[moduleID].distanceMeters = this.prevMeasuredPositions[moduleID].distanceMeters;
+            } else {
+                this.filteredPositions[moduleID] = this.measuredPositions[moduleID];
             }
-        }*/
-        this.lastStates = currentStates;
-        this.lastPositions = currentPositions;
-        this.currentVelocity = KINEMATICS.toChassisSpeeds(currentStates);
+        }
+        this.prevMeasuredPositions = measuredPositions;
+        
+        this.measuredVelocity = KINEMATICS.toChassisSpeeds(measuredStates);
+        this.filteredVelocity = KINEMATICS.toChassisSpeeds(filteredStates);
+        RobotContainer.state_supervisor.addSkidMeasurement(this.measuredVelocity, this.filteredVelocity);
 
-        estimator.update(getGyroscopeAzimuth(), currentPositions);
+        estimator.update(getGyroscopeAzimuth(), filteredPositions);
 
         switch (driveMode) {
             case OPEN_LOOP:
                 SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, MAX_VELOCITY_METERS_PER_SECOND);
-                //frontLeftModule.setDesiredState(desiredStates[0], true, false);
+                frontLeftModule.setDesiredState(desiredStates[0], true, false);
                 frontRightModule.setDesiredState(desiredStates[1], true, false);
-                //System.out.println(desiredStates[1].toString());
-                //backLeftModule.setDesiredState(desiredStates[2], true, false);
-                //backRightModule.setDesiredState(desiredStates[3], true, false);
+                backLeftModule.setDesiredState(desiredStates[2], true, false);
+                backRightModule.setDesiredState(desiredStates[3], true, false);
             case CLOSED_LOOP:
                 SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, MAX_VELOCITY_METERS_PER_SECOND);
                 frontLeftModule.setDesiredState(desiredStates[0], false, false);
@@ -223,9 +228,9 @@ public class Swerve extends SubsystemBase {
 
         Logger.getInstance().recordOutput("Swerve/Estimator/Pose", estimator.getEstimatedPosition());
         Logger.getInstance().recordOutput("Swerve/Drive Mode", getDriveMode().toString());
-        Logger.getInstance().recordOutput("Swerve/Vx", currentVelocity.vxMetersPerSecond);
-        Logger.getInstance().recordOutput("Swerve/Vy", currentVelocity.vyMetersPerSecond);
-        Logger.getInstance().recordOutput("Swerve/V0", currentVelocity.omegaRadiansPerSecond);
+        Logger.getInstance().recordOutput("Swerve/Vx", filteredVelocity.vxMetersPerSecond);
+        Logger.getInstance().recordOutput("Swerve/Vy", filteredVelocity.vyMetersPerSecond);
+        Logger.getInstance().recordOutput("Swerve/V0", filteredVelocity.omegaRadiansPerSecond);
     }
 
 
@@ -268,8 +273,12 @@ public class Swerve extends SubsystemBase {
 
     
     /* CHASSIS SPEEDS */
-    public ChassisSpeeds getCurrentVelocity() {
-        return currentVelocity;
+    public ChassisSpeeds getFilteredVelocity() {
+        return this.filteredVelocity;
+    }
+
+    public ChassisSpeeds getMeasuredVelocity() {
+        return this.measuredVelocity;
     }
 
     /* OUTPUT LIMITER */
@@ -279,15 +288,15 @@ public class Swerve extends SubsystemBase {
 
     /* MODULE STATES/POSITIONS */
     public SwerveModulePosition[] getModulePositions() {
-        return currentPositions;
+        return this.filteredPositions;
     }
 
     public SwerveModuleState[] getModuleStates() {
-        return currentStates;
+        return this.filteredStates;
     }
 
     public SwerveModuleState[] getDesiredStates() {
-        return desiredStates;
+        return this.desiredStates;
     }
 
     /**
