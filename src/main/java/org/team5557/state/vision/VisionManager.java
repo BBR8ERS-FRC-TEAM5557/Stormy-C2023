@@ -17,6 +17,7 @@ import edu.wpi.first.apriltag.*;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 public class VisionManager {
 <<<<<<< HEAD
 =======
@@ -28,11 +29,15 @@ public class VisionManager {
 >>>>>>> ab9dbbc (vision testing - 1/16)
 =======
 >>>>>>> d7d4736 (update)
+=======
+public class VisionManager {
+>>>>>>> 663d9f2e79cd99d2a563c7ac10737062a0ca6fb0
     private final PhotonCameraExtension photonCamera;
     private final List<PhotonCameraExtension> camera_list;
     private ArrayList<VisionTarget> visibleTargets;
 
     public VisionManager() {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         this.photonCamera = new PhotonCameraExtension("Arducam_OV9281_USB_Camera", new Transform3d());
@@ -42,6 +47,9 @@ public class VisionManager {
 =======
         this.photonCamera = new PhotonCameraExtension("Arducam_OV9281_USB_Camera", new Transform3d());
 >>>>>>> 8d64100 (vision test corrected)
+=======
+        this.photonCamera = new PhotonCameraExtension("Arducam_OV9281_USB_Camera", new Transform3d());
+>>>>>>> 663d9f2e79cd99d2a563c7ac10737062a0ca6fb0
         camera_list = Collections.unmodifiableList(
             List.of(
                 photonCamera
@@ -56,6 +64,7 @@ public class VisionManager {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     public void update() {
 =======
     @Override
@@ -64,6 +73,9 @@ public class VisionManager {
 =======
     public void update() {
 >>>>>>> 35240ae (basic robot state supervisor framework added)
+=======
+    public void update() {
+>>>>>>> 663d9f2e79cd99d2a563c7ac10737062a0ca6fb0
         int camID = 0;
         visibleTargets.clear();
 

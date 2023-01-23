@@ -159,12 +159,16 @@ public class Swerve extends SubsystemBase {
             tab.add(SUBSYSTEM_NAME, this);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 35240ae (basic robot state supervisor framework added)
+=======
+>>>>>>> 663d9f2e79cd99d2a563c7ac10737062a0ca6fb0
             tab.addNumber("vxm", () -> this.getMeasuredVelocity().vxMetersPerSecond);
             tab.addNumber("vym", () -> this.getMeasuredVelocity().vyMetersPerSecond);
             tab.addNumber("vxf", () -> this.getFilteredVelocity().vxMetersPerSecond);
             tab.addNumber("vyf", () -> this.getFilteredVelocity().vyMetersPerSecond);
+<<<<<<< HEAD
 <<<<<<< HEAD
             tab.addNumber("Pose Est X", () -> getPose().getX());
             tab.addNumber("Pose Est Y", () -> getPose().getY());
@@ -180,6 +184,8 @@ public class Swerve extends SubsystemBase {
 =======
 =======
 >>>>>>> 35240ae (basic robot state supervisor framework added)
+=======
+>>>>>>> 663d9f2e79cd99d2a563c7ac10737062a0ca6fb0
             tab.addNumber("Pose Est X", () -> getPose().getX());
             tab.addNumber("Pose Est Y", () -> getPose().getY());
             tab.addNumber("Pose Est Theta", () -> getPose().getRotation().getDegrees());
@@ -211,6 +217,7 @@ public class Swerve extends SubsystemBase {
             this.filteredStates[moduleID] = this.measuredStates[moduleID];
             this.filteredPositions[moduleID] = this.measuredPositions[moduleID];
 <<<<<<< HEAD
+<<<<<<< HEAD
 
             if(Math.abs(measuredStates[moduleID].speedMetersPerSecond - desiredStates[moduleID].speedMetersPerSecond) > skidVelocityDifference.get()) {
                 this.filteredStates[moduleID].speedMetersPerSecond = 0.0;
@@ -235,6 +242,8 @@ public class Swerve extends SubsystemBase {
         estimator.update(getGyroscopeAzimuth(), currentPositions);
 >>>>>>> 8d64100 (vision test corrected)
 =======
+=======
+>>>>>>> 663d9f2e79cd99d2a563c7ac10737062a0ca6fb0
 
             if(Math.abs(measuredStates[moduleID].speedMetersPerSecond - desiredStates[moduleID].speedMetersPerSecond) > skidVelocityDifference.get()) {
                 this.filteredStates[moduleID].speedMetersPerSecond = 0.0;
@@ -250,7 +259,10 @@ public class Swerve extends SubsystemBase {
         RobotContainer.state_supervisor.addSkidMeasurement(this.measuredVelocity, this.filteredVelocity);
 
         estimator.update(getGyroscopeAzimuth(), filteredPositions);
+<<<<<<< HEAD
 >>>>>>> 35240ae (basic robot state supervisor framework added)
+=======
+>>>>>>> 663d9f2e79cd99d2a563c7ac10737062a0ca6fb0
 
         switch (driveMode) {
             case OPEN_LOOP:
