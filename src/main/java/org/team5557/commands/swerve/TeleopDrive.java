@@ -40,6 +40,7 @@ public class TeleopDrive extends CommandBase {
 
     @Override
     public void execute() {
+        /*
         if (input_checker.update(m_rotationSupplier.getAsDouble() == 0.0)) {
             sustain_heading = swerve.getPose().getRotation();
             RobotContainer.raw_controllers.resetTheta();
@@ -52,7 +53,10 @@ public class TeleopDrive extends CommandBase {
                 * SwerveSubsystemConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, rotationalVelocity);
         } else {
             rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
-        }
+        }*/
+
+        //FIX ME: don't run PID stuff when you don't even know if a module will work
+        double rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
 
         rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
 
