@@ -16,9 +16,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.apriltag.*;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 public class VisionManager {
 =======
 public class VisionManager extends SubsystemBase {
+=======
+public class VisionManager {
+>>>>>>> 35240ae (basic robot state supervisor framework added)
     //private final AprilTagFieldLayout tag_layout = new AprilTagFieldLayout(Path.of("asdf;lkajsdf.json"));
 >>>>>>> ab9dbbc (vision testing - 1/16)
     private final PhotonCameraExtension photonCamera;
@@ -48,11 +52,15 @@ public class VisionManager extends SubsystemBase {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     public void update() {
 =======
     @Override
     public void periodic() {
 >>>>>>> ab9dbbc (vision testing - 1/16)
+=======
+    public void update() {
+>>>>>>> 35240ae (basic robot state supervisor framework added)
         int camID = 0;
         visibleTargets.clear();
 

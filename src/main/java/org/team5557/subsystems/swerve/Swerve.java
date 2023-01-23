@@ -158,10 +158,14 @@ public class Swerve extends SubsystemBase {
         if (DEBUGGING) {
             tab.add(SUBSYSTEM_NAME, this);
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 35240ae (basic robot state supervisor framework added)
             tab.addNumber("vxm", () -> this.getMeasuredVelocity().vxMetersPerSecond);
             tab.addNumber("vym", () -> this.getMeasuredVelocity().vyMetersPerSecond);
             tab.addNumber("vxf", () -> this.getFilteredVelocity().vxMetersPerSecond);
             tab.addNumber("vyf", () -> this.getFilteredVelocity().vyMetersPerSecond);
+<<<<<<< HEAD
             tab.addNumber("Pose Est X", () -> getPose().getX());
             tab.addNumber("Pose Est Y", () -> getPose().getY());
             tab.addNumber("Pose Est Theta", () -> getPose().getRotation().getDegrees());
@@ -174,6 +178,8 @@ public class Swerve extends SubsystemBase {
             //tab.addNumber("Pose Est Theta", () -> getPose().getRotation().getDegrees());
 >>>>>>> ab9dbbc (vision testing - 1/16)
 =======
+=======
+>>>>>>> 35240ae (basic robot state supervisor framework added)
             tab.addNumber("Pose Est X", () -> getPose().getX());
             tab.addNumber("Pose Est Y", () -> getPose().getY());
             tab.addNumber("Pose Est Theta", () -> getPose().getRotation().getDegrees());
@@ -204,6 +210,7 @@ public class Swerve extends SubsystemBase {
 
             this.filteredStates[moduleID] = this.measuredStates[moduleID];
             this.filteredPositions[moduleID] = this.measuredPositions[moduleID];
+<<<<<<< HEAD
 
             if(Math.abs(measuredStates[moduleID].speedMetersPerSecond - desiredStates[moduleID].speedMetersPerSecond) > skidVelocityDifference.get()) {
                 this.filteredStates[moduleID].speedMetersPerSecond = 0.0;
@@ -227,6 +234,23 @@ public class Swerve extends SubsystemBase {
 =======
         estimator.update(getGyroscopeAzimuth(), currentPositions);
 >>>>>>> 8d64100 (vision test corrected)
+=======
+
+            if(Math.abs(measuredStates[moduleID].speedMetersPerSecond - desiredStates[moduleID].speedMetersPerSecond) > skidVelocityDifference.get()) {
+                this.filteredStates[moduleID].speedMetersPerSecond = 0.0;
+                this.filteredPositions[moduleID].distanceMeters = this.prevMeasuredPositions[moduleID].distanceMeters;
+            } else {
+                this.filteredPositions[moduleID] = this.measuredPositions[moduleID];
+            }
+        }
+        this.prevMeasuredPositions = measuredPositions;
+        
+        this.measuredVelocity = KINEMATICS.toChassisSpeeds(measuredStates);
+        this.filteredVelocity = KINEMATICS.toChassisSpeeds(filteredStates);
+        RobotContainer.state_supervisor.addSkidMeasurement(this.measuredVelocity, this.filteredVelocity);
+
+        estimator.update(getGyroscopeAzimuth(), filteredPositions);
+>>>>>>> 35240ae (basic robot state supervisor framework added)
 
         switch (driveMode) {
             case OPEN_LOOP:
