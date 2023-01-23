@@ -144,6 +144,7 @@ public final class Constants {
     public String swerve_readout_key;
     public String tunable_readout_key;
     public String vision_readout_key;
+    public String supervisor_readout_key;
   }
 
   public static final ShuffleboardConstants shuffleboard = new ShuffleboardConstants();
@@ -152,6 +153,7 @@ public final class Constants {
     shuffleboard.swerve_readout_key = "Swerve";
     shuffleboard.tunable_readout_key = "Tunable";
     shuffleboard.vision_readout_key = "Vision";
+    shuffleboard.supervisor_readout_key = "RobotStateSupervisor";
   }
 
   public static class PoseEstimatorConstants {
@@ -169,5 +171,17 @@ public final class Constants {
     estimator.highAccuracyVisionStdDevs = VecBuilder.fill(0.02, 0.02, Units.degreesToRadians(3));
     estimator.normalVisionStdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5)); //X, Y, Theta
     estimator.stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1); //X, Y, Theta
+  }
+
+  public static class RobotStateSupervisorConstants {
+    public double maxSkidErrorMeters;
+    public double visionToEstimatorConvergenceThreshold;
+    public double visionConvergenceExpiryTime;
+  }
+  public static final RobotStateSupervisorConstants supervisor = new RobotStateSupervisorConstants();
+  static {
+    supervisor.maxSkidErrorMeters = 1.0;
+    supervisor.visionToEstimatorConvergenceThreshold = 0.25;
+    supervisor.visionConvergenceExpiryTime = 5.0;
   }
 }

@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.apriltag.*;
 
-public class VisionManager extends SubsystemBase {
+public class VisionManager {
     //private final AprilTagFieldLayout tag_layout = new AprilTagFieldLayout(Path.of("asdf;lkajsdf.json"));
     private final PhotonCameraExtension photonCamera;
     private final List<PhotonCameraExtension> camera_list;
@@ -35,8 +35,7 @@ public class VisionManager extends SubsystemBase {
             .withPosition(4, 0);
     }
 
-    @Override
-    public void periodic() {
+    public void update() {
         int camID = 0;
         visibleTargets.clear();
 
