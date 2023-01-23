@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.apriltag.*;
 
 public class VisionManager {
-    //private final AprilTagFieldLayout tag_layout = new AprilTagFieldLayout(Path.of("asdf;lkajsdf.json"));
     private final PhotonCameraExtension photonCamera;
     private final List<PhotonCameraExtension> camera_list;
     private ArrayList<VisionTarget> visibleTargets;

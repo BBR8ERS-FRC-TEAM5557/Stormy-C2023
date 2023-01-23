@@ -29,7 +29,6 @@ public class RobotStateSupervisor extends SubsystemBase {
     //private final GoalPlanner goal_planner = new GoalPlanner();
     private final SwerveDrivePoseEstimator pose_estimator = swerve.getEstimator();
 
-
     private final GenericEntry skidDeaccumulationSensitivity;
 
     public RobotStateSupervisor() {
@@ -135,7 +134,6 @@ public class RobotStateSupervisor extends SubsystemBase {
         LocalizationStatus localizationStatus;
 
         //Skid/Swerve Related
-        ObstacleInterference obstacleInterference;
         Translation2d skidAccumulator;
 
         //Vision Related
@@ -148,11 +146,6 @@ public class RobotStateSupervisor extends SubsystemBase {
         LOCALIZED,
         DELOCALIZED,
         LOCALIZING
-    }
-
-    public enum ObstacleInterference {
-        CHARGE,
-
     }
     
 }
