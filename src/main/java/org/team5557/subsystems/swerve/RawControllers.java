@@ -45,7 +45,7 @@ public class RawControllers extends SubsystemBase {
 
     public void resetTheta() {
         startAngle = swerve.getPose().getRotation();
-        thetaController.reset(startAngle.getRadians(), swerve.getCurrentVelocity().omegaRadiansPerSecond);
+        thetaController.reset(startAngle.getRadians(), swerve.getMeasuredVelocity().omegaRadiansPerSecond);
     }
 
     public Rotation2d getStartAngle() {
