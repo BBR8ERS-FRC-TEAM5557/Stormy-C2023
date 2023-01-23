@@ -13,19 +13,14 @@ import org.team5557.subsystems.swerve.RawControllers;
 import org.team5557.subsystems.swerve.Swerve;
 import org.team5557.subsystems.swerve.SwerveSubsystemConstants;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-/**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a "declarative" paradigm, very little robot logic should
- * actually be handled in the {@link Robot} periodic methods (other than the
- * scheduler calls). Instead, the structure of the robot (including subsystems,
- * commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
   // Subsystems
+  //public static final RobotStateSupervisor state_supervisor = new RobotStateSupervisor();
   public static final Swerve swerve = new Swerve();
 
   // Controller
@@ -45,41 +40,13 @@ public class RobotContainer {
       new Alert("Tuning mode active, expect decreased network performance.",
           AlertType.INFO).set(true);
     }
-    /*
-    switch (Constants.robot_mode) {
-      // Real robot, instantiate hardware IO implementations
-      case REAL:
-        drive = new Drive(new DriveIOSparkMax());
-        flywheel = new Flywheel(new FlywheelIOSparkMax());
-        // drive = new Drive(new DriveIOFalcon500());
-        // flywheel = new Flywheel(new FlywheelIOFalcon500());
-        break;
 
-      // Sim robot, instantiate physics sim IO implementations
-      case SIM:
-        drive = new Drive(new DriveIOSim());
-        flywheel = new Flywheel(new FlywheelIOSim());
-        break;
-
-      // Replayed robot, disable IO implementations
-      default:
-        drive = new Drive(new DriveIO() {
-        });
-        flywheel = new Flywheel(new FlywheelIO() {
-        });
-        break;
-    } */
-
-    CommandScheduler.getInstance().registerSubsystem(swerve);
+    //CommandScheduler.getInstance().registerSubsystem(swerve);
+    //CommandScheduler.getInstance().registerSubsystem(state_supervisor);
     configureButtonBindings();
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by instantiating a {@link GenericHID} or one of its subclasses
-   * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
-   * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
+
   private void configureButtonBindings() {
     swerve.setDefaultCommand(new TeleopDrive(this::getForwardInput, this::getStrafeInput, this::getRotationInput));
   }
@@ -116,7 +83,7 @@ public class RobotContainer {
       return -square(deadband(primary_controller.getRightX(), 0.1)) * SwerveSubsystemConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
   }
 
-  private double getRightStickAngle() {
-      return Math.atan2(primary_controller.getRightX(), -primary_controller.getRightY());
+  public Rotation2d getRightStickAngle() {
+      return new Rotation2d(primary_controller.getRightX(), primary_controller.getRightY());//Math.atan2(primary_controller.getRightX(), -primary_controller.getRightY());
   }
 }

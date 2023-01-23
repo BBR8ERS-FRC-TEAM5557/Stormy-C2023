@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team5557.RobotContainer;
+import org.team5557.commands.swerve.FeedForwardCharacterization;
+import org.team5557.commands.swerve.FeedForwardCharacterization.FeedForwardCharacterizationData;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
@@ -31,6 +33,7 @@ public class AutonomousChooser {
 
         autonomousModeChooser.addDefaultOption("Five Ball (Orange)", AutonomousMode.CIRCLE_AUTO);
         autonomousModeChooser.addOption("Test Auto", AutonomousMode.TEST_AUTO);
+        autonomousModeChooser.addOption("FF Characterization", AutonomousMode.FF_CHARACTERIZATION);
     }
 
     public LoggedDashboardChooser<AutonomousMode> getModeChooser() {
@@ -44,6 +47,10 @@ public class AutonomousChooser {
         follow(command, trajectories.getTestAutoPartOne());
 
         return command;
+    }
+
+    public Command getFFCharacterization() {
+        return new FeedForwardCharacterization(RobotContainer.swerve, true, new FeedForwardCharacterizationData("drive"), RobotContainer.swerve::runCharacterizationVolts, RobotContainer.swerve::getCharacterizationVelocity);
     }
 
     private void follow(SequentialCommandGroup command, PathPlannerTrajectory trajectory) {
@@ -76,6 +83,8 @@ public class AutonomousChooser {
         switch (autonomousModeChooser.get()) {
             case TEST_AUTO :
                 return getTestAuto();
+            case FF_CHARACTERIZATION :
+                return getFFCharacterization();
             default:
                 break;
         }
@@ -85,6 +94,7 @@ public class AutonomousChooser {
     private enum AutonomousMode {
         RANDOM_THING,
         TEST_AUTO,
-        CIRCLE_AUTO
+        CIRCLE_AUTO,
+        FF_CHARACTERIZATION
     }
 }

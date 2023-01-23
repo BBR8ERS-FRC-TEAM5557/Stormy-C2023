@@ -61,6 +61,7 @@ public class Swerve extends SubsystemBase {
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
     private Translation2d centerOfRotation = new Translation2d();
 
+    private double characterizationVolts = 0.0;
     private final GenericEntry motorOutputPercentageLimiterEntry;
     private double motorOutputLimiter;
     private final TunableNumber skidVelocityDifference;
@@ -202,23 +203,24 @@ public class Swerve extends SubsystemBase {
         switch (driveMode) {
             case OPEN_LOOP:
                 SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, MAX_VELOCITY_METERS_PER_SECOND);
-                //frontLeftModule.setDesiredState(desiredStates[0], true, false);
+                frontLeftModule.setDesiredState(desiredStates[0], true, false);
                 frontRightModule.setDesiredState(desiredStates[1], true, false);
-                //System.out.println(desiredStates[1].toString());
-                //backLeftModule.setDesiredState(desiredStates[2], true, false);
-                //backRightModule.setDesiredState(desiredStates[3], true, false);
+                backLeftModule.setDesiredState(desiredStates[2], true, false);
+                backRightModule.setDesiredState(desiredStates[3], true, false);
             case CLOSED_LOOP:
                 SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, MAX_VELOCITY_METERS_PER_SECOND);
-                frontLeftModule.setDesiredState(desiredStates[0], false, false);
-                frontRightModule.setDesiredState(desiredStates[1], false, false);
-                backLeftModule.setDesiredState(desiredStates[2], false, false);
-                backRightModule.setDesiredState(desiredStates[3], false, false);
+                //frontLeftModule.setDesiredState(desiredStates[0], false, false);
+                //frontRightModule.setDesiredState(desiredStates[1], false, false);
+                //backLeftModule.setDesiredState(desiredStates[2], false, false);
+                //backRightModule.setDesiredState(desiredStates[3], false, false);
             case X_OUT:
                 this.desiredStates = X_OUT_STATES;
-                frontLeftModule.setDesiredState(desiredStates[0], true, true);
-                frontRightModule.setDesiredState(desiredStates[1], true, true);
-                backLeftModule.setDesiredState(desiredStates[2], true, true);
-                backRightModule.setDesiredState(desiredStates[3], true, true);
+                //frontLeftModule.setDesiredState(desiredStates[0], true, true);
+                //frontRightModule.setDesiredState(desiredStates[1], true, true);
+                //backLeftModule.setDesiredState(desiredStates[2], true, true);
+                //backRightModule.setDesiredState(desiredStates[3], true, true);
+            case FF_CHARACTERIZATION:
+                frontLeftModule.setVoltageForCharacterization(characterizationVolts);
         }
 
         Logger.getInstance().recordOutput("Swerve/Estimator/Pose", estimator.getEstimatedPosition());
@@ -313,10 +315,24 @@ public class Swerve extends SubsystemBase {
         this.drive(chassisSpeeds, DriveMode.CLOSED_LOOP, true, Constants.superstructure.center_of_rotation);
     }
 
+    public void runCharacterizationVolts(double volts) {
+        this.driveMode = DriveMode.FF_CHARACTERIZATION;
+        this.characterizationVolts = volts;
+    }
+
+    public double getCharacterizationVelocity() {
+        double driveVelocityAverage = 0.0;
+        for (SwerveModule swerveModule : swerveModules) {
+            driveVelocityAverage += swerveModule.getState().speedMetersPerSecond;
+        }
+        return driveVelocityAverage / 4.0;
+    }
+
     public enum DriveMode {
         OPEN_LOOP,
         CLOSED_LOOP,
-        X_OUT
+        X_OUT,
+        FF_CHARACTERIZATION
     }
 
     /*
