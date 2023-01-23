@@ -159,7 +159,7 @@ public class SwerveModule {
      */
     public void updateAndProcessInputs() {
         io.updateInputs(inputs);
-        Logger.getInstance().processInputs("Mod" + moduleNumber, (LoggableInputs) inputs);
+        //Logger.getInstance().processInputs("Mod" + moduleNumber, (LoggableInputs) inputs);
     }
 
     /**

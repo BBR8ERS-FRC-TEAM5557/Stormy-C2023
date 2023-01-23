@@ -91,7 +91,7 @@ public final class Constants {
   static {
     ports.primary_controller = 0;
     ports.candle = 13;
-    ports.pigeon = 14;
+    ports.pigeon = 2;
     ports.canbus_name = "canivore1";
 
     ports.underglow_start_index = 0;
