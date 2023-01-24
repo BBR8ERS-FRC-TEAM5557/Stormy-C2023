@@ -52,10 +52,10 @@ public class Robot extends LoggedRobot {
     }
 
     // Set up data receivers & replay source
-    switch (Constants.currentMode) {
+    switch (Constants.robot_mode) {
       // Running on a real robot, log to a USB stick
       case REAL:
-        logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
+        logger.addDataReceiver(new WPILOGWriter("/media/sda2/"));
         logger.addDataReceiver(new NT4Publisher());
         break;
 
@@ -85,11 +85,6 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during all modes. */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler. This is responsible for polling buttons, adding
-    // newly-scheduled commands, running already-scheduled commands, removing
-    // finished or interrupted commands, and running subsystem periodic() methods.
-    // This must be called from the robot's periodic block in order for anything in
-    // the Command-based framework to work.
     CommandScheduler.getInstance().run();
   }
 
@@ -109,7 +104,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void autonomousInit() {
-    autonomousCommand = robotContainer.getAutonomousCommand();
+    autonomousCommand = robotContainer.getAutonomousChooser().getCommand();
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
