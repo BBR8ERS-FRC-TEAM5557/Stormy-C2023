@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class TeleopDrive extends CommandBase {
     private final Swerve swerve;
     private final LatchedBoolean input_checker;
-    private Rotation2d sustain_heading;
+    public Rotation2d sustain_heading;
 
     private final DoubleSupplier m_translationXSupplier;
     private final DoubleSupplier m_translationYSupplier;
@@ -35,37 +35,37 @@ public class TeleopDrive extends CommandBase {
 
     @Override
     public void initialize() {
-        swerve.setDriveMode(DriveMode.OPEN_LOOP);
+        swerve.setDriveMode(DriveMode.CLOSED_LOOP);
+        sustain_heading = swerve.getPose().getRotation();
     }
 
     @Override
     public void execute() {
-        /*
         if (input_checker.update(m_rotationSupplier.getAsDouble() == 0.0)) {
             sustain_heading = swerve.getPose().getRotation();
-            RobotContainer.raw_controllers.resetTheta();
+            RobotContainer.raw_controllers.resetAlign();
         }
 
         double rotationalVelocity; 
         if(m_rotationSupplier.getAsDouble() == 0.0) {
-            rotationalVelocity = RobotContainer.raw_controllers.calculateTheta(sustain_heading.getRadians()) * swerve.getMotorOutputLimiter();
-            rotationalVelocity += Math.copySign(SwerveSubsystemConstants.ROTATIONAL_STATIC_CONSTANT / SwerveSubsystemConstants.MAX_VOLTAGE
-                * SwerveSubsystemConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, rotationalVelocity);
+            rotationalVelocity = RobotContainer.raw_controllers.calculateAlign(sustain_heading.getRadians()) * swerve.getMotorOutputLimiter();
+            //rotationalVelocity += Math.copySign(SwerveSubsystemConstants.ROTATIONAL_STATIC_CONSTANT / SwerveSubsystemConstants.MAX_VOLTAGE
+                //* SwerveSubsystemConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, rotationalVelocity);
         } else {
             rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
-        }*/
+        }
 
         //FIX ME: don't run PID stuff when you don't even know if a module will work
-        double rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
+        //double rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
 
-        rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
+        //rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
 
         swerve.drive(
             new ChassisSpeeds(
                 m_translationXSupplier.getAsDouble() * swerve.getMotorOutputLimiter(),
                 m_translationYSupplier.getAsDouble() * swerve.getMotorOutputLimiter(),
                 rotationalVelocity),
-            DriveMode.OPEN_LOOP, false,
+            DriveMode.CLOSED_LOOP, true,
             Constants.superstructure.center_of_rotation
         );
     }

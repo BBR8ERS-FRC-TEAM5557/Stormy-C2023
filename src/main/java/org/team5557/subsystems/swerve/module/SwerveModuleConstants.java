@@ -2,6 +2,8 @@ package org.team5557.subsystems.swerve.module;
 
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.math.util.Units;
+
 public class SwerveModuleConstants {
     private static final String CONSTRUCTOR_EXCEPTION = "constant class";
 
@@ -10,7 +12,7 @@ public class SwerveModuleConstants {
     }
 
     /* MK4i L2 */
-    public static final double MK4I_L2_WHEEL_DIAMETER_METERS = 0.10033;
+    public static final double MK4I_L2_WHEEL_DIAMETER_METERS = Units.inchesToMeters(4.0);//0.10033;
     public static final double MK4I_L2_WHEEL_CIRCUMFERENCE = MK4I_L2_WHEEL_DIAMETER_METERS * Math.PI;
     public static final double MK4I_L2_DRIVE_GEAR_RATIO = 1 / ((14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0));
     public static final boolean MK4I_L2_DRIVE_MOTOR_INVERTED = true;
@@ -31,7 +33,7 @@ public class SwerveModuleConstants {
     public static final double CLOSED_LOOP_RAMP = 0.0;
 
     /* Swerve Current Limiting */
-    public static final int ANGLE_CONTINUOUS_CURRENT_LIMIT = 80;
+    public static final int ANGLE_CONTINUOUS_CURRENT_LIMIT = 25;
     public static final int ANGLE_PEAK_CURRENT_LIMIT = 40;
     public static final double ANGLE_PEAK_CURRENT_DURATION = 0.1;
     public static final boolean ANGLE_ENABLE_CURRENT_LIMIT = true;
@@ -53,7 +55,7 @@ public class SwerveModuleConstants {
     public static final double ANGLE_KF = 0.0;
 
     /* Drive Motor PID Values */
-    public static final double DRIVE_KP = 0.10;
+    public static final double DRIVE_KP = 0.0000001;
     public static final double DRIVE_KI = 0.0;
     public static final double DRIVE_KD = 0.0;
     public static final double DRIVE_KF = 0.0;
@@ -62,8 +64,8 @@ public class SwerveModuleConstants {
 
     /* Drive Motor Characterization Values */
     // divide by 12 to convert from volts to percent output for CTRE
-    public static final double DRIVE_KS = (0.55493 / 12);
-    public static final double DRIVE_KV = (2.3014 / 12);
+    public static final double DRIVE_KS = (0.10095 / 12);
+    public static final double DRIVE_KV = (2.55494 / 12);
     public static final double DRIVE_KA = (0.12872 / 12);
 
     /* Neutral Modes */

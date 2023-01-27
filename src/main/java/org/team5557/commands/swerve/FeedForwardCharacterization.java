@@ -20,7 +20,7 @@
  
  @java.lang.SuppressWarnings({"java:S106"})
  public class FeedForwardCharacterization extends CommandBase {
-   private static final double START_DELAY_SECS = 2.0;
+   private static final double START_DELAY_SECS = 0.0;
    private static final double RAMP_RATE_VOLTS_PER_SECOND = 0.05;
  
    private final boolean forwards;

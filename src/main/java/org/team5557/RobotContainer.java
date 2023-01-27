@@ -8,15 +8,20 @@ import org.library.team6328.util.Alert;
 import org.library.team6328.util.Alert.AlertType;
 import org.team5557.auto.AutonomousChooser;
 import org.team5557.auto.AutonomousTrajectories;
+import org.team5557.commands.swerve.AimDrive;
 import org.team5557.commands.swerve.TeleopDrive;
 import org.team5557.subsystems.swerve.RawControllers;
 import org.team5557.subsystems.swerve.Swerve;
 import org.team5557.subsystems.swerve.SwerveSubsystemConstants;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
   // Subsystems
@@ -49,6 +54,18 @@ public class RobotContainer {
 
   private void configureButtonBindings() {
     swerve.setDefaultCommand(new TeleopDrive(this::getForwardInput, this::getStrafeInput, this::getRotationInput));
+
+    new Trigger(primary_controller::getStartButton).onTrue(
+      new InstantCommand(() -> swerve.setPose(new Pose2d()))
+    );
+
+    new Trigger(() -> primary_controller.getPOV() == 0).whileTrue(
+      new AimDrive(this::getForwardInput, this::getStrafeInput, 0.0)
+    );
+
+    new Trigger(primary_controller::getRightStickButton).whileTrue(
+      new AimDrive(this::getForwardInput, this::getStrafeInput, () -> getRightStickAngle().getRadians())
+    );
   }
 
   /**
@@ -84,6 +101,6 @@ public class RobotContainer {
   }
 
   public Rotation2d getRightStickAngle() {
-      return new Rotation2d(primary_controller.getRightX(), primary_controller.getRightY());//Math.atan2(primary_controller.getRightX(), -primary_controller.getRightY());
+      return new Rotation2d(-primary_controller.getRightY(), -primary_controller.getRightX());//Math.atan2(primary_controller.getRightX(), -primary_controller.getRightY());
   }
 }
