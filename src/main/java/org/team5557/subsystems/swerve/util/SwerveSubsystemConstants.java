@@ -1,4 +1,4 @@
-package org.team5557.subsystems.swerve;
+package org.team5557.subsystems.swerve.util;
 
 import org.team5557.Constants;
 import org.team5557.subsystems.swerve.module.SwerveModuleConstants;
@@ -29,6 +29,8 @@ public final class SwerveSubsystemConstants {
         public static final int BR_STEER_MOTOR = 15;
         public static final int BR_CANCODER = 5;
         public static final double BR_OFFSET = -232.2 - 180.0;
+
+        
 
         public static final SwerveModuleState[] X_OUT_STATES = {
                         new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45)),
@@ -99,21 +101,4 @@ public final class SwerveSubsystemConstants {
 
         public static final double MAX_COAST_VELOCITY_METERS_PER_SECOND = 0.05;
 
-        public static final int TIMEOUT_MS = 30;
-
-        public static final double AUTO_MAX_SPEED_METERS_PER_SECOND = 3;
-        public static final double AUTO_MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 3;
-        public static final double AUTO_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = 2.0 * Math.PI;
-        public static final double AUTO_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND_SQUARED = 2.0 * Math.PI;
-
-        // FIXME: tune PID values for auto paths
-
-        public static final double AUTO_DRIVE_P_CONTROLLER = 2.2956;
-        public static final double AUTO_DRIVE_I_CONTROLLER = 0.0;
-        public static final double AUTO_DRIVE_D_CONTROLLER = 0.0;
-        public static final double AUTO_TURN_P_CONTROLLER = 4.9;
-        public static final double AUTO_TURN_I_CONTROLLER = 0.0;
-        public static final double AUTO_TURN_D_CONTROLLER = 0.0;
-
-        public static final double DEADBAND = 0.1;
 }

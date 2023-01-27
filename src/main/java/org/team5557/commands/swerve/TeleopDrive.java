@@ -6,8 +6,8 @@ import org.library.team254.LatchedBoolean;
 import org.team5557.Constants;
 import org.team5557.RobotContainer;
 import org.team5557.subsystems.swerve.Swerve;
-import org.team5557.subsystems.swerve.SwerveSubsystemConstants;
 import org.team5557.subsystems.swerve.Swerve.DriveMode;
+import org.team5557.subsystems.swerve.util.SwerveSubsystemConstants;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -40,7 +40,6 @@ public class TeleopDrive extends CommandBase {
 
     @Override
     public void execute() {
-        /*
         if (input_checker.update(m_rotationSupplier.getAsDouble() == 0.0)) {
             sustain_heading = swerve.getPose().getRotation();
             RobotContainer.raw_controllers.resetTheta();
@@ -53,19 +52,16 @@ public class TeleopDrive extends CommandBase {
                 * SwerveSubsystemConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, rotationalVelocity);
         } else {
             rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
-        }*/
+        }
 
-        //FIX ME: don't run PID stuff when you don't even know if a module will work
-        double rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
-
-        rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
+        //rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
 
         swerve.drive(
             new ChassisSpeeds(
                 m_translationXSupplier.getAsDouble() * swerve.getMotorOutputLimiter(),
                 m_translationYSupplier.getAsDouble() * swerve.getMotorOutputLimiter(),
                 rotationalVelocity),
-            DriveMode.OPEN_LOOP, false,
+            DriveMode.OPEN_LOOP, true,
             Constants.superstructure.center_of_rotation
         );
     }

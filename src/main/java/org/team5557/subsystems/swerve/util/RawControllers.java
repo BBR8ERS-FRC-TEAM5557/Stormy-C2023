@@ -1,9 +1,10 @@
-package org.team5557.subsystems.swerve;
+package org.team5557.subsystems.swerve.util;
 
 import java.util.function.DoubleSupplier;
 
 import org.team5557.Constants;
 import org.team5557.RobotContainer;
+import org.team5557.subsystems.swerve.Swerve;
 
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
@@ -45,7 +46,7 @@ public class RawControllers extends SubsystemBase {
 
     public void resetTheta() {
         startAngle = swerve.getPose().getRotation();
-        thetaController.reset(startAngle.getRadians(), swerve.getCurrentVelocity().omegaRadiansPerSecond);
+        thetaController.reset(startAngle.getRadians(), swerve.getFilteredVelocity().omegaRadiansPerSecond);
     }
 
     public Rotation2d getStartAngle() {
