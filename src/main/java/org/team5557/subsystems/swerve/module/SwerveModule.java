@@ -1,11 +1,9 @@
 package org.team5557.subsystems.swerve.module;
 
 
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggableInputs;
 import org.team5557.Constants;
-import org.team5557.subsystems.swerve.Conversions;
 import org.team5557.subsystems.swerve.module.SwerveModuleIO.SwerveModuleIOInputs;
+import org.team5557.subsystems.swerve.util.Conversions;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;

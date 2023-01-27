@@ -9,18 +9,17 @@ import org.library.team6328.util.Alert.AlertType;
 import org.team5557.auto.AutonomousChooser;
 import org.team5557.auto.AutonomousTrajectories;
 import org.team5557.commands.swerve.TeleopDrive;
-import org.team5557.subsystems.swerve.RawControllers;
+import org.team5557.state.RobotStateSupervisor;
 import org.team5557.subsystems.swerve.Swerve;
-import org.team5557.subsystems.swerve.SwerveSubsystemConstants;
+import org.team5557.subsystems.swerve.util.RawControllers;
+import org.team5557.subsystems.swerve.util.SwerveSubsystemConstants;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class RobotContainer {
   // Subsystems
-  //public static final RobotStateSupervisor state_supervisor = new RobotStateSupervisor();
   public static final Swerve swerve = new Swerve();
 
   // Controller
@@ -29,6 +28,7 @@ public class RobotContainer {
   // Dashboard inputs / Util
   private final AutonomousChooser autonomous_chooser = new AutonomousChooser(new AutonomousTrajectories());
   public static final RawControllers raw_controllers = new RawControllers();
+  public static final RobotStateSupervisor state_supervisor = new RobotStateSupervisor();
     //private final LoggedDashboardNumber flywheelSpeedInput = new LoggedDashboardNumber("Flywheel Speed", 1500.0);
   
 
@@ -41,14 +41,16 @@ public class RobotContainer {
           AlertType.INFO).set(true);
     }
 
-    //CommandScheduler.getInstance().registerSubsystem(swerve);
-    //CommandScheduler.getInstance().registerSubsystem(state_supervisor);
+    CommandScheduler.getInstance().registerSubsystem(state_supervisor);
+
     configureButtonBindings();
   }
 
 
   private void configureButtonBindings() {
     swerve.setDefaultCommand(new TeleopDrive(this::getForwardInput, this::getStrafeInput, this::getRotationInput));
+
+
   }
 
   /**

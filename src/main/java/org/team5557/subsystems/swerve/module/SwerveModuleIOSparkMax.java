@@ -24,7 +24,7 @@ import org.library.team3061.util.CANDeviceFinder;
 import org.library.team3061.util.CANDeviceId.CANDeviceType;
 import org.library.team6328.util.TunableNumber;
 import org.team5557.Constants;
-import org.team5557.subsystems.swerve.Conversions;
+import org.team5557.subsystems.swerve.util.Conversions;
 
 
 public class SwerveModuleIOSparkMax implements SwerveModuleIO {
