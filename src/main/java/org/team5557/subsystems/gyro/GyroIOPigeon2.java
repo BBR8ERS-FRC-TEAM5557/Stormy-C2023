@@ -1,7 +1,5 @@
 package org.team5557.subsystems.gyro;
 
-import org.team5557.Constants;
-
 import com.ctre.phoenix.sensors.Pigeon2;
 
 public class GyroIOPigeon2 implements GyroIO {

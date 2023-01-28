@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class RawControllers extends SubsystemBase {
     public final ProfiledPIDController thetaController;
+    public final PIDController alignController;
 
     public final PPHolonomicDriveController follower;
     public final PIDController rotationController;
@@ -34,8 +35,12 @@ public class RawControllers extends SubsystemBase {
         );
         // Setup thetaController used for auton and automatic turns
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
+        thetaController.setTolerance(Math.toRadians(1.0));
 
-        rotationController = new PIDController(Constants.follower.theta_kP, Constants.follower.theta_kI, Constants.follower.theta_kD);
+        alignController = new PIDController(Constants.follower.auto_kP, Constants.follower.auto_kI, Constants.follower.auto_kD);
+        alignController.enableContinuousInput(-Math.PI, Math.PI);
+
+        rotationController = new PIDController(Constants.follower.auto_kP, Constants.follower.auto_kI, Constants.follower.auto_kD);
         xController = new PIDController(Constants.follower.translation_kP, Constants.follower.translation_kI, Constants.follower.translation_kD);
         yController = new PIDController(Constants.follower.translation_kP, Constants.follower.translation_kI, Constants.follower.translation_kD);
 
@@ -65,9 +70,27 @@ public class RawControllers extends SubsystemBase {
         return calculateThetaSupplier(() -> goalAngle);
     }
 
+    //FOR NON PROFILED ANGLE STUFF
+    public void resetAlign() {
+        startAngle = swerve.getPose().getRotation();
+        thetaController.reset(startAngle.getRadians(), swerve.getFilteredVelocity().omegaRadiansPerSecond);
+    }
+
+    public double calculateAlign(double goalAngleRadians) {
+        return alignController.calculate(swerve.getPose().getRotation().getRadians(), goalAngleRadians);
+    }
+
+    public DoubleSupplier calculateAlignSupplier(DoubleSupplier goalAngleSupplierRadians) {
+        return () -> calculateAlign(goalAngleSupplierRadians.getAsDouble());
+    }
+
+    public DoubleSupplier calculateAlignSupplier(double goalAngle) {
+        return calculateThetaSupplier(() -> goalAngle);
+    }
+
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
+
     }
 
     public void resetTranslation() {

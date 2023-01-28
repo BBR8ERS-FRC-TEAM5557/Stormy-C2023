@@ -7,6 +7,8 @@ import static org.team5557.subsystems.swerve.util.SwerveSubsystemConstants.*;
 
 import java.util.Map;
 
+import org.library.team2910.math.MathUtils;
+import org.library.team4481.SecondOrderSwerveModuleStates;
 import org.library.team6328.util.TunableNumber;
 import org.littletonrobotics.junction.Logger;
 import org.team5557.subsystems.gyro.GyroIO;
@@ -24,7 +26,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -51,7 +52,11 @@ public class Swerve extends SubsystemBase {
     private final SwerveModule backRightModule;
 
     private SwerveModuleState[] desiredStates = {new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(),new SwerveModuleState()};
-    
+
+    private double[] moduleTurnSpeeds = new double[4];
+    private SecondOrderSwerveModuleStates desiredStates2 = new SecondOrderSwerveModuleStates(desiredStates, moduleTurnSpeeds);
+
+
     private SwerveModuleState[] measuredStates = {new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(),new SwerveModuleState()};
     private SwerveModuleState[] filteredStates = this.measuredStates;
     private SwerveModulePosition[] measuredPositions = {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()};
@@ -154,17 +159,17 @@ public class Swerve extends SubsystemBase {
         motorOutputPercentageLimiterEntry = tab.add("Motor Percentage", 100.0).withWidget(BuiltInWidgets.kNumberSlider)
             .withProperties(Map.of("min", 0.0, "max", 100.0, "Block increment", 10.0)).withPosition(0, 3)
             .getEntry();
-        skidVelocityDifference = new TunableNumber(Constants.shuffleboard.tunable_readout_key, 0.25);
+        skidVelocityDifference = new TunableNumber("SkidVelocityDifference", 0.2);
 
         if (DEBUGGING) {
             tab.add(SUBSYSTEM_NAME, this);
-            tab.addNumber("vxm", () -> this.getMeasuredVelocity().vxMetersPerSecond);
-            tab.addNumber("vym", () -> this.getMeasuredVelocity().vyMetersPerSecond);
-            tab.addNumber("vxf", () -> this.getFilteredVelocity().vxMetersPerSecond);
-            tab.addNumber("vyf", () -> this.getFilteredVelocity().vyMetersPerSecond);
-            tab.addNumber("Pose Est X", () -> getPose().getX());
-            tab.addNumber("Pose Est Y", () -> getPose().getY());
-            tab.addNumber("Pose Est Theta", () -> getPose().getRotation().getDegrees());
+            tab.addNumber("vxm", () -> MathUtils.truncate(this.getMeasuredVelocity().vxMetersPerSecond, 2));
+            tab.addNumber("vym", () -> MathUtils.truncate(this.getMeasuredVelocity().vyMetersPerSecond, 2));
+            tab.addNumber("vxf", () -> MathUtils.truncate(this.getFilteredVelocity().vxMetersPerSecond, 2));
+            tab.addNumber("vyf", () -> MathUtils.truncate(this.getFilteredVelocity().vyMetersPerSecond, 2));
+            tab.addNumber("Pose Est X", () -> MathUtils.truncate(getPose().getX(), 2));
+            tab.addNumber("Pose Est Y", () -> MathUtils.truncate(getPose().getY(), 2));
+            tab.addNumber("Pose Est Theta", () -> MathUtils.truncate(getPose().getRotation().getDegrees(), 2));
         }
         
         if (TESTING) {
@@ -182,7 +187,11 @@ public class Swerve extends SubsystemBase {
         Logger.getInstance().processInputs("Swerve/Gyro", gyroInputs);
 
         // update and log the swerve moudles inputs
-        this.desiredStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds, centerOfRotation);
+        //this.desiredStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds, centerOfRotation);
+        this.desiredStates2 = SECOND_KINEMATICS.toSwerveModuleState(chassisSpeeds, getGyroscopeAzimuth());
+        this.desiredStates = desiredStates2.getSwerveModuleStates();
+        this.moduleTurnSpeeds = desiredStates2.getModuleTurnSpeeds();
+
         for (SwerveModule swerveModule : swerveModules) {
             int moduleID = swerveModule.getModuleNumber();
             swerveModule.updateAndProcessInputs();
@@ -210,31 +219,41 @@ public class Swerve extends SubsystemBase {
         switch (driveMode) {
             case OPEN_LOOP:
                 SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, MAX_VELOCITY_METERS_PER_SECOND);
-                frontLeftModule.setDesiredState(desiredStates[0], true, false);
-                frontRightModule.setDesiredState(desiredStates[1], true, false);
-                backLeftModule.setDesiredState(desiredStates[2], true, false);
-                backRightModule.setDesiredState(desiredStates[3], true, false);
+                frontLeftModule.setDesiredState(desiredStates[0], moduleTurnSpeeds[0], true, false);
+                frontRightModule.setDesiredState(desiredStates[1], moduleTurnSpeeds[1],true, false);
+                backLeftModule.setDesiredState(desiredStates[2], moduleTurnSpeeds[2],true, false);
+                backRightModule.setDesiredState(desiredStates[3], moduleTurnSpeeds[3],true, false);
+                break;
             case CLOSED_LOOP:
                 SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, MAX_VELOCITY_METERS_PER_SECOND);
-                //frontLeftModule.setDesiredState(desiredStates[0], false, false);
-                //frontRightModule.setDesiredState(desiredStates[1], false, false);
-                //backLeftModule.setDesiredState(desiredStates[2], false, false);
-                //backRightModule.setDesiredState(desiredStates[3], false, false);
+                frontLeftModule.setDesiredState(desiredStates[0], false, false);
+                frontRightModule.setDesiredState(desiredStates[1], false, false);
+                backLeftModule.setDesiredState(desiredStates[2], false, false);
+                backRightModule.setDesiredState(desiredStates[3], false, false);
+                break;
             case X_OUT:
                 this.desiredStates = X_OUT_STATES;
-                //frontLeftModule.setDesiredState(desiredStates[0], true, true);
-                //frontRightModule.setDesiredState(desiredStates[1], true, true);
-                //backLeftModule.setDesiredState(desiredStates[2], true, true);
-                //backRightModule.setDesiredState(desiredStates[3], true, true);
+                frontLeftModule.setDesiredState(desiredStates[0], true, true);
+                frontRightModule.setDesiredState(desiredStates[1], true, true);
+                backLeftModule.setDesiredState(desiredStates[2], true, true);
+                backRightModule.setDesiredState(desiredStates[3], true, true);
+                break;
             case FF_CHARACTERIZATION:
                 frontLeftModule.setVoltageForCharacterization(characterizationVolts);
+                frontRightModule.setVoltageForCharacterization(characterizationVolts);
+                backLeftModule.setVoltageForCharacterization(characterizationVolts);
+                backRightModule.setVoltageForCharacterization(characterizationVolts);
+                break;
         }
 
-        Logger.getInstance().recordOutput("Swerve/Estimator/Pose", estimator.getEstimatedPosition());
         Logger.getInstance().recordOutput("Swerve/Drive Mode", getDriveMode().toString());
-        Logger.getInstance().recordOutput("Swerve/Vx", filteredVelocity.vxMetersPerSecond);
-        Logger.getInstance().recordOutput("Swerve/Vy", filteredVelocity.vyMetersPerSecond);
-        Logger.getInstance().recordOutput("Swerve/V0", filteredVelocity.omegaRadiansPerSecond);
+
+        Logger.getInstance().recordOutput("Swerve/Velocity/Vx", filteredVelocity.vxMetersPerSecond);
+        Logger.getInstance().recordOutput("Swerve/Velocity/Vy", filteredVelocity.vyMetersPerSecond);
+        Logger.getInstance().recordOutput("Swerve/Velocity/V0", filteredVelocity.omegaRadiansPerSecond);
+
+        Logger.getInstance().recordOutput("Swerve/States/Filtered States", filteredStates);
+        Logger.getInstance().recordOutput("Swerve/States/Measured States", measuredStates);
     }
 
 

@@ -1,6 +1,6 @@
 package org.team5557.subsystems.swerve.module;
 
-
+import org.library.team2910.math.MathUtils;
 import org.team5557.Constants;
 import org.team5557.subsystems.swerve.module.SwerveModuleIO.SwerveModuleIOInputs;
 import org.team5557.subsystems.swerve.util.Conversions;
@@ -49,11 +49,11 @@ public class SwerveModule {
         if (DEBUGGING) {
             ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
             ShuffleboardLayout container = tab.getLayout("Mod " + this.moduleNumber, BuiltInLayouts.kList)
-                    .withSize(2, 3).withPosition(2 * this.moduleNumber, 0);
-            container.addNumber("Mod " + this.moduleNumber + ": Cancoder", () -> inputs.angleAbsolutePositionDeg);
-            container.addNumber("Mod " + this.moduleNumber + ": Integrated", () -> Units.radiansToDegrees(inputs.anglePositionRad));
-            container.addNumber("Mod " + this.moduleNumber + ": Velocity", () -> inputs.driveVelocityMetersPerSec);
-            container.addNumber("Mod " + this.moduleNumber + ": Applied Velocity", () -> inputs.driveAppliedPercentage);
+                    .withSize(2, 2).withPosition(2 * this.moduleNumber, 3);
+            container.addNumber("Mod " + this.moduleNumber + ": Cancoder", () -> MathUtils.truncate(inputs.angleAbsolutePositionDeg, 2));
+            container.addNumber("Mod " + this.moduleNumber + ": Integrated", () -> MathUtils.truncate(Units.radiansToDegrees(inputs.anglePositionRad), 2));
+            container.addNumber("Mod " + this.moduleNumber + ": Velocity", () -> MathUtils.truncate(inputs.driveVelocityMetersPerSec, 2));
+            container.addNumber("Mod " + this.moduleNumber + ": Applied Velocity", () -> MathUtils.truncate(inputs.driveAppliedPercentage, 2));
         }
     }
 
@@ -73,7 +73,6 @@ public class SwerveModule {
      */
     public void setDesiredState(
             SwerveModuleState desiredState, boolean isOpenLoop, boolean forceAngle) {
-
         desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
 
         if (isOpenLoop) {
@@ -99,6 +98,40 @@ public class SwerveModule {
         }
 
         io.setAnglePosition(angle);
+        lastAngle = angle;
+    }
+
+        /**
+     * Set this swerve module to the specified speed and angle.
+     *
+     * @param desiredState the desired state of the module
+     * @param isOpenLoop   if true, the drive motor will be set to the calculated
+     *                     fraction of the max
+     *                     velocity; if false, the drive motor will set to the
+     *                     specified velocity using a closed-loop
+     *                     controller (PID).
+     * @param forceAngle   if true, the module will be forced to rotate to the
+     *                     specified angle; if
+     *                     false, the module will not rotate if the velocity is less
+     *                     than 1% of the max velocity.
+     */
+    public void setDesiredState(SwerveModuleState desiredState, double turnSpeed, boolean isOpenLoop, boolean forceAngle) {
+
+        desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
+        if (isOpenLoop) {
+            double percentOutput = desiredState.speedMetersPerSecond / maxVelocity;
+            io.setDriveMotorPercentage(percentOutput);
+        } else {
+            io.setDriveVelocity(desiredState.speedMetersPerSecond);
+        }
+        double angle;
+        if (!forceAngle && Math.abs(desiredState.speedMetersPerSecond) <= (maxVelocity * 0.01)) {
+            angle = lastAngle;
+        } else {
+            //put the sent angle in range [0,2pi]
+            angle = Conversions.convertPiPositive(desiredState.angle.getRadians()); //FIX ME: IDK what i did here
+        }
+        io.setAnglePosition(angle, turnSpeed);
         lastAngle = angle;
     }
 

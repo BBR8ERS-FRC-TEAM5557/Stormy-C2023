@@ -16,7 +16,7 @@ public interface SwerveModuleIO {
 
     double angleAbsolutePositionDeg = 0.0;
     double anglePositionRad = 0.0;
-    double angleVelocityRevPerMin = 0.0;
+    double angleVelocityRadPerSec = 0.0;
     double angleAppliedPercentage = 0.0;
     double[] angleCurrentAmps = new double[] {};
     double[] angleTempCelcius = new double[] {};
@@ -33,6 +33,9 @@ public interface SwerveModuleIO {
 
   /** Run the turn motor to the specified angle. */
   public default void setAnglePosition(double degrees) {}
+
+    /** Run the turn motor to the specified angle. */
+    public default void setAnglePosition(double degrees, double turnSpeed) {}
 
   /** Enable or disable brake mode on the drive motor. */
   public default void setDriveBrakeMode(boolean enable) {}

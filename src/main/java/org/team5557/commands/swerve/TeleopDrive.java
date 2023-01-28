@@ -36,25 +36,24 @@ public class TeleopDrive extends CommandBase {
     @Override
     public void initialize() {
         swerve.setDriveMode(DriveMode.OPEN_LOOP);
+        sustain_heading = swerve.getPose().getRotation();
     }
 
     @Override
     public void execute() {
         if (input_checker.update(m_rotationSupplier.getAsDouble() == 0.0)) {
             sustain_heading = swerve.getPose().getRotation();
-            RobotContainer.raw_controllers.resetTheta();
+            RobotContainer.raw_controllers.resetAlign();
         }
 
         double rotationalVelocity; 
         if(m_rotationSupplier.getAsDouble() == 0.0) {
             rotationalVelocity = RobotContainer.raw_controllers.calculateTheta(sustain_heading.getRadians()) * swerve.getMotorOutputLimiter();
-            rotationalVelocity += Math.copySign(SwerveSubsystemConstants.ROTATIONAL_STATIC_CONSTANT / SwerveSubsystemConstants.MAX_VOLTAGE
-                * SwerveSubsystemConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, rotationalVelocity);
+            //rotationalVelocity += Math.copySign(SwerveSubsystemConstants.ROTATIONAL_STATIC_CONSTANT / SwerveSubsystemConstants.MAX_VOLTAGE
+                //* SwerveSubsystemConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, rotationalVelocity);
         } else {
             rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
         }
-
-        //rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
 
         swerve.drive(
             new ChassisSpeeds(

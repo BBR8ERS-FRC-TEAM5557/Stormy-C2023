@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -43,6 +44,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
     private RelativeEncoder mDriveMotorEncoder;
     private CANCoder angleEncoder;
     private SimpleMotorFeedforward feedForward;
+    private ArmFeedforward angleFFController;
 
     private double angleOffsetDeg;
     private double resetIteration = 0;
@@ -61,6 +63,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
 
         this.angleOffsetDeg = angleOffsetDeg;
         this.feedForward = new SimpleMotorFeedforward(DRIVE_KS, DRIVE_KV, DRIVE_KA);
+        this.angleFFController = new ArmFeedforward(TURN_KS, 0.0, TURN_KV, TURN_KA);
 
         CANDeviceFinder can = new CANDeviceFinder();
         can.isDevicePresent(CANDeviceType.SPARK_MAX, driveMotorID, "Mod " + moduleNumber + "Drive");
@@ -132,11 +135,11 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         mDriveMotorPID = mDriveMotor.getPIDController();
         mDriveMotorEncoder = mDriveMotor.getEncoder();
 
-        SparkMaxUtil.checkError(mAngleMotor.setSmartCurrentLimit(DRIVE_CONTINUOUS_CURRENT_LIMIT),
+        SparkMaxUtil.checkError(mDriveMotor.setSmartCurrentLimit(DRIVE_CONTINUOUS_CURRENT_LIMIT),
                 "Motor ID " + driveMotorID + ": failed to set current limit");
-        SparkMaxUtil.checkError(mAngleMotor.setIdleMode(IdleMode.kCoast),
+        SparkMaxUtil.checkError(mDriveMotor.setIdleMode(IdleMode.kCoast),
                 "Motor ID " + driveMotorID + ": failed to set Idle Mode");
-        SparkMaxUtil.checkError(mAngleMotor.setCANTimeout(Constants.kCAN_TimeoutMs),
+        SparkMaxUtil.checkError(mDriveMotor.setCANTimeout(Constants.kCAN_TimeoutMs),
                 "Motor ID " + driveMotorID + ": failed to set CAN timeout");
 
         SparkMaxUtil.checkError(mDriveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100),
@@ -148,6 +151,11 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         // angleMotorConfig.FEEDBACK_STATUS_FRAME_RATE_MS = 20;
         // SparkMaxUtil.checkError(mAngleMotor.getEncoder().setPositionConversionFactor(360
         // / ANGLE_GEAR_RATIO), null);
+        
+        SparkMaxUtil.checkError(mDriveMotorEncoder.setPositionConversionFactor(1.0),
+        "Failed to set NEO encoder conversion factor");
+        SparkMaxUtil.checkError(mDriveMotorEncoder.setVelocityConversionFactor(1.0),
+        "Failed to set NEO encoder conversion factor");
 
         SparkMaxUtil.checkError(mDriveMotorPID.setP(driveKp.get(), SLOT_INDEX), "Motor ID " + driveMotorID + ": failed to set P");
         SparkMaxUtil.checkError(mDriveMotorPID.setI(driveKi.get(), SLOT_INDEX), "Motor ID " + driveMotorID + ": failed to set I");
@@ -190,7 +198,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         
         inputs.angleAbsolutePositionDeg = angleEncoder.getAbsolutePosition();
         inputs.anglePositionRad = Conversions.convertPiPositive(mAngleMotorEncoder.getPosition());
-        inputs.angleVelocityRevPerMin = mAngleMotorEncoder.getVelocity();
+        inputs.angleVelocityRadPerSec = mAngleMotorEncoder.getVelocity();
         inputs.angleAppliedPercentage = mAngleMotor.getAppliedOutput();
         inputs.angleCurrentAmps = new double[] { mAngleMotor.getOutputCurrent() };
         inputs.angleTempCelcius = new double[] { mAngleMotor.getMotorTemperature() };
@@ -264,6 +272,42 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
             adjustedReferenceAngleRadians += 2.0 * Math.PI;
         }
         mAngleMotorPID.setReference(adjustedReferenceAngleRadians, CANSparkMax.ControlType.kPosition);
+    }
+
+        /**
+     * Run the turn motor to the specified angle with a desired turn speed and feedforward on turn motor
+     * 
+     * @param referenceAngleRadians - the desired angle given in range [0,2pi]
+     */
+    @Override
+    public void setAnglePosition(double referenceAngleRadians, double turnSpeed) {
+        double currentAngleRadians = mAngleMotorEncoder.getPosition();
+        if (mAngleMotorEncoder.getVelocity() < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
+            if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
+                resetIteration = 0;
+                double absoluteAngle = getCanCoder().getRadians();
+                mAngleMotorEncoder.setPosition(absoluteAngle);
+                currentAngleRadians = absoluteAngle;
+            }
+        } else {
+            resetIteration = 0;
+        }
+        double currentAngleRadiansMod = Conversions.convertPiPositive(currentAngleRadians);
+        double adjustedReferenceAngleRadians = referenceAngleRadians + (currentAngleRadians - currentAngleRadiansMod);
+        if (referenceAngleRadians - currentAngleRadiansMod > Math.PI) {
+            adjustedReferenceAngleRadians -= 2.0 * Math.PI;
+        } else if (referenceAngleRadians - currentAngleRadiansMod < -Math.PI) {
+            adjustedReferenceAngleRadians += 2.0 * Math.PI;
+        }
+
+        double angleArbFFComponent = angleFFController.calculate(referenceAngleRadians, turnSpeed);
+        mAngleMotorPID.setReference(
+                adjustedReferenceAngleRadians, 
+                CANSparkMax.ControlType.kPosition, 
+                SLOT_INDEX, 
+                angleArbFFComponent,
+                SparkMaxPIDController.ArbFFUnits.kVoltage
+        );
     }
 
     /** Enable or disable brake mode on the drive motor. */
