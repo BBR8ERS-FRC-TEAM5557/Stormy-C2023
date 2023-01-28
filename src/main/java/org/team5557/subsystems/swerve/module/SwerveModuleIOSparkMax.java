@@ -132,11 +132,11 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         mDriveMotorPID = mDriveMotor.getPIDController();
         mDriveMotorEncoder = mDriveMotor.getEncoder();
 
-        SparkMaxUtil.checkError(mAngleMotor.setSmartCurrentLimit(DRIVE_CONTINUOUS_CURRENT_LIMIT),
+        SparkMaxUtil.checkError(mDriveMotor.setSmartCurrentLimit(DRIVE_CONTINUOUS_CURRENT_LIMIT),
                 "Motor ID " + driveMotorID + ": failed to set current limit");
-        SparkMaxUtil.checkError(mAngleMotor.setIdleMode(IdleMode.kCoast),
+        SparkMaxUtil.checkError(mDriveMotor.setIdleMode(IdleMode.kCoast),
                 "Motor ID " + driveMotorID + ": failed to set Idle Mode");
-        SparkMaxUtil.checkError(mAngleMotor.setCANTimeout(Constants.kCAN_TimeoutMs),
+        SparkMaxUtil.checkError(mDriveMotor.setCANTimeout(Constants.kCAN_TimeoutMs),
                 "Motor ID " + driveMotorID + ": failed to set CAN timeout");
 
         SparkMaxUtil.checkError(mDriveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100),
@@ -148,6 +148,10 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         // angleMotorConfig.FEEDBACK_STATUS_FRAME_RATE_MS = 20;
         // SparkMaxUtil.checkError(mAngleMotor.getEncoder().setPositionConversionFactor(360
         // / ANGLE_GEAR_RATIO), null);
+        SparkMaxUtil.checkError(mDriveMotorEncoder.setPositionConversionFactor(1.0),
+        "Failed to set NEO encoder conversion factor");
+        SparkMaxUtil.checkError(mDriveMotorEncoder.setVelocityConversionFactor(1.0),
+        "Failed to set NEO encoder conversion factor");
 
         SparkMaxUtil.checkError(mDriveMotorPID.setP(driveKp.get(), SLOT_INDEX), "Motor ID " + driveMotorID + ": failed to set P");
         SparkMaxUtil.checkError(mDriveMotorPID.setI(driveKi.get(), SLOT_INDEX), "Motor ID " + driveMotorID + ": failed to set I");
@@ -190,7 +194,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         
         inputs.angleAbsolutePositionDeg = angleEncoder.getAbsolutePosition();
         inputs.anglePositionRad = Conversions.convertPiPositive(mAngleMotorEncoder.getPosition());
-        inputs.angleVelocityRevPerMin = mAngleMotorEncoder.getVelocity();
+        inputs.angleVelocityRadPerSec = mAngleMotorEncoder.getVelocity();
         inputs.angleAppliedPercentage = mAngleMotor.getAppliedOutput();
         inputs.angleCurrentAmps = new double[] { mAngleMotor.getOutputCurrent() };
         inputs.angleTempCelcius = new double[] { mAngleMotor.getMotorTemperature() };

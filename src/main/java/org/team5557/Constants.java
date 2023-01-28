@@ -121,6 +121,10 @@ public final class Constants {
     public double theta_kV;
     public double theta_kA;
 
+    public double auto_kP;
+    public double auto_kI;
+    public double auto_kD;
+
     public double translation_kP;
     public double translation_kI;
     public double translation_kD;
@@ -128,11 +132,15 @@ public final class Constants {
 
   public static final FollowerConstants follower = new FollowerConstants();
   static {
-    follower.theta_kP = 6.37;
+    follower.theta_kP = 0.1;
     follower.theta_kI = 0.0;
-    follower.theta_kD = 0.3;
+    follower.theta_kD = 0.0;
     follower.theta_kV = 2.0 * Math.PI;
-    follower.theta_kA = 10.0 * Math.PI;
+    follower.theta_kA = Math.pow(2, follower.theta_kV);
+
+    follower.auto_kP = 0.06;
+    follower.auto_kI = 0.0;
+    follower.auto_kD = 0.0;
 
     follower.translation_kP = 5.0;
     follower.translation_kI = 0.0;

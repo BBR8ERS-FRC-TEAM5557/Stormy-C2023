@@ -16,7 +16,7 @@ public interface SwerveModuleIO {
 
     double angleAbsolutePositionDeg = 0.0;
     double anglePositionRad = 0.0;
-    double angleVelocityRevPerMin = 0.0;
+    double angleVelocityRadPerSec = 0.0;
     double angleAppliedPercentage = 0.0;
     double[] angleCurrentAmps = new double[] {};
     double[] angleTempCelcius = new double[] {};

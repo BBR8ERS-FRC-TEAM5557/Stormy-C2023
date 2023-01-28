@@ -150,7 +150,7 @@ public class Swerve extends SubsystemBase {
         motorOutputPercentageLimiterEntry = tab.add("Motor Percentage", 100.0).withWidget(BuiltInWidgets.kNumberSlider)
             .withProperties(Map.of("min", 0.0, "max", 100.0, "Block increment", 10.0)).withPosition(0, 3)
             .getEntry();
-        skidVelocityDifference = new TunableNumber("Swerve/SkidVelocityDifference", 1.0);
+        skidVelocityDifference = new TunableNumber("SkidVelocityDifference", 0.2);
 
         if (DEBUGGING) {
             tab.add(SUBSYSTEM_NAME, this);
@@ -186,14 +186,14 @@ public class Swerve extends SubsystemBase {
 
         motorOutputLimiter = motorOutputPercentageLimiterEntry.getDouble(0.0) / 100;
     
-        /*
+        
         //ORBIT 1690 SKID Detection implementation...
         for(int i = 0; i < 4; i++) {
             if(Math.abs(currentStates[i].speedMetersPerSecond - desiredStates[i].speedMetersPerSecond) > skidVelocityDifference.get()) {//SKID_VELOCITY_DIFFERENCE) {
                 currentStates[i].speedMetersPerSecond = 0.0;
                 currentPositions[i].distanceMeters = lastPositions[i].distanceMeters;
             }
-        }*/
+        }
         this.lastStates = currentStates;
         this.lastPositions = currentPositions;
         this.currentVelocity = KINEMATICS.toChassisSpeeds(currentStates);
@@ -207,20 +207,27 @@ public class Swerve extends SubsystemBase {
                 frontRightModule.setDesiredState(desiredStates[1], true, false);
                 backLeftModule.setDesiredState(desiredStates[2], true, false);
                 backRightModule.setDesiredState(desiredStates[3], true, false);
+                break;
             case CLOSED_LOOP:
                 SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, MAX_VELOCITY_METERS_PER_SECOND);
-                //frontLeftModule.setDesiredState(desiredStates[0], false, false);
-                //frontRightModule.setDesiredState(desiredStates[1], false, false);
-                //backLeftModule.setDesiredState(desiredStates[2], false, false);
-                //backRightModule.setDesiredState(desiredStates[3], false, false);
+                frontLeftModule.setDesiredState(desiredStates[0], false, false);
+                frontRightModule.setDesiredState(desiredStates[1], false, false);
+                backLeftModule.setDesiredState(desiredStates[2], false, false);
+                backRightModule.setDesiredState(desiredStates[3], false, false);
+                break;
             case X_OUT:
                 this.desiredStates = X_OUT_STATES;
-                //frontLeftModule.setDesiredState(desiredStates[0], true, true);
-                //frontRightModule.setDesiredState(desiredStates[1], true, true);
-                //backLeftModule.setDesiredState(desiredStates[2], true, true);
-                //backRightModule.setDesiredState(desiredStates[3], true, true);
+                frontLeftModule.setDesiredState(desiredStates[0], true, true);
+                frontRightModule.setDesiredState(desiredStates[1], true, true);
+                backLeftModule.setDesiredState(desiredStates[2], true, true);
+                backRightModule.setDesiredState(desiredStates[3], true, true);
+                break;
             case FF_CHARACTERIZATION:
                 frontLeftModule.setVoltageForCharacterization(characterizationVolts);
+                frontRightModule.setVoltageForCharacterization(characterizationVolts);
+                backLeftModule.setVoltageForCharacterization(characterizationVolts);
+                backRightModule.setVoltageForCharacterization(characterizationVolts);
+                break;
         }
 
         Logger.getInstance().recordOutput("Swerve/Estimator/Pose", estimator.getEstimatedPosition());

@@ -3,6 +3,7 @@ package org.team5557.auto;
 import java.util.HashMap;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.team5557.Constants;
 import org.team5557.RobotContainer;
 import org.team5557.commands.swerve.FeedForwardCharacterization;
 import org.team5557.commands.swerve.FeedForwardCharacterization.FeedForwardCharacterizationData;
@@ -20,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 public class AutonomousChooser {
     private final AutonomousTrajectories trajectories;
 
-    private final LoggedDashboardChooser<AutonomousMode> autonomousModeChooser = new LoggedDashboardChooser<>("Auto/Chooser");
+    private final LoggedDashboardChooser<AutonomousMode> autonomousModeChooser = new LoggedDashboardChooser<>(Constants.shuffleboard.driver_readout_key);
 
     public static HashMap<String, Command> eventMap = new HashMap<>();
     static {

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class RawControllers extends SubsystemBase {
     public final ProfiledPIDController thetaController;
+    public final PIDController alignController;
 
     public final PPHolonomicDriveController follower;
     public final PIDController rotationController;
@@ -31,8 +32,13 @@ public class RawControllers extends SubsystemBase {
             Constants.follower.theta_kD, 
             new Constraints(Constants.follower.theta_kV, Constants.follower.theta_kA)
         );
-        // Setup thetaController used for auton and automatic turns
+        // Setup thetaController used for automatic turns
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
+        thetaController.setTolerance(Math.toRadians(1.0));
+
+        alignController = new PIDController(Constants.follower.auto_kP, 0, 0);
+        alignController.enableContinuousInput(-Math.PI, Math.PI);
+
 
         rotationController = new PIDController(Constants.follower.theta_kP, Constants.follower.theta_kI, Constants.follower.theta_kD);
         xController = new PIDController(Constants.follower.translation_kP, Constants.follower.translation_kI, Constants.follower.translation_kD);
@@ -61,6 +67,25 @@ public class RawControllers extends SubsystemBase {
     }
 
     public DoubleSupplier calculateThetaSupplier(double goalAngle) {
+        return calculateThetaSupplier(() -> goalAngle);
+    }
+
+    //FOR NON PROFILED
+
+    public void resetAlign() {
+        startAngle = swerve.getPose().getRotation();
+        thetaController.reset(startAngle.getRadians(), swerve.getCurrentVelocity().omegaRadiansPerSecond);
+    }
+
+    public double calculateAlign(double goalAngleRadians) {
+        return alignController.calculate(swerve.getPose().getRotation().getRadians(), goalAngleRadians);
+    }
+
+    public DoubleSupplier calculateAlignSupplier(DoubleSupplier goalAngleSupplierRadians) {
+        return () -> calculateAlign(goalAngleSupplierRadians.getAsDouble());
+    }
+
+    public DoubleSupplier calculateAlignSupplier(double goalAngle) {
         return calculateThetaSupplier(() -> goalAngle);
     }
 
