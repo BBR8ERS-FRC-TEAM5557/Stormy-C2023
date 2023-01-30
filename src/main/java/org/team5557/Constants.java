@@ -39,7 +39,7 @@ public final class Constants {
     REPLAY
   }
 
-  public static final boolean tuning_mode = false;
+  public static final boolean tuning_mode = true;
   public static final double kloop_period = 0.02;
   public static final int klong_CAN_TimeoutMs = 100;
   public static final int kCAN_TimeoutMs = 10;
@@ -69,8 +69,8 @@ public final class Constants {
 
   public static final SuperstructureConstants superstructure = new SuperstructureConstants();
   static {
-    superstructure.trackwidth = 24.0;
-    superstructure.drivebase = 24.0;
+    superstructure.trackwidth = 26.0;
+    superstructure.drivebase = 26.0;
 
     superstructure.center_of_rotation = new Translation2d();
     superstructure.intake_center_of_rotation = new Translation2d(1.0, 0.0);
@@ -134,7 +134,7 @@ public final class Constants {
   static {
     follower.theta_kP = 0.1;
     follower.theta_kI = 0.0;
-    follower.theta_kD = 0.3;
+    follower.theta_kD = 0.0;
     follower.theta_kV = 2.0 * Math.PI;
     follower.theta_kA = Math.pow(2, follower.theta_kV);
 

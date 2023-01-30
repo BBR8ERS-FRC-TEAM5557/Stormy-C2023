@@ -128,4 +128,8 @@ public class VisGraph {
         Collections.reverse(path);
         return path;
     }
+
+    public List<Node> getNodes() {
+        return nodes;
+    }
 }

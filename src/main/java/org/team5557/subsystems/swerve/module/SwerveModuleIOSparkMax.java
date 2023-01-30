@@ -306,7 +306,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
                 CANSparkMax.ControlType.kPosition, 
                 SLOT_INDEX, 
                 angleArbFFComponent,
-                SparkMaxPIDController.ArbFFUnits.kVoltage
+                SparkMaxPIDController.ArbFFUnits.kPercentOut
         );
     }
 

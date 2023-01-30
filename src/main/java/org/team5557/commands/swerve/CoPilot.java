@@ -11,12 +11,16 @@ import org.team5557.state.RobotStateSupervisor.RobotState;
 import org.team5557.subsystems.swerve.Swerve;
 import org.team5557.subsystems.swerve.Swerve.DriveMode;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
@@ -56,6 +60,7 @@ public class CoPilot extends CommandBase {
     @Override
     public void initialize() {
         this.alignController.reset();
+        m_periodicIO.active_trajectory = null;
     }
 
     @Override
@@ -77,7 +82,18 @@ public class CoPilot extends CommandBase {
         m_periodicIO.localizationStatus = m_periodicIO.state.localizationStatus;
 
         if(m_periodicIO.active_trajectory == null && m_periodicIO.localizationStatus == LocalizationStatus.LOCALIZED) {
-            m_periodicIO.active_trajectory = state.generatePath();
+            m_periodicIO.active_trajectory = PathPlanner.generatePath(
+                Constants.pathplanner.hellaslow_constraints, 
+                new PathPoint(
+                    swerve.getPose().getTranslation(),
+                    swerve.getPose().getRotation(),
+                    swerve.getPose().getRotation()
+                ),
+                new PathPoint(
+                    new Translation2d(),
+                    new Rotation2d()
+                )
+            );//state.generatePath();
             this.regenerationTimestamp = this.currentTimestamp;
         }
 

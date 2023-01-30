@@ -121,6 +121,6 @@ public class RobotContainer {
    *         being PI/2
    */
   public Rotation2d getRightStickAngle() {
-    return new Rotation2d(-primary_controller.getRightY(), -primary_controller.getRightX());
+    return new Rotation2d(deadband(-primary_controller.getRightY(), 0.4), deadband(-primary_controller.getRightX(), 0.4));
   }
 }

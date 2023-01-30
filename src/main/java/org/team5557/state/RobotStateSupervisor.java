@@ -53,12 +53,15 @@ public class RobotStateSupervisor extends SubsystemBase {
     public RobotStateSupervisor() {
         configurePathWeaver();
         robot_state.visionToEstimatorDisagreement = new MovingAverage(30);
+        robot_state.localizationStatus = LocalizationStatus.LOCALIZED;
+        robot_state.skidAccumulator = new Translation2d();
 
         ShuffleboardTab tab = Shuffleboard.getTab(Constants.shuffleboard.supervisor_readout_key);
 
         tab.add("Localization", robot_state.localizationStatus.toString());
         tab.add("Skid Accumulator", robot_state.skidAccumulator.getNorm());
         tab.add("Vision - Estimator Disagreement", robot_state.visionToEstimatorDisagreement.get());
+        tab.add("Nodes", path_weaver.getMeshInstance().getNodes().toString());
 
         skidDeaccumulationSensitivity = tab.add("Skid Deaccumulation Sensitivity", 100.0).withWidget(BuiltInWidgets.kNumberSlider)
             .withProperties(Map.of("min", 0.1, "max", 50.0, "Block increment", 10.0))
@@ -71,6 +74,7 @@ public class RobotStateSupervisor extends SubsystemBase {
         //Update general info
         robot_state.estimatedPose = pose_estimator.getEstimatedPosition();
 
+        /*
         //Update Vision Manager
         this.vision_manager.update();
         //recieve list of vision measurements from VM
@@ -100,7 +104,7 @@ public class RobotStateSupervisor extends SubsystemBase {
         } else {
             clearVisionEstimatorDisagreement();
             robot_state.localizationStatus = LocalizationStatus.DELOCALIZED;
-        }
+        }*/
 
 
         Logger.getInstance().recordOutput("StateSupervisor/EstimatedPose", robot_state.estimatedPose);

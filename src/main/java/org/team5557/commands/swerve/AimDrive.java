@@ -43,10 +43,6 @@ public class AimDrive extends CommandBase {
     public void execute() {
         Rotation2d goalAngle = Rotation2d.fromRadians(goalAngleSupplierRadians.getAsDouble());
         double rotationalVelocity = RobotContainer.raw_controllers.calculateTheta(goalAngle.getRadians()) * swerve.getMotorOutputLimiter();
-        if(!RobotContainer.raw_controllers.thetaController.atSetpoint()) {
-            rotationalVelocity += Math.copySign(SwerveSubsystemConstants.ROTATIONAL_STATIC_CONSTANT / SwerveSubsystemConstants.MAX_VOLTAGE
-                    * SwerveSubsystemConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, rotationalVelocity);
-        }
  
         swerve.drive(new ChassisSpeeds(
                 m_translationXSupplier.getAsDouble() * swerve.getMotorOutputLimiter(),

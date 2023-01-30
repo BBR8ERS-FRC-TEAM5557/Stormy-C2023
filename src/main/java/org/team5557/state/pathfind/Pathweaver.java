@@ -68,4 +68,8 @@ public class Pathweaver {
             }
         }
     }
+
+    public VisGraph getMeshInstance() {
+        return navMesh;
+    }
 }

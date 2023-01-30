@@ -188,7 +188,7 @@ public class Swerve extends SubsystemBase {
 
         // update and log the swerve moudles inputs
         //this.desiredStates = KINEMATICS.toSwerveModuleStates(chassisSpeeds, centerOfRotation);
-        this.desiredStates2 = SECOND_KINEMATICS.toSwerveModuleState(chassisSpeeds, getGyroscopeAzimuth());
+        this.desiredStates2 = SECOND_KINEMATICS.toSwerveModuleState(chassisSpeeds, Rotation2d.fromDegrees(0.0));
         this.desiredStates = desiredStates2.getSwerveModuleStates();
         this.moduleTurnSpeeds = desiredStates2.getModuleTurnSpeeds();
 

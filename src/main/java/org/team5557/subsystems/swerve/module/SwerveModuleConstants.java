@@ -68,8 +68,8 @@ public class SwerveModuleConstants {
     public static final double DRIVE_KV = (2.55494 / 12);
     public static final double DRIVE_KA = (0.12872 / 12);
 
-    public static final double TURN_KS = 0.2;
-    public static final double TURN_KV = 0.6;
+    public static final double TURN_KS = (0.15928/12);
+    public static final double TURN_KV = (0.43772/12);
     public static final double TURN_KA = 0.0;
 
     /* Neutral Modes */
