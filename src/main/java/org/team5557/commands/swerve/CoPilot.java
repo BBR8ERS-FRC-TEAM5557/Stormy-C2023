@@ -82,18 +82,23 @@ public class CoPilot extends CommandBase {
         m_periodicIO.localizationStatus = m_periodicIO.state.localizationStatus;
 
         if(m_periodicIO.active_trajectory == null && m_periodicIO.localizationStatus == LocalizationStatus.LOCALIZED) {
+            Translation2d goal = new Translation2d();
+            Translation2d robot_to_target = goal.minus(swerve.getPose().getTranslation());
+
             m_periodicIO.active_trajectory = PathPlanner.generatePath(
                 Constants.pathplanner.hellaslow_constraints, 
                 new PathPoint(
                     swerve.getPose().getTranslation(),
-                    swerve.getPose().getRotation(),
+                    robot_to_target.getAngle(),
                     swerve.getPose().getRotation()
                 ),
                 new PathPoint(
-                    new Translation2d(),
+                    goal,
+                    robot_to_target.getAngle(),
                     new Rotation2d()
                 )
             );//state.generatePath();
+            //state.generatePath();
             this.regenerationTimestamp = this.currentTimestamp;
         }
 

@@ -61,7 +61,7 @@ public class TeleopDrive extends CommandBase {
                 m_translationXSupplier.getAsDouble() * swerve.getMotorOutputLimiter(),
                 m_translationYSupplier.getAsDouble() * swerve.getMotorOutputLimiter(),
                 rotationalVelocity),
-            DriveMode.OPEN_LOOP, true,
+            DriveMode.CLOSED_LOOP, true,
             Constants.superstructure.center_of_rotation
         );
     }

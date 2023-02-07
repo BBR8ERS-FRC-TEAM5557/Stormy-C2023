@@ -45,7 +45,6 @@ public class RawControllers extends SubsystemBase {
         yController = new PIDController(Constants.follower.translation_kP, Constants.follower.translation_kI, Constants.follower.translation_kD);
 
         follower = new PPHolonomicDriveController(xController, yController, rotationController);
-
         this.swerve = RobotContainer.swerve;
     }
 

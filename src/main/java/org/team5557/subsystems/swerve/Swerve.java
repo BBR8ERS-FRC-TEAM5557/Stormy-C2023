@@ -52,23 +52,20 @@ public class Swerve extends SubsystemBase {
     private final SwerveModule backRightModule;
 
     private SwerveModuleState[] desiredStates = {new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(),new SwerveModuleState()};
-
     private double[] moduleTurnSpeeds = new double[4];
     private SecondOrderSwerveModuleStates desiredStates2 = new SecondOrderSwerveModuleStates(desiredStates, moduleTurnSpeeds);
 
 
     private SwerveModuleState[] measuredStates = {new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(),new SwerveModuleState()};
-    private SwerveModuleState[] filteredStates = this.measuredStates;
+    private SwerveModuleState[] filteredStates = {new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(),new SwerveModuleState()};
     private SwerveModulePosition[] measuredPositions = {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()};
-    private SwerveModulePosition[] prevMeasuredPositions = this.measuredPositions;
-    private SwerveModulePosition[] filteredPositions = this.measuredPositions;
+    private SwerveModulePosition[] filteredPositions = {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()};
 
 
     private DriveMode driveMode = DriveMode.OPEN_LOOP;
     private ChassisSpeeds measuredVelocity = new ChassisSpeeds();
     private ChassisSpeeds filteredVelocity = this.measuredVelocity;
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
-    private Translation2d centerOfRotation = new Translation2d();
 
     private final GenericEntry motorOutputPercentageLimiterEntry;
     private double motorOutputLimiter;
@@ -159,7 +156,7 @@ public class Swerve extends SubsystemBase {
         motorOutputPercentageLimiterEntry = tab.add("Motor Percentage", 100.0).withWidget(BuiltInWidgets.kNumberSlider)
             .withProperties(Map.of("min", 0.0, "max", 100.0, "Block increment", 10.0)).withPosition(0, 3)
             .getEntry();
-        skidVelocityDifference = new TunableNumber("SkidVelocityDifference", 0.2);
+        skidVelocityDifference = new TunableNumber("SkidVelocityDifference", 0.75);
 
         if (DEBUGGING) {
             tab.add(SUBSYSTEM_NAME, this);
@@ -192,23 +189,30 @@ public class Swerve extends SubsystemBase {
         this.desiredStates = desiredStates2.getSwerveModuleStates();
         this.moduleTurnSpeeds = desiredStates2.getModuleTurnSpeeds();
 
+        SwerveModuleState[] mStates = new SwerveModuleState[4];
+        SwerveModulePosition[] mPositions = new SwerveModulePosition[4];
+        SwerveModuleState[] fStates = new SwerveModuleState[4];
+        SwerveModulePosition[] fPositions = new SwerveModulePosition[4];
+
         for (SwerveModule swerveModule : swerveModules) {
             int moduleID = swerveModule.getModuleNumber();
             swerveModule.updateAndProcessInputs();
-            this.measuredStates[moduleID] = swerveModule.getState();
-            this.measuredPositions[moduleID] = swerveModule.getPosition();
-
-            this.filteredStates[moduleID] = this.measuredStates[moduleID];
-            this.filteredPositions[moduleID] = this.measuredPositions[moduleID];
+            mStates[moduleID] = swerveModule.getState();
+            mPositions[moduleID] = swerveModule.getPosition();
 
             if(Math.abs(measuredStates[moduleID].speedMetersPerSecond - desiredStates[moduleID].speedMetersPerSecond) > skidVelocityDifference.get()) {
-                this.filteredStates[moduleID].speedMetersPerSecond = 0.0;
-                this.filteredPositions[moduleID].distanceMeters = this.prevMeasuredPositions[moduleID].distanceMeters;
+                fStates[moduleID] = new SwerveModuleState(0.0, mStates[moduleID].angle);
+                fPositions[moduleID] = new SwerveModulePosition(this.measuredPositions[moduleID].distanceMeters, mStates[moduleID].angle);
             } else {
-                this.filteredPositions[moduleID] = this.measuredPositions[moduleID];
+                fStates[moduleID] = swerveModule.getState();
+                fPositions[moduleID] = swerveModule.getPosition();
             }
         }
-        this.prevMeasuredPositions = measuredPositions;
+
+        this.measuredStates = mStates;
+        this.measuredPositions = mPositions;
+        this.filteredPositions = fPositions;
+        this.filteredStates = fStates;
         
         this.measuredVelocity = KINEMATICS.toChassisSpeeds(measuredStates);
         this.filteredVelocity = KINEMATICS.toChassisSpeeds(filteredStates);
@@ -226,10 +230,10 @@ public class Swerve extends SubsystemBase {
                 break;
             case CLOSED_LOOP:
                 SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, MAX_VELOCITY_METERS_PER_SECOND);
-                frontLeftModule.setDesiredState(desiredStates[0], false, false);
-                frontRightModule.setDesiredState(desiredStates[1], false, false);
-                backLeftModule.setDesiredState(desiredStates[2], false, false);
-                backRightModule.setDesiredState(desiredStates[3], false, false);
+                frontLeftModule.setDesiredState(desiredStates[0], moduleTurnSpeeds[0], false, false);
+                frontRightModule.setDesiredState(desiredStates[1], moduleTurnSpeeds[1],false, false);
+                backLeftModule.setDesiredState(desiredStates[2], moduleTurnSpeeds[2],false, false);
+                backRightModule.setDesiredState(desiredStates[3], moduleTurnSpeeds[3],false, false);
                 break;
             case X_OUT:
                 this.desiredStates = X_OUT_STATES;
@@ -326,7 +330,6 @@ public class Swerve extends SubsystemBase {
      * Sets the desired chassis speed of the drivetrain.
      */
     public void drive(ChassisSpeeds chassisSpeeds, DriveMode driveMode, boolean fieldRelative, Translation2d centerOfRotation) {
-        this.centerOfRotation = centerOfRotation;
         if (fieldRelative) {
             this.chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                 chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond, getPose().getRotation());

@@ -23,12 +23,12 @@ public final class SwerveSubsystemConstants {
         public static final int BL_DRIVE_MOTOR = 11;
         public static final int BL_STEER_MOTOR = 16;
         public static final int BL_CANCODER = 5;
-        public static final double BL_OFFSET = -232.9-180.0;
+        public static final double BL_OFFSET = -232.9 - 180.0;
 
         public static final int BR_DRIVE_MOTOR = 17;
         public static final int BR_STEER_MOTOR = 15;
         public static final int BR_CANCODER = 6;
-        public static final double BR_OFFSET = -182.2-180.0;
+        public static final double BR_OFFSET = -182.2 - 180.0;
 
         public static final SwerveModuleState[] X_OUT_STATES = {
                         new SwerveModuleState(0.0, Rotation2d.fromDegrees(45)),
@@ -54,7 +54,7 @@ public final class SwerveSubsystemConstants {
         public static final SecondOrderSwerveKinematics SECOND_KINEMATICS = new SecondOrderSwerveKinematics(
                         // Front left
                         new Translation2d(Constants.superstructure.trackwidth / 2.0,
-                                Constants.superstructure.drivebase / 2.0),
+                                        Constants.superstructure.drivebase / 2.0),
                         // Front right
                         new Translation2d(Constants.superstructure.trackwidth / 2.0,
                                         -Constants.superstructure.drivebase / 2.0),
@@ -70,6 +70,13 @@ public final class SwerveSubsystemConstants {
                         new SwerveModulePosition(),
                         new SwerveModulePosition(),
                         new SwerveModulePosition()
+        };
+
+        public static final SwerveModuleState[] DEFAULT_STATES = new SwerveModuleState[] { 
+                new SwerveModuleState(),
+                new SwerveModuleState(),
+                new SwerveModuleState(), 
+                new SwerveModuleState() 
         };
 
         /**
@@ -90,12 +97,13 @@ public final class SwerveSubsystemConstants {
          * This is a measure of how fast the robot should be able to drive in a straight
          * line.
          */
-        public static final double MAX_VELOCITY_METERS_PER_SECOND = 4.3;
+        public static final double MAX_VELOCITY_METERS_PER_SECOND = 4.2;
         /*
-                        5678.0
-                        / 60.0
-                        / SwerveModuleConstants.DRIVE_GEAR_RATIO
-                        * SwerveModuleConstants.WHEEL_CIRCUMFERENCE;*/
+         * 5678.0
+         * / 60.0
+         * / SwerveModuleConstants.DRIVE_GEAR_RATIO
+         * SwerveModuleConstants.WHEEL_CIRCUMFERENCE;
+         */
 
         public static final double ROTATIONAL_STATIC_CONSTANT = 0.1;
 
