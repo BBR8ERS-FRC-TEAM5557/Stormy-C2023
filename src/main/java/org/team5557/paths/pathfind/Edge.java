@@ -1,4 +1,4 @@
-package org.team5557.state.pathfind.util;
+package org.team5557.paths.pathfind;
 
 public class Edge {
     public Node start;

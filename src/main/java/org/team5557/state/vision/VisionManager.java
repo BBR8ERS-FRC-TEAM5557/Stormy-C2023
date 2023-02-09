@@ -3,69 +3,143 @@ package org.team5557.state.vision;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
+import org.library.team6328.util.PolynomialRegression;
+import org.littletonrobotics.junction.Logger;
+import org.photonvision.targeting.PhotonTrackedTarget;
 import org.team5557.Constants;
 import org.team5557.FieldConstants;
-import org.team5557.state.vision.VisionTarget.MeasurementFidelity;
+import org.team5557.state.vision.VisionUpdate.MeasurementFidelity;
+
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public class VisionManager {
     private final PhotonCameraExtension photonCamera;
     private final List<PhotonCameraExtension> camera_list;
-    private ArrayList<VisionTarget> visibleTargets;
+
+    private Consumer<VisionUpdate> visionConsumer;
+    private Consumer<Pose2d> disagreementConsumer;
+
+    private static final PolynomialRegression xyStdDevModel;
+    private static final PolynomialRegression thetaStdDevModel;
+
+    static {
+        xyStdDevModel = new PolynomialRegression(
+            new double[] {
+                    0.752358, 1.016358, 1.296358, 1.574358, 1.913358, 2.184358, 2.493358, 2.758358,
+                    3.223358, 4.093358, 4.726358
+            },
+            new double[] {
+                    0.005, 0.0135, 0.016, 0.038, 0.0515, 0.0925, 0.0695, 0.046, 0.1245, 0.0815, 0.193
+            },
+            1);
+        thetaStdDevModel = new PolynomialRegression(
+            new double[] {
+                    0.752358, 1.016358, 1.296358, 1.574358, 1.913358, 2.184358, 2.493358, 2.758358,
+                    3.223358, 4.093358, 4.726358
+            },
+            new double[] {
+                    0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.049, 0.027, 0.059, 0.029, 0.068
+            },
+            1);
+    }
 
     public VisionManager() {
         this.photonCamera = new PhotonCameraExtension("Arducam_OV9281_USB_Camera", new Transform3d());
         camera_list = Collections.unmodifiableList(
-            List.of(
-                photonCamera
-            )
-        );
+                List.of(
+                        photonCamera));
 
         ShuffleboardTab tab = Shuffleboard.getTab(Constants.shuffleboard.vision_readout_key);
-        tab.addCamera("Arducam", "Arducam", "http://10.55.57.105:5800", "http://10.29.10.11:5800")
-            .withSize(3, 3)
-            .withPosition(4, 0);
+        if (Constants.tuning_mode) {
+            tab.addCamera("Arducam", "Arducam", "http://10.55.57.105:5800", "http://10.29.10.11:5800")
+                    .withSize(3, 3)
+                    .withPosition(4, 0);
+        }
     }
 
     public void update() {
-        int camID = 0;
-        visibleTargets.clear();
-
         for (PhotonCameraExtension camera : camera_list) {
             var pipelineResult = camera.getLatestResult();
-            if (!pipelineResult.equals(camera.getLastPipelineResult()) && pipelineResult.hasTargets()) {
-              camera.setLastPipelineResult(pipelineResult);
-              double imageCaptureTime = pipelineResult.getTimestampSeconds();
-              var target = pipelineResult.getBestTarget();
-              var fiducialId = target.getFiducialId();
-              var targetPose = FieldConstants.aprilTags.get(fiducialId);//tag_layout.getTagPose(fiducialId);
-              if (target.getPoseAmbiguity() <= .2 && fiducialId >= 0 && fiducialId <= 8){ //&& targetPose.isPresent()) {
-                Transform3d camToTarget = target.getBestCameraToTarget();
-                Pose3d camPose = targetPose.transformBy(camToTarget.inverse());//targetPose.get().transformBy(camToTarget.inverse());
-                var visionMeasurement = camPose.transformBy(camera.CAMERA_TO_ROBOT);
 
-                VisionTarget visionTarget = new VisionTarget();
-                visionTarget.cameraID = camID;
-                visionTarget.measuredPose = visionMeasurement.toPose2d();
-                visionTarget.corners = target.getDetectedCorners();
-                visionTarget.timestamp = imageCaptureTime;
-                if(target.getPoseAmbiguity() <= .05 && visionTarget.measuredPose.getTranslation().getNorm() < Constants.estimator.max_high_accuracy_distance) {
-                    visionTarget.fidelity = MeasurementFidelity.HIGH;
-                } else {
-                    visionTarget.fidelity = MeasurementFidelity.MEDIUM;
-                }
-                visibleTargets.add(camID, visionTarget);
-              }
+            if (!pipelineResult.equals(camera.getLastPipelineResult())) {
+                camera.setLastPipelineResult(pipelineResult);
+
+                double imageCaptureTime = pipelineResult.getTimestampSeconds();
+                Logger.getInstance()
+                        .recordOutput(
+                                "Vision/" + camera.getName() + "/LatencySecs",
+                                Timer.getFPGATimestamp() - imageCaptureTime);
             }
-            camID++;
+
+            if (pipelineResult.hasTargets()) {
+                List<PhotonTrackedTarget> targets = pipelineResult.getTargets();
+                List<Pose2d> visionPose2ds = new ArrayList<>();
+                List<Pose3d> tagPose3ds = new ArrayList<>();
+                List<Integer> tagIds = new ArrayList<>();
+
+                for (PhotonTrackedTarget target : targets) {
+                    int fiducialId = target.getFiducialId();
+                    Transform3d camToTarget = target.getBestCameraToTarget();
+                    var fieldToTag = FieldConstants.aprilTags.get(fiducialId);
+
+                    if (fieldToTag == null) {
+                        continue;
+                    }
+
+                    Pose3d camPose = fieldToTag.transformBy(camToTarget.inverse());
+                    Pose2d visionMeasurement = camPose.transformBy(camera.CAMERA_TO_ROBOT).toPose2d();
+
+                    visionPose2ds.add(visionMeasurement);
+                    tagPose3ds.add(camPose);
+                    tagIds.add(target.getFiducialId());
+
+                    if (target.getPoseAmbiguity() <= .2) {
+                        double tagDistance = camPose.getTranslation().getNorm();
+                        double xyStdDev = xyStdDevModel.predict(tagDistance);
+                        double thetaStdDev = thetaStdDevModel.predict(tagDistance);
+                        VisionUpdate visionUpdate = new VisionUpdate();
+
+                        visionUpdate.measuredPose = visionMeasurement;
+                        visionUpdate.corners = target.getDetectedCorners();
+                        visionUpdate.timestamp = pipelineResult.getTimestampSeconds();
+                        visionUpdate.stdDevs = VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev);
+
+                        visionConsumer.accept(visionUpdate);
+                        disagreementConsumer.accept(visionMeasurement);
+                    }
+
+                    Logger.getInstance()
+                            .recordOutput(
+                                    "Vision/" + camera.getName() + "/RobotPoses",
+                                    visionPose2ds.toArray(new Pose2d[visionPose2ds.size()]));
+                    Logger.getInstance()
+                            .recordOutput(
+                                    "Vision/" + camera.getName() + "/TagPoses",
+                                    tagPose3ds.toArray(new Pose3d[tagPose3ds.size()]));
+                    Logger.getInstance()
+                            .recordOutput(
+                                    "Vision/" + camera.getName() + "/TagIDs",
+                                    tagIds.stream().mapToLong(Long::valueOf).toArray());
+                    Logger.getInstance()
+                            .recordOutput(
+                                    "Vision/" + camera.getName() + "/PoseAmbiguity",
+                                    target.getPoseAmbiguity());
+                }
+            }
         }
     }
-    
-    public ArrayList<VisionTarget> getTargets() {
-        return visibleTargets;
+
+    public void setDataInterface(Consumer<VisionUpdate> visionConsumer, Consumer<Pose2d> disagreementConsumer) {
+        this.visionConsumer = visionConsumer;
+        this.disagreementConsumer = disagreementConsumer;
     }
+
 }

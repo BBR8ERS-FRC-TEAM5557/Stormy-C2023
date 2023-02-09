@@ -4,7 +4,10 @@ import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
 import org.team5557.Constants;
+import org.team5557.Robot;
 import org.team5557.RobotContainer;
+import org.team5557.paths.Pathweaver;
+import org.team5557.paths.pathfind.Node;
 import org.team5557.state.RobotStateSupervisor;
 import org.team5557.state.RobotStateSupervisor.LocalizationStatus;
 import org.team5557.state.RobotStateSupervisor.RobotState;
@@ -37,16 +40,19 @@ public class CoPilot extends CommandBase {
 
     private final Swerve swerve;
     private final RobotStateSupervisor state;
+    private Pathweaver path_weaver;
     private final PeriodicIO m_periodicIO;
     //private final LEDs leds;
 
     private double regenerationTimestamp;
     private double currentTimestamp;
 
+
     public CoPilot(DoubleSupplier translationXSupplier, DoubleSupplier translationYSupplier) {
         m_periodicIO = new PeriodicIO();
 
         this.swerve = RobotContainer.swerve;
+        this.path_weaver = RobotContainer.path_weaver;
         this.state = RobotContainer.state_supervisor;
         this.follower = RobotContainer.raw_controllers.follower;
         this.alignController = RobotContainer.raw_controllers.alignController;
@@ -82,10 +88,10 @@ public class CoPilot extends CommandBase {
         m_periodicIO.localizationStatus = m_periodicIO.state.localizationStatus;
 
         if(m_periodicIO.active_trajectory == null && m_periodicIO.localizationStatus == LocalizationStatus.LOCALIZED) {
-            Translation2d goal = new Translation2d();
-            Translation2d robot_to_target = goal.minus(swerve.getPose().getTranslation());
+            //Translation2d goal = new Translation2d();
+            //Translation2d robot_to_target = goal.minus(swerve.getPose().getTranslation());
 
-            m_periodicIO.active_trajectory = PathPlanner.generatePath(
+            m_periodicIO.active_trajectory = path_weaver.generatePath(new Node(new Pose2d())); /*PathPlanner.generatePath(
                 Constants.pathplanner.hellaslow_constraints, 
                 new PathPoint(
                     swerve.getPose().getTranslation(),
@@ -97,8 +103,7 @@ public class CoPilot extends CommandBase {
                     robot_to_target.getAngle(),
                     new Rotation2d()
                 )
-            );//state.generatePath();
-            //state.generatePath();
+            );*/
             this.regenerationTimestamp = this.currentTimestamp;
         }
 
@@ -107,7 +112,7 @@ public class CoPilot extends CommandBase {
             Pose2d currentPose = m_periodicIO.state.estimatedPose;
             m_periodicIO.target_chassis_speeds = this.follower.calculate(currentPose, m_periodicIO.desired_state);
         } else {
-            m_periodicIO.target_chassis_speeds = new ChassisSpeeds(translationXSupplier.getAsDouble(), translationYSupplier.getAsDouble(), RobotContainer.raw_controllers.calculateAlign(Math.PI));
+            m_periodicIO.target_chassis_speeds = new ChassisSpeeds(translationXSupplier.getAsDouble(), translationYSupplier.getAsDouble(), RobotContainer.raw_controllers.calculateAlign(0));
         }
 
         Logger.getInstance().recordOutput("CoPilot/Active Trajectory", m_periodicIO.active_trajectory);

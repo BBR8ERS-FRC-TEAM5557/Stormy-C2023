@@ -192,4 +192,44 @@ public final class Constants {
     supervisor.visionToEstimatorConvergenceThreshold = 0.25;
     supervisor.visionConvergenceExpiryTime = 5.0;
   }
+
+  public static class ShoulderConstants {
+    public double mass;
+    public double length;
+    public double moi;
+    public double cgRadius;
+    public double minAngle;
+    public double maxAngle;
+    public double reduction;
+  }
+  public static final ShoulderConstants kShoulderConstants = new ShoulderConstants();
+  static {
+    kShoulderConstants.mass = 1.0;
+    kShoulderConstants.length = Units.inchesToMeters(14.0);
+    kShoulderConstants.moi = 1.0;
+    kShoulderConstants.cgRadius = Units.inchesToMeters(5.0);
+    kShoulderConstants.minAngle = -90.0; //degrees
+    kShoulderConstants.maxAngle = 180.0; //degrees
+    kShoulderConstants.reduction = 75.0 / 1.0;
+  }
+
+  public static class WristConstants {
+    public double mass;
+    public double length;
+    public double moi;
+    public double cgRadius;
+    public double minAngle;
+    public double maxAngle;
+    public double reduction;
+  }
+  public static final WristConstants kWristConstants = new WristConstants();
+  static {
+    kWristConstants.mass = 1.0;
+    kWristConstants.length = Units.inchesToMeters(14.0);
+    kWristConstants.moi = 1.0;
+    kWristConstants.cgRadius = Units.inchesToMeters(5.0);
+    kWristConstants.minAngle = -90.0; //degrees
+    kWristConstants.maxAngle = 180.0; //degrees
+    kWristConstants.reduction = 75.0 / 1.0;
+  }
 }

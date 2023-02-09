@@ -1,4 +1,4 @@
-package org.team5557.state.pathfind.util;
+package org.team5557.paths.pathfind;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,16 +44,25 @@ public class Node {
     public void addNeighbor(Node neighbor) {
         this.neighbors.add(neighbor);
     }
+    
     public double getX(){
       return x;
     }
+
     public double getY(){
       return y;
     }
+
     public Rotation2d getHolRot(){
       return holonomicRotation;
     }
+
     public void setHolRot(double degree){
       this.holonomicRotation = Rotation2d.fromDegrees(degree);
-    } 
+    }
+
+    @Override
+    public String toString() {
+      return "X Position: " + getX() + "\t" + "Y Position: " + getY();
+    }
   }

@@ -1,4 +1,4 @@
-package org.team5557.state.pathfind.util;
+package org.team5557.paths.pathfind;
 
 /*
    Licensed to the Apache Software Foundation (ASF) under one or more

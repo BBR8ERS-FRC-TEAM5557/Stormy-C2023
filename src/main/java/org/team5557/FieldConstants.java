@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.List;
 import java.util.Map;
 
-import org.team5557.state.pathfind.util.Obstacle;
+import org.team5557.paths.pathfind.Obstacle;
 
 /**
  * Contains various field dimensions and useful reference points. Dimensions are in meters, and sets

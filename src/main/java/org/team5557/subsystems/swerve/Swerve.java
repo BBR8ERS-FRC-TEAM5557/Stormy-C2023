@@ -2,6 +2,7 @@ package org.team5557.subsystems.swerve;
 
 import org.team5557.Constants;
 import org.team5557.RobotContainer;
+import org.team5557.state.vision.VisionUpdate;
 
 import static org.team5557.subsystems.swerve.util.SwerveSubsystemConstants.*;
 
@@ -298,6 +299,9 @@ public class Swerve extends SubsystemBase {
         estimator.resetPosition(getGyroscopeAzimuth(), getModulePositions(), pose);
     }
 
+    public void addVisionMeasurement(VisionUpdate update) {
+        estimator.addVisionMeasurement(update.measuredPose, update.timestamp, update.stdDevs);
+    }
     
     /* CHASSIS SPEEDS */
     public ChassisSpeeds getFilteredVelocity() {

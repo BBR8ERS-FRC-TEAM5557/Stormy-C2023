@@ -1,4 +1,4 @@
-package org.team5557.state.pathfind.util;
+package org.team5557.paths.pathfind;
 
 import java.util.ArrayList;
 import java.util.List;

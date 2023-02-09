@@ -4,13 +4,26 @@
 
 package org.team5557;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+
+import org.library.team6328.util.Alert;
+import org.library.team6328.util.Alert.AlertType;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedPowerDistribution;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Threads;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -23,7 +36,17 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
+  private double autoStart;
+  private boolean autoMessagePrinted;
+
   private RobotContainer robotContainer;
+
+  private final Alert logReceiverQueueAlert = new Alert("Logging queue exceeded capacity, data will NOT be logged.",
+      AlertType.ERROR);
+
+  public Robot() {
+    super(Constants.kloop_period);
+  }
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -34,6 +57,7 @@ public class Robot extends LoggedRobot {
     Logger logger = Logger.getInstance();
 
     // Record metadata
+    logger.recordMetadata("TuningMode", Boolean.toString(Constants.tuning_mode));
     logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
     logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
@@ -55,8 +79,10 @@ public class Robot extends LoggedRobot {
     switch (Constants.robot_mode) {
       // Running on a real robot, log to a USB stick
       case REAL:
-        logger.addDataReceiver(new WPILOGWriter("/media/sda2/"));
+        String folder = "/media/sda2/";
+        logger.addDataReceiver(new WPILOGWriter(folder));
         logger.addDataReceiver(new NT4Publisher());
+        LoggedPowerDistribution.getInstance();
         break;
 
       // Running a physics simulator, log to local folder
@@ -77,6 +103,33 @@ public class Robot extends LoggedRobot {
     // Start AdvantageKit logger
     logger.start();
 
+    // Log active commands
+    Map<String, Integer> commandCounts = new HashMap<>();
+    BiConsumer<Command, Boolean> logCommandFunction = (Command command, Boolean active) -> {
+      String name = command.getName();
+      int count = commandCounts.getOrDefault(name, 0) + (active ? 1 : -1);
+      commandCounts.put(name, count);
+      Logger.getInstance()
+          .recordOutput(
+              "CommandsUnique/" + name + "_" + Integer.toHexString(command.hashCode()), active);
+      Logger.getInstance().recordOutput("CommandsAll/" + name, count > 0);
+    };
+    CommandScheduler.getInstance()
+        .onCommandInitialize(
+            (Command command) -> {
+              logCommandFunction.accept(command, true);
+            });
+    CommandScheduler.getInstance()
+        .onCommandFinish(
+            (Command command) -> {
+              logCommandFunction.accept(command, false);
+            });
+    CommandScheduler.getInstance()
+        .onCommandInterrupt(
+            (Command command) -> {
+              logCommandFunction.accept(command, false);
+            });
+
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
@@ -85,7 +138,43 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during all modes. */
   @Override
   public void robotPeriodic() {
+    Threads.setCurrentThreadPriority(true, 99);
+
     CommandScheduler.getInstance().run();
+
+    // Check logging fault
+    logReceiverQueueAlert.set(Logger.getInstance().getReceiverQueueFault());
+
+    // Log list of NT clients
+    List<String> clientNames = new ArrayList<>();
+    List<String> clientAddresses = new ArrayList<>();
+    for (var client : NetworkTableInstance.getDefault().getConnections()) {
+      clientNames.add(client.remote_id);
+      clientAddresses.add(client.remote_ip);
+    }
+    Logger.getInstance()
+        .recordOutput("NTClients/Names", clientNames.toArray(new String[clientNames.size()]));
+    Logger.getInstance()
+        .recordOutput(
+            "NTClients/Addresses", clientAddresses.toArray(new String[clientAddresses.size()]));
+
+    // Print auto duration
+    if (autonomousCommand != null) {
+      if (!autonomousCommand.isScheduled() && !autoMessagePrinted) {
+        if (DriverStation.isAutonomousEnabled()) {
+          System.out.println(
+              String.format(
+                  "*** Auto finished in %.2f secs ***", Timer.getFPGATimestamp() - autoStart));
+        } else {
+          System.out.println(
+              String.format(
+                  "*** Auto cancelled in %.2f secs ***", Timer.getFPGATimestamp() - autoStart));
+        }
+        autoMessagePrinted = true;
+      }
+    }
+
+    Threads.setCurrentThreadPriority(true, 10);
   }
 
   /** This function is called once when the robot is disabled. */
@@ -104,6 +193,8 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void autonomousInit() {
+    autoStart = Timer.getFPGATimestamp();
+    autoMessagePrinted = false;
     autonomousCommand = robotContainer.getAutonomousChooser().getCommand();
 
     // schedule the autonomous command (example)

@@ -4,6 +4,8 @@
 
 package org.team5557;
 
+import java.util.List;
+
 import org.library.team6328.util.Alert;
 import org.library.team6328.util.Alert.AlertType;
 import org.team5557.auto.AutonomousChooser;
@@ -11,13 +13,14 @@ import org.team5557.auto.AutonomousTrajectories;
 import org.team5557.commands.swerve.AimDrive;
 import org.team5557.commands.swerve.CoPilot;
 import org.team5557.commands.swerve.TeleopDrive;
+import org.team5557.paths.Pathweaver;
+import org.team5557.paths.pathfind.Node;
+import org.team5557.paths.pathfind.Obstacle;
 import org.team5557.state.RobotStateSupervisor;
 import org.team5557.subsystems.swerve.Swerve;
 import org.team5557.subsystems.swerve.Swerve.DriveMode;
 import org.team5557.subsystems.swerve.util.RawControllers;
 import org.team5557.subsystems.swerve.util.SwerveSubsystemConstants;
-
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -36,6 +39,10 @@ public class RobotContainer {
 
   // Dashboard inputs / Util
   private final AutonomousChooser autonomous_chooser = new AutonomousChooser(new AutonomousTrajectories());
+
+  private static final List<Obstacle> obstacles = FieldConstants.obstacles;
+  public static final Pathweaver path_weaver = new Pathweaver(0, obstacles);
+
   public static final RawControllers raw_controllers = new RawControllers();
   public static final RobotStateSupervisor state_supervisor = new RobotStateSupervisor();
   // private final LoggedDashboardNumber flywheelSpeedInput = new LoggedDashboardNumber("Flywheel Speed", 1500.0);
@@ -52,6 +59,8 @@ public class RobotContainer {
     CommandScheduler.getInstance().registerSubsystem(state_supervisor);
 
     configureButtonBindings();
+
+    configurePathWeaver();
   }
 
   private void configureButtonBindings() {
@@ -80,6 +89,18 @@ public class RobotContainer {
     );
 
   }
+
+  private void configurePathWeaver() {
+    path_weaver.addNode(new Node(new Pose2d()));
+
+    path_weaver.addNode(new Node(1,0));
+    path_weaver.addNode(new Node(2.92-0.42,4.75));
+    path_weaver.addNode(new Node(2.92-0.42,1.51-0.42));
+    path_weaver.addNode(new Node(6,4.75));
+    path_weaver.addNode(new Node(6,1.51-0.42));
+
+    path_weaver.generateNodeEdges();
+}
 
   /**
    * Use this to pass the autonomous chooser to the main {@link Robot} class.
