@@ -5,6 +5,8 @@ import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAlternateEncoder.Type;
 
+import src.main.java.org.library.team254.lib.*;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
