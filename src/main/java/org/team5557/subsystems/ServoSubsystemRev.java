@@ -1,9 +1,12 @@
 package org.team5557.subsystems;
 
-import com.revrobotics.*
+import com.revrobotics.*;
+import com.revrobotics.SparkMaxAlternateEncoder;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxAlternateEncoder.Type;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.drive.RobotDriveBase.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -57,6 +60,9 @@ public abstract class ServoSubsystemRev extends SubsystemBase {
         public int kIZone = 0; // Ticks
         public int kDeadband = 0; // Ticks
 
+        public int kEncoderCPR = 42;
+        public double kGearingPreEncoder = 1;
+
         public double kPositionKp = 0;
         public double kPositionKi = 0;
         public double kPositionKd = 0;
@@ -86,13 +92,15 @@ public abstract class ServoSubsystemRev extends SubsystemBase {
 
     protected final int mForwardSoftLimitTicks;
     protected final int mReverseSoftLimitTicks;
+     
 
     protected ServoSubsystemRev(final ServoMotorSubsystemConstants constants) {
         mConstants = constants;
         mMaster = new CANSparkMax(mConstants.kMasterConstants.id, MotorType.kBrushless);
         mSlaves = new CANSparkMax[mConstants.kSlaveConstants.length];
-
-        mMasterEncoder = mMaster.gettAlternateEncoder(mConstants,kEncoderCPR);
+        
+        SparkMaxAlternateEncoder mMasterEncoder; 
+        mMasterEncoder = (SparkMaxAlternateEncoder) mMaster.getAlternateEncoder(mConstants.kEncoderCPR);
         mMasterEncoder.setPositionConversionFactor(mConstants.kGearingPreEncoder);
         mMasterEncoder.setVelocityConversionFactor(mConstants.kGearingPreEncoder);
 
