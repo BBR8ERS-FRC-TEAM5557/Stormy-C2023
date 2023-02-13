@@ -1,7 +1,7 @@
 package org.team5557.subsystems;
 
 import com.revrobotics.*;
-import com.revrobotics.SparkMaxAlternateEncoder;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAlternateEncoder.Type;
 
@@ -61,7 +61,10 @@ public abstract class ServoSubsystemRev extends SubsystemBase {
         public double kMaxIntegralAccumulator = 0;
         public int kIZone = 0; // Ticks
         public int kDeadband = 0; // Ticks
-
+        
+        public float kLongCANTimeoutMs=1;
+        
+        public double kRevsPerUnitDistance=1;
         public int kEncoderCPR = 42;
         public double kGearingPreEncoder = 1;
 
@@ -94,6 +97,9 @@ public abstract class ServoSubsystemRev extends SubsystemBase {
 
     protected final int mForwardSoftLimitTicks;
     protected final int mReverseSoftLimitTicks;
+    protected final double mForwardSoftLimitrevs;
+
+    public SparkMaxPIDController mMasterPIDController;
      
 
     protected ServoSubsystemRev(final ServoMotorSubsystemConstants constants) {
@@ -107,25 +113,25 @@ public abstract class ServoSubsystemRev extends SubsystemBase {
         mMasterEncoder.setVelocityConversionFactor(mConstants.kGearingPreEncoder);
 
         SparkMaxUtil.checkError(mMasterPIDController.setFeedbackDevice(mMasterEncoder), 
-        mConstants.kName + ": Could not detect encoder: ");
-
+            mConstants.kName + ": Could not detect encoder: ");
+        
         mForwardSoftLimitrevs =  ((mConstants.kMaxUnitsLimit - mConstants.kHomePosition) * mConstants.kRevsPerUnitDistance);
         SparkMaxUtil.checkError(
-                mMaster.setSoftLimit(mForwardSoftLimitTicks, Constants.kLongCANTimeoutMs),
+                mMaster.setSoftLimit(SoftLimitDirection.kForward, mConstants.kLongCANTimeoutMs),
                 mConstants.kName + ": Could not set forward soft limit: ");
                 
-        SparkMaxUtil.checkError(mConstants.kMaxUnitsLimit-mConstants.kHomePosition
+        SparkMaxUtil.checkError(mConstants.kMaxUnitsLimit-mConstants.kHomePosition,
                 mConstants.kName + ": Could not enable forward soft limit: ");
 
         mReverseSoftLimitTicks = (int) ((mConstants.kMinUnitsLimit - mConstants.kHomePosition) * mConstants.kTicksPerUnitDistance);
         SparkMaxUtil.checkError(
-                mMaster.configReverseSoftLimitThreshold(mReverseSoftLimitTicks, Constants.kLongCANTimeoutMs),
+                mMaster.configReverseSoftLimitThreshold(mReverseSoftLimitTicks, mConstants.kLongCANTimeoutMs),
                 mConstants.kName + ": Could not set reverse soft limit: ");
 
-        SparkMaxUtil.checkError(mMaster.configReverseSoftLimitEnable(true, Constants.kLongCANTimeoutMs),
+        SparkMaxUtil.checkError(mMaster.configReverseSoftLimitEnable(true, mConstants.kLongCANTimeoutMs),
                 mConstants.kName + ": Could not enable reverse soft limit: ");
 
-        SparkMaxUtil.checkError(mMaster.configVoltageCompSaturation(12.0, Constants.kLongCANTimeoutMs),
+        SparkMaxUtil.checkError(mMaster.configVoltageCompSaturation(12.0, (mConstants.kLongCANTimeoutMs)),
                 mConstants.kName + ": Could not set voltage compensation saturation: ");
 
         SparkMaxUtil.checkError(mMaster.config_kP(kMotionProfileSlot, mConstants.kKp, Constants.kLongCANTimeoutMs),
