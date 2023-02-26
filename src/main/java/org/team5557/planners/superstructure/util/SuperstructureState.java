@@ -5,6 +5,26 @@ public class SuperstructureState {
     public double shoulder; // degrees
     public double wrist; // degrees
 
+    public static enum Preset {
+        HOLDING(new SuperstructureState(0.0,0.0,0.0)),
+        HIGH(new SuperstructureState(0.0, 0.0, 0.0)),
+        MID(new SuperstructureState(0.0, 0.0, 0.0)),
+        LOW(new SuperstructureState(0.0, 0.0, 0.0)),
+        INTAKING_SCORESIDE(new SuperstructureState(0.0, 0.0, 0.0)),
+        INTAKING_INTAKESIDE(new SuperstructureState(0.0, 0.0, 0.0)),
+        SHOOTING_INTAKESIDE(new SuperstructureState(0.0, 0.0, 0.0));
+        
+        private SuperstructureState state;
+        private Preset(SuperstructureState state) {
+            this.state = state;
+        }
+        public SuperstructureState getState() {
+            return state;
+        }
+    }
+
+
+
     public SuperstructureState(double elevator, double shoulder, double wrist) {
         this.elevator = elevator;
         this.shoulder = shoulder;

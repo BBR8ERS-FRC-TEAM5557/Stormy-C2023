@@ -1,4 +1,4 @@
-package org.library.team254;
+package org.library.team254.util;
 
 /**
  * An iterative boolean latch.

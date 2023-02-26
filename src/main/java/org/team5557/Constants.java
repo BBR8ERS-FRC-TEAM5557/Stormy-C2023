@@ -78,8 +78,11 @@ public final class Constants {
 
   public static class PortConstants {
     public int primary_controller;
+    public int danny_controller;
+
     public int pigeon;
     public int candle;
+    public int elevatorLimitSwitch;
     public String canbus_name;
 
     public int underglow_start_index;
@@ -90,8 +93,10 @@ public final class Constants {
   public static final PortConstants ports = new PortConstants();
   static {
     ports.primary_controller = 0;
-    ports.candle = 13;
-    ports.pigeon = 2;
+    ports.danny_controller = 1;
+
+    ports.candle = 16;
+    ports.pigeon = 15;
     ports.canbus_name = "canivore1";
 
     ports.underglow_start_index = 0;
@@ -149,7 +154,11 @@ public final class Constants {
 
   public static class ShuffleboardConstants {
     public String driver_readout_key;
+
     public String swerve_readout_key;
+    public String elevator_readout_key;
+
+
     public String tunable_readout_key;
     public String vision_readout_key;
     public String supervisor_readout_key;

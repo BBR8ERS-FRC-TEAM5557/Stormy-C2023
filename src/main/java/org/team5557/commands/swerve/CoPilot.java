@@ -122,7 +122,7 @@ public class CoPilot extends CommandBase {
         swerve.drive(
             m_periodicIO.target_chassis_speeds,
             DriveMode.CLOSED_LOOP,
-            true,
+            false, //??
             Constants.superstructure.center_of_rotation
         );
     }

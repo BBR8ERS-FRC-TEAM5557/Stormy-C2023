@@ -1,4 +1,4 @@
-package org.team5557.state.vision;
+package org.team5557.state.vision.util;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;

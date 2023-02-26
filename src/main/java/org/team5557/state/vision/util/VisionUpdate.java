@@ -1,4 +1,4 @@
-package org.team5557.state.vision;
+package org.team5557.state.vision.util;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;

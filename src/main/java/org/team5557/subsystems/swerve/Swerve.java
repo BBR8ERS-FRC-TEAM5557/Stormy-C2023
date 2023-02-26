@@ -2,7 +2,7 @@ package org.team5557.subsystems.swerve;
 
 import org.team5557.Constants;
 import org.team5557.RobotContainer;
-import org.team5557.state.vision.VisionUpdate;
+import org.team5557.state.vision.util.VisionUpdate;
 
 import static org.team5557.subsystems.swerve.util.SwerveSubsystemConstants.*;
 

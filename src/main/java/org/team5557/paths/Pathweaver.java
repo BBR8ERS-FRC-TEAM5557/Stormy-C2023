@@ -114,7 +114,7 @@ public class Pathweaver {
 
         List<Node> fullPath = findPath(startPoint, endPoint);
 
-        if (fullPath.size() <= 0) {
+        if (fullPath.size() <= 1) {
             return null;
         }
         

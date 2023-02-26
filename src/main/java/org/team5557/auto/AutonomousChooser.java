@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team5557.Constants;
+import org.team5557.FieldConstants;
 import org.team5557.RobotContainer;
 import org.team5557.commands.swerve.FeedForwardCharacterization;
 import org.team5557.commands.swerve.FeedForwardCharacterization.FeedForwardCharacterizationData;
@@ -13,6 +14,8 @@ import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -65,6 +68,11 @@ public class AutonomousChooser {
 
     public void resetRobotPose(SequentialCommandGroup command, PathPlannerTrajectory trajectory) {
         Pose2d start = trajectory.getInitialPose();
+        if(DriverStation.getAlliance() == Alliance.Red) {
+            Pose2d flipped = FieldConstants.allianceFlip(start);
+            command.addCommands(new InstantCommand(() -> RobotContainer.swerve.setPose(flipped)));
+            return;
+        }
         command.addCommands(new InstantCommand(() -> RobotContainer.swerve.setPose(start)));
     }
 
@@ -76,6 +84,7 @@ public class AutonomousChooser {
             RobotContainer.raw_controllers.yController, // Y controller (usually the same values as X controller)
             RobotContainer.raw_controllers.rotationController, // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
             chassisSpeed -> RobotContainer.swerve.drive(chassisSpeed), // Module states consumer
+            true, //flip path based on alliance
             RobotContainer.swerve // Requires this drive subsystem
         );
     }
