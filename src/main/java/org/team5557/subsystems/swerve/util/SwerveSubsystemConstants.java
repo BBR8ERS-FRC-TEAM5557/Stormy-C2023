@@ -10,25 +10,25 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public final class SwerveSubsystemConstants {
-        public static final int FL_DRIVE_MOTOR = 12;
-        public static final int FL_STEER_MOTOR = 13;
-        public static final int FL_CANCODER = 3;
-        public static final double FL_OFFSET = -255.5;
+        public static final int FL_DRIVE_MOTOR = 20;
+        public static final int FL_STEER_MOTOR = 24;
+        public static final int FL_CANCODER = 10;
+        public static final double FL_OFFSET = -0.0;
 
-        public static final int FR_DRIVE_MOTOR = 14;
-        public static final int FR_STEER_MOTOR = 10;
-        public static final int FR_CANCODER = 4;
-        public static final double FR_OFFSET = -189.2;
+        public static final int FR_DRIVE_MOTOR = 21;
+        public static final int FR_STEER_MOTOR = 25;
+        public static final int FR_CANCODER = 11;
+        public static final double FR_OFFSET = -0.0;
 
-        public static final int BL_DRIVE_MOTOR = 11;
-        public static final int BL_STEER_MOTOR = 16;
-        public static final int BL_CANCODER = 5;
-        public static final double BL_OFFSET = -232.9 - 180.0;
+        public static final int BL_DRIVE_MOTOR = 22;
+        public static final int BL_STEER_MOTOR = 26;
+        public static final int BL_CANCODER = 12;
+        public static final double BL_OFFSET = -0.0;
 
-        public static final int BR_DRIVE_MOTOR = 17;
-        public static final int BR_STEER_MOTOR = 15;
-        public static final int BR_CANCODER = 6;
-        public static final double BR_OFFSET = -182.2 - 180.0;
+        public static final int BR_DRIVE_MOTOR = 23;
+        public static final int BR_STEER_MOTOR = 27;
+        public static final int BR_CANCODER = 13;
+        public static final double BR_OFFSET = -0.0;
 
         public static final SwerveModuleState[] X_OUT_STATES = {
                         new SwerveModuleState(0.0, Rotation2d.fromDegrees(45)),

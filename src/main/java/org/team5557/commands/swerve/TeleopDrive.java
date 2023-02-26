@@ -2,7 +2,7 @@ package org.team5557.commands.swerve;
 
 import java.util.function.DoubleSupplier;
 
-import org.library.team254.LatchedBoolean;
+import org.library.team254.util.LatchedBoolean;
 import org.team5557.Constants;
 import org.team5557.RobotContainer;
 import org.team5557.subsystems.swerve.Swerve;
@@ -61,7 +61,7 @@ public class TeleopDrive extends CommandBase {
                 m_translationXSupplier.getAsDouble() * swerve.getMotorOutputLimiter(),
                 m_translationYSupplier.getAsDouble() * swerve.getMotorOutputLimiter(),
                 rotationalVelocity),
-            DriveMode.CLOSED_LOOP, true,
+            DriveMode.OPEN_LOOP, true,
             Constants.superstructure.center_of_rotation
         );
     }

@@ -10,7 +10,9 @@ import org.littletonrobotics.junction.Logger;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.team5557.Constants;
 import org.team5557.FieldConstants;
-import org.team5557.state.vision.VisionUpdate.MeasurementFidelity;
+import org.team5557.state.vision.util.PhotonCameraExtension;
+import org.team5557.state.vision.util.VisionUpdate;
+import org.team5557.state.vision.util.VisionUpdate.MeasurementFidelity;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -52,14 +54,14 @@ public class VisionManager {
     }
 
     public VisionManager() {
-        this.photonCamera = new PhotonCameraExtension("Arducam_OV9281_USB_Camera", new Transform3d());
+        this.photonCamera = new PhotonCameraExtension("Arducam_OV9281_Anakin", new Transform3d());
         camera_list = Collections.unmodifiableList(
                 List.of(
                         photonCamera));
 
         ShuffleboardTab tab = Shuffleboard.getTab(Constants.shuffleboard.vision_readout_key);
         if (Constants.tuning_mode) {
-            tab.addCamera("Arducam", "Arducam", "http://10.55.57.105:5800", "http://10.29.10.11:5800")
+            tab.addCamera("Anakin", "Arducam_OV9281_Anakin", "http://10.55.57.11:1184", "http://photonvision.local:1184")
                     .withSize(3, 3)
                     .withPosition(4, 0);
         }

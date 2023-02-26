@@ -79,7 +79,7 @@ public class Robot extends LoggedRobot {
     switch (Constants.robot_mode) {
       // Running on a real robot, log to a USB stick
       case REAL:
-        String folder = "/media/sda2/";
+        String folder = "/media/sda1/";
         logger.addDataReceiver(new WPILOGWriter(folder));
         logger.addDataReceiver(new NT4Publisher());
         LoggedPowerDistribution.getInstance();
