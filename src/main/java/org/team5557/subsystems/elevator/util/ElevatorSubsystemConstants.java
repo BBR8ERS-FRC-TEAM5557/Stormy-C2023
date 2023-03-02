@@ -34,8 +34,8 @@ public class ElevatorSubsystemConstants {
         kElevatorConstants.kSlaveConstants[1].invert_motor = invert_motors;
 
 
-        kElevatorConstants.kRevsPerUnitDistance = 1.0 / 2.5;
-        kElevatorConstants.kEncoderInverted = false;
+        kElevatorConstants.kRevsPerUnitDistance = 1.0 / (2.25 * Math.PI);
+        kElevatorConstants.kEncoderInverted = true;
 
         kElevatorConstants.kKp = 0;  // Raw output / raw error
         kElevatorConstants.kKi = 0;  // Raw output / sum of raw error
@@ -46,7 +46,7 @@ public class ElevatorSubsystemConstants {
         kElevatorConstants.kIZone = 0; // Ticks
         kElevatorConstants.kDeadband = 0; // units
 
-        kElevatorConstants.kPositionKp = 0;
+        kElevatorConstants.kPositionKp = 0.2;
         kElevatorConstants.kPositionKi = 0;
         kElevatorConstants.kPositionKd = 0;
         kElevatorConstants.kPositionKf = 0;
@@ -63,8 +63,8 @@ public class ElevatorSubsystemConstants {
         kElevatorConstants.kLimitRPM = 1000;
         kElevatorConstants.kEnableCurrentLimit = true;
 
-        kElevatorConstants.kMaxUnitsLimit = 24.0;//inches
-        kElevatorConstants.kMinUnitsLimit = 0.0;
+        kElevatorConstants.kMaxUnitsLimit = 48.0;//inches
+        kElevatorConstants.kMinUnitsLimit = 2.0;
 
         kElevatorConstants.kStatus0FrameRate = 20;
         kElevatorConstants.kStatus1FrameRate = 20;

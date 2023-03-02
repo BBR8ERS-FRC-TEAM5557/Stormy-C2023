@@ -3,6 +3,8 @@ package org.team5557.subsystems.elevator;
 import org.library.team254.drivers.ServoMotorSubsystemRel;
 import org.library.team254.util.LatchedBoolean;
 import org.team5557.Constants;
+import org.team5557.Robot;
+import org.team5557.RobotContainer;
 import org.team5557.subsystems.elevator.commands.HomeElevator;
 import static org.team5557.subsystems.elevator.util.ElevatorSubsystemConstants.*;
 
@@ -19,14 +21,14 @@ public class Elevator extends ServoMotorSubsystemRel {
     private ElevatorFeedforward feedforward = new ElevatorFeedforward(kS, kG, kV, kA);
     private DigitalInput magLimitSwitch = new DigitalInput(Constants.ports.elevatorLimitSwitch);
 
-    private boolean mHomed = false;
     private LatchedBoolean mJustReset = new LatchedBoolean();
-    private Command mHomeElevatorCommand = new HomeElevator();
 
     ShuffleboardTab tab = Shuffleboard.getTab(Constants.shuffleboard.elevator_readout_key);
 
     public Elevator(ServoMotorSubsystemRelConstants constants) {
         super(constants);
+
+        mHasBeenZeroed = true;
 
         tab.addString("Control Mode", () -> mControlState.toString());
         tab.addDouble("Height (in.)", this::getPosition);
@@ -36,6 +38,8 @@ public class Elevator extends ServoMotorSubsystemRel {
         tab.addBoolean("atHomingLocation", this::atHomingLocation);
         tab.addBoolean("isHomed", this::isHomed);
         tab.addBoolean("isHoming", this::isHoming);
+
+        this.outputTelemetry();
     }
 
     @Override
@@ -50,21 +54,22 @@ public class Elevator extends ServoMotorSubsystemRel {
 
         if (!isHomed() && atHomingLocation()) {
             zeroSensors();
-            mHomed = true;
+            mHasBeenZeroed = true;
         }
+        this.outputTelemetry();
     }
 
     @Override
     public synchronized boolean atHomingLocation() {
-        return magLimitSwitch.get();
+        return !magLimitSwitch.get();
     }
 
     @Override
     public synchronized void handleMasterReset(boolean reset) {
         if (mJustReset.update(reset)) {
-                mHomed = false;
+                mHasBeenZeroed = false;
                 //set arm and wrist to viable spots
-                scheduleHomingCommand();
+                RobotContainer.homeElevatorCommand.schedule();
         }
     }
 
@@ -73,16 +78,19 @@ public class Elevator extends ServoMotorSubsystemRel {
         super.writePeriodicOutputs();
     }
 
-    public synchronized void scheduleHomingCommand() {
-        mHomeElevatorCommand.schedule();
-    }
-
     public synchronized boolean isHoming() {
-        return mHomeElevatorCommand.isScheduled();
+        if(RobotContainer.homeElevatorCommand != null) {
+            return RobotContainer.homeElevatorCommand.isScheduled();
+        }
+        return false;
     }
 
     public synchronized boolean isHomed() {
-        return mHomed;
+        return mHasBeenZeroed;
+    }
+
+    public synchronized void setHomed(boolean homed) {
+        this.mHasBeenZeroed = homed;
     }
 
     public synchronized void disableSoftLimits() {
@@ -96,11 +104,13 @@ public class Elevator extends ServoMotorSubsystemRel {
     }
     
     //motion profiling with automatic feedforward
-    public synchronized void setMotionProfilingGoal(TrapezoidProfile.State goal) {
+    public synchronized void setMotionProfilingGoal(double position) {
         if (mControlState != ControlState.MOTION_PROFILING_WPI) {
             mControlState = ControlState.MOTION_PROFILING_WPI;
             mPreviousProfiledState = new TrapezoidProfile.State(mPeriodicIO.position_units, mPeriodicIO.velocity_units_per_s);
         }
+        TrapezoidProfile.State goal = new TrapezoidProfile.State(position, 0.0);
+
         TrapezoidProfile profile = new TrapezoidProfile(mConstants.profileConstraints, goal, mPreviousProfiledState);
         mPreviousProfiledState = profile.calculate(mConstants.kLooperDt);
         mPeriodicIO.demand = constrainUnits(mPreviousProfiledState.position);

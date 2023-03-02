@@ -23,7 +23,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public class VisionManager {
-    private final PhotonCameraExtension photonCamera;
+    private final PhotonCameraExtension anakin;
+    private final PhotonCameraExtension obi_wan;
     private final List<PhotonCameraExtension> camera_list;
 
     private Consumer<VisionUpdate> visionConsumer;
@@ -54,16 +55,24 @@ public class VisionManager {
     }
 
     public VisionManager() {
-        this.photonCamera = new PhotonCameraExtension("Arducam_OV9281_Anakin", new Transform3d());
+        this.anakin = new PhotonCameraExtension("Arducam_OV9281_Anakin", new Transform3d());
+        this.obi_wan = new PhotonCameraExtension("Arducam_OV9281_Obi_Wan", new Transform3d());
         camera_list = Collections.unmodifiableList(
                 List.of(
-                        photonCamera));
+                        anakin,
+                        obi_wan
+                    )
+                );
 
         ShuffleboardTab tab = Shuffleboard.getTab(Constants.shuffleboard.vision_readout_key);
         if (Constants.tuning_mode) {
             tab.addCamera("Anakin", "Arducam_OV9281_Anakin", "http://10.55.57.11:1184", "http://photonvision.local:1184")
-                    .withSize(3, 3)
-                    .withPosition(4, 0);
+                .withSize(3, 3)
+                .withPosition(4, 0);
+
+            tab.addCamera("ObiWan", "Arducam_OV9281_Obi_Wan", "http://10.55.57.11:1185", "http://photonvision.local:1185")
+                .withSize(3, 3)
+                .withPosition(5, 0);
         }
     }
 
@@ -138,10 +147,8 @@ public class VisionManager {
             }
         }
     }
-
     public void setDataInterface(Consumer<VisionUpdate> visionConsumer, Consumer<Pose2d> disagreementConsumer) {
         this.visionConsumer = visionConsumer;
         this.disagreementConsumer = disagreementConsumer;
     }
-
 }

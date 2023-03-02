@@ -15,6 +15,10 @@ public class HomeElevator extends CommandBase {
 
     private final Timer t = new Timer();
 
+    public HomeElevator() {
+        addRequirements(elevator);
+    }
+
     @Override
     public void initialize() {
         //set leds and shit
@@ -51,7 +55,9 @@ public class HomeElevator extends CommandBase {
     public void finishHoming() {
         t.stop();
         t.reset();
+        elevator.setOpenLoop(0.0);
         elevator.zeroSensors();
         elevator.enableSoftLimits();
+        elevator.setHomed(true);
     }
 }

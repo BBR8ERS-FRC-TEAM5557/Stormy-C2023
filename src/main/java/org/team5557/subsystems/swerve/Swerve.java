@@ -267,8 +267,8 @@ public class Swerve extends SubsystemBase {
         return Rotation2d.fromDegrees(gyroInputs.azimuthDeg);
     }
 
-    public Rotation2d getGyroscopePitch() {
-        return Rotation2d.fromDegrees(gyroInputs.pitchDeg - this.pitchOffset);
+    public double getGyroscopePitch() {
+        return gyroInputs.pitchDeg - this.pitchOffset;
     }
 
     public double getGyroscopePitchVelocity() {
@@ -349,7 +349,7 @@ public class Swerve extends SubsystemBase {
      * Chassis speeds consumer for PathPlanner
      */
     public void drive(ChassisSpeeds chassisSpeeds) {
-        this.drive(chassisSpeeds, DriveMode.CLOSED_LOOP, true, Constants.superstructure.center_of_rotation);
+        this.drive(chassisSpeeds, DriveMode.OPEN_LOOP, true, Constants.superstructure.center_of_rotation);
     }
 
     public void runCharacterizationVolts(double volts) {

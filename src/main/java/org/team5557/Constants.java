@@ -85,6 +85,9 @@ public final class Constants {
     public int elevatorLimitSwitch;
     public String canbus_name;
 
+    public int clawSolenoidForward;
+    public int clawSolenoidReverse;
+
     public int underglow_start_index;
     public int underglow_end_index;
     public int underglow_num_leds;
@@ -98,6 +101,9 @@ public final class Constants {
     ports.candle = 16;
     ports.pigeon = 15;
     ports.canbus_name = "canivore1";
+
+    ports.clawSolenoidForward = 0;
+    ports.clawSolenoidReverse = 1;
 
     ports.underglow_start_index = 0;
     ports.underglow_end_index = 67;
@@ -114,7 +120,7 @@ public final class Constants {
   public static final PathPlannerConstants pathplanner = new PathPlannerConstants();
   static {
     pathplanner.fast_constraints = new PathConstraints(4.0, 3.0);
-    pathplanner.medium_constraints = new PathConstraints(3.0, 1);
+    pathplanner.medium_constraints = new PathConstraints(3.0, 2);
     pathplanner.slow_constraints = new PathConstraints(2.0, 1.0);
     pathplanner.hellaslow_constraints = new PathConstraints(1.0, 1.0);
   }
@@ -171,6 +177,8 @@ public final class Constants {
     shuffleboard.tunable_readout_key = "Tunable";
     shuffleboard.vision_readout_key = "Vision";
     shuffleboard.supervisor_readout_key = "RobotStateSupervisor";
+
+    shuffleboard.elevator_readout_key = "Elevator";
   }
 
   public static class PoseEstimatorConstants {

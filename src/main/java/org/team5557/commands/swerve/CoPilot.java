@@ -4,6 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
 import org.team5557.Constants;
+import org.team5557.FieldConstants;
 import org.team5557.Robot;
 import org.team5557.RobotContainer;
 import org.team5557.paths.Pathweaver;
@@ -11,6 +12,7 @@ import org.team5557.paths.pathfind.Node;
 import org.team5557.state.RobotStateSupervisor;
 import org.team5557.state.RobotStateSupervisor.LocalizationStatus;
 import org.team5557.state.RobotStateSupervisor.RobotState;
+import org.team5557.state.goal.ObjectiveTracker;
 import org.team5557.subsystems.swerve.Swerve;
 import org.team5557.subsystems.swerve.Swerve.DriveMode;
 
@@ -26,7 +28,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -40,6 +44,8 @@ public class CoPilot extends CommandBase {
 
     private final Swerve swerve;
     private final RobotStateSupervisor state;
+    private final ObjectiveTracker objective_tracker;
+
     private Pathweaver path_weaver;
     private final PeriodicIO m_periodicIO;
     //private final LEDs leds;
@@ -52,6 +58,7 @@ public class CoPilot extends CommandBase {
         m_periodicIO = new PeriodicIO();
 
         this.swerve = RobotContainer.swerve;
+        this.objective_tracker = RobotContainer.objective_tracker;
         this.path_weaver = RobotContainer.path_weaver;
         this.state = RobotContainer.state_supervisor;
         this.follower = RobotContainer.raw_controllers.follower;
@@ -87,23 +94,35 @@ public class CoPilot extends CommandBase {
 
         m_periodicIO.localizationStatus = m_periodicIO.state.localizationStatus;
 
-        if(m_periodicIO.active_trajectory == null && m_periodicIO.localizationStatus == LocalizationStatus.LOCALIZED) {
-            //Translation2d goal = new Translation2d();
-            //Translation2d robot_to_target = goal.minus(swerve.getPose().getTranslation());
+        int column = objective_tracker.selectedColumn;
+        boolean isBlue = DriverStation.getAlliance() == Alliance.Blue;
+        Translation2d goalPoint = 
+            new Translation2d(
+                FieldConstants.Grids.outerX + Constants.superstructure.drivebase/2.0 + 5.0, //drivebase offset thing
+                isBlue ? FieldConstants.Grids.lowTranslations[8 - column].getY() : FieldConstants.Grids.lowTranslations[column].getY()
+            );
 
-            m_periodicIO.active_trajectory = path_weaver.generatePath(new Node(new Pose2d())); /*PathPlanner.generatePath(
-                Constants.pathplanner.hellaslow_constraints, 
+        goalPoint = isBlue ? goalPoint : FieldConstants.allianceFlip(goalPoint);
+        Rotation2d goalRotation = isBlue ? new Rotation2d() : Rotation2d.fromDegrees(180);
+
+        if(m_periodicIO.active_trajectory == null && m_periodicIO.localizationStatus == LocalizationStatus.LOCALIZED) {
+
+
+            Translation2d robot_to_target = goalPoint.minus(m_periodicIO.state.estimatedPose.getTranslation());
+            //m_periodicIO.active_trajectory = path_weaver.generatePath(new Node(new Pose2d())); 
+            PathPlanner.generatePath(
+                Constants.pathplanner.medium_constraints, 
                 new PathPoint(
-                    swerve.getPose().getTranslation(),
+                    m_periodicIO.state.estimatedPose.getTranslation(),
                     robot_to_target.getAngle(),
                     swerve.getPose().getRotation()
                 ),
                 new PathPoint(
-                    goal,
+                    goalPoint,
                     robot_to_target.getAngle(),
-                    new Rotation2d()
+                    goalRotation
                 )
-            );*/
+            );
             this.regenerationTimestamp = this.currentTimestamp;
         }
 
@@ -112,7 +131,7 @@ public class CoPilot extends CommandBase {
             Pose2d currentPose = m_periodicIO.state.estimatedPose;
             m_periodicIO.target_chassis_speeds = this.follower.calculate(currentPose, m_periodicIO.desired_state);
         } else {
-            m_periodicIO.target_chassis_speeds = new ChassisSpeeds(translationXSupplier.getAsDouble(), translationYSupplier.getAsDouble(), RobotContainer.raw_controllers.calculateAlign(0));
+            m_periodicIO.target_chassis_speeds = new ChassisSpeeds(translationXSupplier.getAsDouble(), translationYSupplier.getAsDouble(), RobotContainer.raw_controllers.calculateAlign(goalRotation.getRadians()));
         }
 
         Logger.getInstance().recordOutput("CoPilot/Active Trajectory", m_periodicIO.active_trajectory);
@@ -121,8 +140,8 @@ public class CoPilot extends CommandBase {
     public synchronized void writeOutputs() {
         swerve.drive(
             m_periodicIO.target_chassis_speeds,
-            DriveMode.CLOSED_LOOP,
-            false, //??
+            DriveMode.OPEN_LOOP,
+            true, //??
             Constants.superstructure.center_of_rotation
         );
     }

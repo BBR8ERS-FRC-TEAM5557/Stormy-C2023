@@ -11,6 +11,8 @@ import org.team5557.subsystems.swerve.util.SwerveSubsystemConstants;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class TeleopDrive extends CommandBase {
@@ -54,13 +56,23 @@ public class TeleopDrive extends CommandBase {
         } else {
             rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
         }
-        //rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
+        rotationalVelocity = m_rotationSupplier.getAsDouble() / 2.0;//* swerve.getMotorOutputLimiter();
+
+        ChassisSpeeds velocity;
+        if(DriverStation.getAlliance() == Alliance.Blue) {
+            velocity = new ChassisSpeeds(
+                m_translationXSupplier.getAsDouble(),
+                m_translationYSupplier.getAsDouble(),
+                rotationalVelocity);
+        } else {
+            velocity = new ChassisSpeeds(
+                -m_translationXSupplier.getAsDouble(),
+                -m_translationYSupplier.getAsDouble(),
+                rotationalVelocity);
+        }
 
         swerve.drive(
-            new ChassisSpeeds(
-                m_translationXSupplier.getAsDouble() * swerve.getMotorOutputLimiter(),
-                m_translationYSupplier.getAsDouble() * swerve.getMotorOutputLimiter(),
-                rotationalVelocity),
+            velocity,
             DriveMode.OPEN_LOOP, true,
             Constants.superstructure.center_of_rotation
         );

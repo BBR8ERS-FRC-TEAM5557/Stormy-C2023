@@ -22,4 +22,9 @@ public class ElevatorManual extends CommandBase {
     public void execute() {
         elevator.setOpenLoop(elevatorJogger.getAsDouble() / maxPower);
     }
+
+    @Override
+    public void end(boolean interrupted) {
+        elevator.setOpenLoop(0.0);
+    }
 }

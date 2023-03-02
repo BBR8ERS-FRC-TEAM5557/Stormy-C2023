@@ -25,6 +25,8 @@ import org.team5557.state.goal.ObjectiveTracker;
 import org.team5557.state.goal.ObjectiveTracker.Direction;
 import org.team5557.subsystems.elevator.Elevator;
 import org.team5557.subsystems.elevator.commands.ElevatorManual;
+import org.team5557.subsystems.elevator.commands.HomeElevator;
+import org.team5557.subsystems.elevator.commands.SetElevatorHeight;
 import org.team5557.subsystems.elevator.util.ElevatorSubsystemConstants;
 import org.team5557.subsystems.swerve.Swerve;
 import org.team5557.subsystems.swerve.Swerve.DriveMode;
@@ -60,6 +62,9 @@ public class RobotContainer {
   public static final RobotStateSupervisor state_supervisor = new RobotStateSupervisor();
   public static final ObjectiveTracker objective_tracker = new ObjectiveTracker();
   // private final LoggedDashboardNumber flywheelSpeedInput = new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+
+  //Commands
+  public static final Command homeElevatorCommand = new HomeElevator();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -128,14 +133,19 @@ public class RobotContainer {
     ////////////\\\\\\\\\\\\
 
     //Manual elevator control
-    Command manualElevatorControl = new ElevatorManual(danny_controller::getLeftY);
+    Command manualElevatorControl = new ElevatorManual(() -> getForwardInput());
     new Trigger(() -> danny_controller.getRightBumper() && danny_controller.getLeftBumper()).whileTrue(
       manualElevatorControl
     );
 
+    Command setElevatorCommand = new SetElevatorHeight(12.0);
+    new Trigger(() -> danny_controller.getBButton()).whileTrue(
+      setElevatorCommand
+    );
+
     //Trigger Homing Command
     new Trigger(() -> danny_controller.getRightBumper() && danny_controller.getLeftBumper() && danny_controller.getAButton()).onTrue(
-      new InstantCommand(() -> elevator.scheduleHomingCommand())
+      new InstantCommand(() -> homeElevatorCommand.schedule())
     );
 
     //Adjust Scoring objectives

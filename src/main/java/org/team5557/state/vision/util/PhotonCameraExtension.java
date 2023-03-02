@@ -10,11 +10,6 @@ public class PhotonCameraExtension extends PhotonCamera {
     private PhotonPipelineResult lastPipelineResult;
     public final Transform3d CAMERA_TO_ROBOT;
 
-    public PhotonCameraExtension(NetworkTableInstance instance, String cameraName, Transform3d cameraToRobot) {
-        super(instance, cameraName);
-        this.CAMERA_TO_ROBOT = cameraToRobot;
-    }
-
     public PhotonCameraExtension(String cameraName, Transform3d cameraToRobot){
         super(cameraName);
         this.CAMERA_TO_ROBOT = cameraToRobot;

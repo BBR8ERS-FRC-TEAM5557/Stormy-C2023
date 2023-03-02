@@ -112,6 +112,7 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
 
         mMaster.setCANTimeout(mConstants.kLongCANTimeoutMs);
 
+        mMaster.setInverted(mConstants.kMasterConstants.invert_motor);
 
         /////////CONFIG ENCODER STUFF\\\\\\\\\\\
         SparkMaxUtil.checkError(mMasterEncoder.setPositionConversionFactor(
@@ -496,9 +497,9 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
 
     public void outputTelemetry() {
         Logger.getInstance().recordOutput(mConstants.kName + "/Demand", mPeriodicIO.demand);
-        Logger.getInstance().recordOutput(mConstants.kName + "/PositionDeg", mPeriodicIO.position_units);
+        Logger.getInstance().recordOutput(mConstants.kName + "/PositionUnits", mPeriodicIO.position_units);
         Logger.getInstance().recordOutput(mConstants.kName + "/PositionError", mPeriodicIO.error_units);
-        Logger.getInstance().recordOutput(mConstants.kName + "/VelocityDegPerSec", mPeriodicIO.velocity_units_per_s);
+        Logger.getInstance().recordOutput(mConstants.kName + "/VelocityUnitsPerSec", mPeriodicIO.velocity_units_per_s);
         Logger.getInstance().recordOutput(mConstants.kName + "/OutputDutyCycle", mPeriodicIO.output_percent);
         Logger.getInstance().recordOutput(mConstants.kName + "/OutputVoltage", mPeriodicIO.output_voltage);
         Logger.getInstance().recordOutput(mConstants.kName + "/OutputCurrent", mPeriodicIO.master_current);
