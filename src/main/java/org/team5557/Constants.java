@@ -222,12 +222,12 @@ public final class Constants {
   public static final ShoulderConstants kShoulderConstants = new ShoulderConstants();
   static {
     kShoulderConstants.mass = 1.0;
-    kShoulderConstants.length = Units.inchesToMeters(14.0);
+    kShoulderConstants.length = Units.inchesToMeters(12.5);
     kShoulderConstants.moi = 1.0;
     kShoulderConstants.cgRadius = Units.inchesToMeters(5.0);
     kShoulderConstants.minAngle = -90.0; //degrees
     kShoulderConstants.maxAngle = 180.0; //degrees
-    kShoulderConstants.reduction = 75.0 / 1.0;
+    kShoulderConstants.reduction = 108.0 / 1.0;
   }
 
   public static class WristConstants {
@@ -247,6 +247,6 @@ public final class Constants {
     kWristConstants.cgRadius = Units.inchesToMeters(5.0);
     kWristConstants.minAngle = -90.0; //degrees
     kWristConstants.maxAngle = 180.0; //degrees
-    kWristConstants.reduction = 75.0 / 1.0;
+    kWristConstants.reduction = 50.0 / 1.0;
   }
 }

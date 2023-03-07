@@ -305,7 +305,7 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
     public synchronized void readPeriodicInputs() {
         mPeriodicIO.timestamp = Timer.getFPGATimestamp();
 
-        /*if (mMaster.getFault(FaultID.kHasReset)) {
+        if (mMaster.getFault(FaultID.kHasReset)) {
             DriverStation.reportError(mConstants.kName + ": SparkMax Reset! ", false);
             mPeriodicIO.reset_occured = true;
             return;
@@ -349,7 +349,6 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
             DriverStation.reportError(mConstants.kName + ": SparkMax Fault! " + FaultID.kDRVFault.toString(), false);
             mMaster.clearFaults();
         }
-        */
         
         mPeriodicIO.master_current = mMaster.getOutputCurrent();
         mPeriodicIO.output_voltage = mMaster.getAppliedOutput() * mMaster.getBusVoltage();
@@ -394,7 +393,7 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
                 System.out.println(mConstants.kName + ": Slave SparkMax reset occurred");
             }
         }
-        //writePeriodicOutputs();
+        writePeriodicOutputs();
         outputTelemetry();
     }
 

@@ -70,8 +70,8 @@ public abstract class ServoMotorSubsystemAbs extends SubsystemBase {
         public int kPositionIZone = 0; // Ticks
         public int kPositionDeadband = 0; // Ticks
 
-        public int kCruiseVelocity = 0; // units/s
-        public int kAcceleration = 0; // units / s / s
+        public double kCruiseVelocity = 0; // units/s
+        public double kAcceleration = 0; // units / s / s
         public TrapezoidProfile.Constraints profileConstraints = new TrapezoidProfile.Constraints(kCruiseVelocity, kAcceleration);
         public double kRampRate = 0.0; // s
         public double kMaxVoltage = 12.0;
@@ -420,9 +420,9 @@ public abstract class ServoMotorSubsystemAbs extends SubsystemBase {
     }
 
     public synchronized void setMotionProfilingGoal(TrapezoidProfile.State goal, double feedforward_v) {
-        if (mControlState != ControlState.MOTION_PROFILING_WPI) {
+        if (mControlState != ControlState.MOTION_PROFILING_WPI || mPreviousProfiledState == null) {
             mControlState = ControlState.MOTION_PROFILING_WPI;
-            mPreviousProfiledState = new TrapezoidProfile.State(mPeriodicIO.position_units, mPeriodicIO.velocity_units_per_s);
+            mPreviousProfiledState = new TrapezoidProfile.State(mPeriodicIO.position_units, 0.0);//mPeriodicIO.velocity_units_per_s);
         }
         TrapezoidProfile profile = new TrapezoidProfile(mConstants.profileConstraints, goal, mPreviousProfiledState);
         mPreviousProfiledState = profile.calculate(mConstants.kLooperDt);

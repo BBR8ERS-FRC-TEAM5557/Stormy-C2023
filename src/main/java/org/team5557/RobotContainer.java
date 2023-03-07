@@ -29,6 +29,10 @@ import org.team5557.subsystems.elevator.commands.ElevatorManual;
 import org.team5557.subsystems.elevator.commands.HomeElevator;
 import org.team5557.subsystems.elevator.commands.SetElevatorHeight;
 import org.team5557.subsystems.elevator.util.ElevatorSubsystemConstants;
+import org.team5557.subsystems.shoulder.Shoulder;
+import org.team5557.subsystems.shoulder.commands.SetShoulderAngle;
+import org.team5557.subsystems.shoulder.commands.ShoulderManual;
+import org.team5557.subsystems.shoulder.util.ShoulderSubsystemConstants;
 import org.team5557.subsystems.swerve.Swerve;
 import org.team5557.subsystems.swerve.Swerve.DriveMode;
 import org.team5557.subsystems.swerve.util.RawControllers;
@@ -49,6 +53,7 @@ public class RobotContainer {
   // Subsystems
   public static final Swerve swerve = new Swerve();
   public static final Elevator elevator = new Elevator(ElevatorSubsystemConstants.kElevatorConstants);
+  public static final Shoulder shoulder = new Shoulder(ShoulderSubsystemConstants.kShoulderConstants);
 
   // Controller
   public static final XboxController primary_controller = new XboxController(Constants.ports.primary_controller);
@@ -137,14 +142,24 @@ public class RobotContainer {
     ////////////\\\\\\\\\\\\
 
     //Manual elevator control
-    Command manualElevatorControl = new ElevatorManual(() -> getForwardInput());
-    new Trigger(() -> danny_controller.getRightBumper() && danny_controller.getLeftBumper()).whileTrue(
+    Command manualElevatorControl = new ElevatorManual(() -> getElevatorJogger());
+    new Trigger(() -> danny_controller.getLeftBumper()).whileTrue(
       manualElevatorControl
     );
 
+    Command manualShoulderControl = new ShoulderManual(() -> getElevatorJogger());
+    new Trigger(()-> danny_controller.getRightBumper()).whileTrue(
+      manualShoulderControl
+    );
+
     Command setElevatorCommand = new SetElevatorHeight(12.0);
-    new Trigger(() -> danny_controller.getBButton()).whileTrue(
+    new Trigger(() -> danny_controller.getBButton() && false).whileTrue(
       setElevatorCommand
+    );
+
+    Command setShoulderCommand = new SetShoulderAngle(180.0);
+    new Trigger(() -> danny_controller.getYButton()).whileTrue(
+      setShoulderCommand
     );
 
     //Trigger Homing Command
@@ -204,6 +219,10 @@ public class RobotContainer {
   public double getForwardInput() {
     return -square(deadband(primary_controller.getLeftY(), 0.1))
         * SwerveSubsystemConstants.MAX_VELOCITY_METERS_PER_SECOND;
+  }
+
+  public double getElevatorJogger() {
+    return -square(deadband(danny_controller.getLeftY(), 0.1));
   }
 
   public double getStrafeInput() {
