@@ -14,6 +14,7 @@ import org.team5557.auto.AutonomousChooser;
 import org.team5557.auto.AutonomousTrajectories;
 import org.team5557.commands.superstructure.SetSuperstructureSetpoint;
 import org.team5557.commands.swerve.AimDrive;
+import org.team5557.commands.swerve.AutoBalance;
 import org.team5557.commands.swerve.CoPilot;
 import org.team5557.commands.swerve.TeleopDrive;
 import org.team5557.paths.Pathweaver;
@@ -36,6 +37,7 @@ import org.team5557.state.goal.ObjectiveTracker;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -61,6 +63,8 @@ public class RobotContainer {
   public static final RawControllers raw_controllers = new RawControllers();
   public static final RobotStateSupervisor state_supervisor = new RobotStateSupervisor();
   public static final ObjectiveTracker objective_tracker = new ObjectiveTracker();
+
+  //public static final PneumaticHub ph = new PneumaticHub(0);
   // private final LoggedDashboardNumber flywheelSpeedInput = new LoggedDashboardNumber("Flywheel Speed", 1500.0);
 
   //Commands
@@ -87,6 +91,8 @@ public class RobotContainer {
     swerve.setDefaultCommand(
       new TeleopDrive(this::getForwardInput, this::getStrafeInput, this::getRotationInput)
     );
+
+    new Trigger(primary_controller::getXButton).whileTrue(new AutoBalance());
 
     /*
     new Trigger(primary_controller::getRightStickButton).whileTrue(
@@ -124,8 +130,6 @@ public class RobotContainer {
     new Trigger(() -> primary_controller.getPOV() == 0).whileTrue(
       new AimDrive(this::getForwardInput, this::getStrafeInput, 0.0)
     );
-
-
 
 
     ////////////\\\\\\\\\\\\

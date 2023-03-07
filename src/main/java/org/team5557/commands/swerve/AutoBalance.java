@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class AutoBalance extends CommandBase {
     Swerve swerve = RobotContainer.swerve;
-    PIDController pid = new PIDController(0.001, 0, 0);
+    PIDController pid = new PIDController(0.03, 0, 0);
     Timer t = new Timer();
     LatchedBoolean latch = new LatchedBoolean();
     
@@ -50,7 +50,7 @@ public class AutoBalance extends CommandBase {
         if (t.get() > 1.0) 
             swerve.drive(new ChassisSpeeds(), DriveMode.X_OUT, false, Constants.superstructure.center_of_rotation);
         else 
-            swerve.drive(new ChassisSpeeds(-output, 0, 0), DriveMode.OPEN_LOOP, false, Constants.superstructure.center_of_rotation);
+            swerve.drive(new ChassisSpeeds(output, 0, 0), DriveMode.OPEN_LOOP, false, Constants.superstructure.center_of_rotation);
 
 
         Logger.getInstance().recordOutput("AutoBalance/output", output);

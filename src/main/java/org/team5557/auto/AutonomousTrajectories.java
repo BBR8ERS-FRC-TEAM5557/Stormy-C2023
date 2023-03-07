@@ -17,8 +17,8 @@ public class AutonomousTrajectories {
     private final PathPlannerTrajectory BpushAndCharge;
 
     public AutonomousTrajectories() {
-        BpushAndCharge = PathPlanner.loadPath("BpushAndCharge.path", Constants.pathplanner.medium_constraints);
-        RpushAndCharge = PathPlanner.loadPath("RpushAndCharge.path", Constants.pathplanner.medium_constraints);
+        BpushAndCharge = PathPlanner.loadPath("BpushAndCharge", Constants.pathplanner.medium_constraints);
+        RpushAndCharge = PathPlanner.loadPath("RpushAndCharge", Constants.pathplanner.medium_constraints);
     }
 
     public PathPlannerTrajectory getRPushAndCharge() {

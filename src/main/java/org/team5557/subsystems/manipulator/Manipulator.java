@@ -23,6 +23,7 @@ public class Manipulator extends SubsystemBase {
     private ManipulatorState mWantedState;
 
     public Manipulator() {
+        
         mClawSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, Constants.ports.clawSolenoidForward, Constants.ports.clawSolenoidReverse);
         mTopRollerMotor = new CANSparkMax(kTopRollerMotorID, MotorType.kBrushless);
         mBottomRollerMotor = new CANSparkMax(kBottomRollerMotorID, MotorType.kBrushless);
@@ -30,8 +31,8 @@ public class Manipulator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        mTopRollerMotor.set(mWantedState.motorSpeed());
-        mBottomRollerMotor.set(mWantedState.motorSpeed());
+        mTopRollerMotor.set(mWantedState.motorSpeed);
+        mBottomRollerMotor.set(mWantedState.motorSpeed);
 
         //if(mClawSolenoid.get() == Value.kForward && )
 

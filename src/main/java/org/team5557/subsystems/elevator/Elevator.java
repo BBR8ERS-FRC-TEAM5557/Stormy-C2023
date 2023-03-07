@@ -31,13 +31,13 @@ public class Elevator extends ServoMotorSubsystemRel {
         mHasBeenZeroed = true;
 
         tab.addString("Control Mode", () -> mControlState.toString());
-        tab.addDouble("Height (in.)", this::getPosition);
-        tab.addDouble("Setpoint", this::getSetpoint);
-        tab.addDouble("Velocity (in./s)", this::getVelocity);
+        tab.addDouble("Height (in.)", () -> this.getPosition());
+        tab.addDouble("Setpoint", () -> this.getSetpoint());
+        tab.addDouble("Velocity (in./s)", () -> this.getVelocity());
 
-        tab.addBoolean("atHomingLocation", this::atHomingLocation);
-        tab.addBoolean("isHomed", this::isHomed);
-        tab.addBoolean("isHoming", this::isHoming);
+        tab.addBoolean("atHomingLocation", () -> this.atHomingLocation());
+        tab.addBoolean("isHomed", ()-> this.isHomed());
+        tab.addBoolean("isHoming", () ->this.isHoming());
 
         this.outputTelemetry();
     }
