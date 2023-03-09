@@ -12,7 +12,7 @@ public class Shoulder extends ServoMotorSubsystemAbs {
     public Shoulder(ServoMotorSubsystemAbsConstants constants) {
         super(constants);
 
-        ShuffleboardTab tab = Shuffleboard.getTab("Arm");
+        ShuffleboardTab tab = Shuffleboard.getTab("Shoulder");
         tab.add(this);
         tab.addNumber("Angle", () -> getAngle());
 

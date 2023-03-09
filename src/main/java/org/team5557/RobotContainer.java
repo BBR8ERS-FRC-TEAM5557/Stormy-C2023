@@ -20,6 +20,7 @@ import org.team5557.commands.swerve.TeleopDrive;
 import org.team5557.paths.Pathweaver;
 import org.team5557.paths.pathfind.Node;
 import org.team5557.paths.pathfind.Obstacle;
+import org.team5557.planners.arm.ArmDynamics;
 import org.team5557.planners.superstructure.util.SuperstructureState;
 import org.team5557.state.RobotStateSupervisor;
 import org.team5557.state.goal.ObjectiveTracker;
@@ -37,6 +38,9 @@ import org.team5557.subsystems.swerve.Swerve;
 import org.team5557.subsystems.swerve.Swerve.DriveMode;
 import org.team5557.subsystems.swerve.util.RawControllers;
 import org.team5557.subsystems.swerve.util.SwerveSubsystemConstants;
+import org.team5557.subsystems.wrist.Wrist;
+import org.team5557.subsystems.wrist.commands.WristManual;
+import org.team5557.subsystems.wrist.util.WristSubsystemConstants;
 import org.team5557.state.goal.ObjectiveTracker;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -54,6 +58,7 @@ public class RobotContainer {
   public static final Swerve swerve = new Swerve();
   public static final Elevator elevator = new Elevator(ElevatorSubsystemConstants.kElevatorConstants);
   public static final Shoulder shoulder = new Shoulder(ShoulderSubsystemConstants.kShoulderConstants);
+  public static final Wrist wrist = new Wrist(WristSubsystemConstants.kWristConstants);
 
   // Controller
   public static final XboxController primary_controller = new XboxController(Constants.ports.primary_controller);
@@ -64,6 +69,7 @@ public class RobotContainer {
 
   private static final List<Obstacle> obstacles = FieldConstants.obstacles;
   public static final Pathweaver path_weaver = new Pathweaver(0, obstacles);
+  public static final ArmDynamics arm_dynamics = new ArmDynamics();
 
   public static final RawControllers raw_controllers = new RawControllers();
   public static final RobotStateSupervisor state_supervisor = new RobotStateSupervisor();
@@ -147,9 +153,14 @@ public class RobotContainer {
       manualElevatorControl
     );
 
-    Command manualShoulderControl = new ShoulderManual(() -> getElevatorJogger());
+    Command manualShoulderControl = new ShoulderManual(() -> getShoulderJogger());
     new Trigger(()-> danny_controller.getRightBumper()).whileTrue(
       manualShoulderControl
+    );
+
+    Command manualWristControl = new WristManual(()-> getWristJogger());
+    new Trigger(()-> danny_controller.getRightBumper()).whileTrue(
+      manualWristControl
     );
 
     Command setElevatorCommand = new SetElevatorHeight(12.0);
@@ -223,6 +234,14 @@ public class RobotContainer {
 
   public double getElevatorJogger() {
     return -square(deadband(danny_controller.getLeftY(), 0.1));
+  }
+
+  public double getShoulderJogger() {
+    return -square(deadband(danny_controller.getLeftY(), 0.1));
+  }
+
+  public double getWristJogger() {
+    return -square(deadband(danny_controller.getRightY(), 0.1));
   }
 
   public double getStrafeInput() {

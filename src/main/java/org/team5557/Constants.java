@@ -225,8 +225,8 @@ public final class Constants {
     kShoulderConstants.length = Units.inchesToMeters(12.5);
     kShoulderConstants.moi = 1.0;
     kShoulderConstants.cgRadius = Units.inchesToMeters(5.0);
-    kShoulderConstants.minAngle = -90.0; //degrees
-    kShoulderConstants.maxAngle = 180.0; //degrees
+    kShoulderConstants.minAngle = Units.degreesToRadians(90.0); //degrees
+    kShoulderConstants.maxAngle = Units.degreesToRadians(344.0); //degrees
     kShoulderConstants.reduction = 108.0 / 1.0;
   }
 
