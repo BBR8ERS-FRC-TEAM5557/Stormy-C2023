@@ -6,17 +6,11 @@ package org.team5557;
 
 import java.util.List;
 
-import javax.xml.transform.TransformerException;
-
 import org.library.team6328.util.Alert;
 import org.library.team6328.util.Alert.AlertType;
 import org.team5557.auto.AutonomousChooser;
 import org.team5557.auto.AutonomousTrajectories;
 import org.team5557.commands.superstructure.SetSuperstructureSetpoint;
-import org.team5557.commands.swerve.AimDrive;
-import org.team5557.commands.swerve.AutoBalance;
-import org.team5557.commands.swerve.CoPilot;
-import org.team5557.commands.swerve.TeleopDrive;
 import org.team5557.paths.Pathweaver;
 import org.team5557.paths.pathfind.Node;
 import org.team5557.paths.pathfind.Obstacle;
@@ -30,22 +24,28 @@ import org.team5557.subsystems.elevator.commands.ElevatorManual;
 import org.team5557.subsystems.elevator.commands.HomeElevator;
 import org.team5557.subsystems.elevator.commands.SetElevatorHeight;
 import org.team5557.subsystems.elevator.util.ElevatorSubsystemConstants;
+import org.team5557.subsystems.manipulator.Manipulator;
+import org.team5557.subsystems.manipulator.commands.SetManipulatorState;
+import org.team5557.subsystems.manipulator.util.ManipulatorState;
+import org.team5557.subsystems.pneumatics.Pneumatics;
 import org.team5557.subsystems.shoulder.Shoulder;
 import org.team5557.subsystems.shoulder.commands.SetShoulderAngle;
 import org.team5557.subsystems.shoulder.commands.ShoulderManual;
 import org.team5557.subsystems.shoulder.util.ShoulderSubsystemConstants;
 import org.team5557.subsystems.swerve.Swerve;
 import org.team5557.subsystems.swerve.Swerve.DriveMode;
+import org.team5557.subsystems.swerve.commands.AimDrive;
+import org.team5557.subsystems.swerve.commands.AutoBalance;
+import org.team5557.subsystems.swerve.commands.CoPilot;
+import org.team5557.subsystems.swerve.commands.TeleopDrive;
 import org.team5557.subsystems.swerve.util.RawControllers;
 import org.team5557.subsystems.swerve.util.SwerveSubsystemConstants;
 import org.team5557.subsystems.wrist.Wrist;
 import org.team5557.subsystems.wrist.commands.WristManual;
 import org.team5557.subsystems.wrist.util.WristSubsystemConstants;
-import org.team5557.state.goal.ObjectiveTracker;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -55,10 +55,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
   // Subsystems
+  public static final Pneumatics pneumatics = new Pneumatics();
   public static final Swerve swerve = new Swerve();
   public static final Elevator elevator = new Elevator(ElevatorSubsystemConstants.kElevatorConstants);
   public static final Shoulder shoulder = new Shoulder(ShoulderSubsystemConstants.kShoulderConstants);
   public static final Wrist wrist = new Wrist(WristSubsystemConstants.kWristConstants);
+  public static final Manipulator manipulator = new Manipulator();
 
   // Controller
   public static final XboxController primary_controller = new XboxController(Constants.ports.primary_controller);
@@ -91,6 +93,7 @@ public class RobotContainer {
     }
 
     CommandScheduler.getInstance().registerSubsystem(state_supervisor);
+    CommandScheduler.getInstance().registerSubsystem(pneumatics);
 
     configureButtonBindings();
 
@@ -147,6 +150,12 @@ public class RobotContainer {
     /////////DANNY\\\\\\\\\\
     ////////////\\\\\\\\\\\\
 
+    //Manipulator
+    Command intakeCube = new SetManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CUBE.getManipulatorState());
+    new Trigger(() -> danny_controller.getLeftTriggerAxis() > 0.5).whileTrue(
+      intakeCube
+    );
+
     //Manual elevator control
     Command manualElevatorControl = new ElevatorManual(() -> getElevatorJogger());
     new Trigger(() -> danny_controller.getLeftBumper()).whileTrue(
@@ -191,8 +200,6 @@ public class RobotContainer {
     new Trigger(() -> danny_controller.getPOV() == 270).whileTrue(
       objective_tracker.shiftNodeCommand(Direction.LEFT)
     );
-
-
   }
 
   private void configurePathWeaver() {

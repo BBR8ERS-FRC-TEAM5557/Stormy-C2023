@@ -1,6 +1,9 @@
 package org.team5557.subsystems.elevator;
 
 import org.library.team254.drivers.ServoMotorSubsystemRel;
+import org.library.team254.motion.IMotionProfileGoal;
+import org.library.team254.motion.MotionState;
+import org.library.team254.motion.SetpointGenerator.Setpoint;
 import org.library.team254.util.LatchedBoolean;
 import org.team5557.Constants;
 import org.team5557.Robot;
@@ -115,5 +118,17 @@ public class Elevator extends ServoMotorSubsystemRel {
         mPreviousProfiledState = profile.calculate(mConstants.kLooperDt);
         mPeriodicIO.demand = constrainUnits(mPreviousProfiledState.position);
         mPeriodicIO.feedforward = feedforward.calculate(goal.velocity);
+    }
+
+    public synchronized void setMotionProfilingGoal(IMotionProfileGoal goal) {
+        if (mControlState != ControlState.MOTION_PROFILING_254) {
+            mControlState = ControlState.MOTION_PROFILING_254;
+            mMotionStateSetpoint = new MotionState(mPeriodicIO.timestamp, mPeriodicIO.position_units, mPeriodicIO.velocity_units_per_s, 0.0);
+            mSetpointGenerator.reset();
+        }
+        Setpoint setpoint = mSetpointGenerator.getSetpoint(mMotionProfileConstraints, goal, mMotionStateSetpoint, mPeriodicIO.timestamp + mConstants.kLooperDt);
+        mPeriodicIO.demand = constrainUnits(setpoint.motion_state.pos());
+        mPeriodicIO.feedforward = feedforward.calculate(setpoint.motion_state.vel());
+        mMotionStateSetpoint = setpoint.motion_state;
     }
 }
