@@ -3,10 +3,12 @@ package org.team5557.subsystems.shoulder.util;
 import org.library.team254.drivers.ServoMotorSubsystemAbs;
 import org.library.team254.drivers.ServoMotorSubsystemAbs.ServoMotorSubsystemAbsConstants;
 import org.library.team254.drivers.ServoMotorSubsystemAbs.SparkMaxConstants;
+import org.library.team254.motion.MotionProfileConstraints;
 import org.library.team3061.util.CANDeviceId;
 import org.library.team3061.util.CANDeviceId.CANDeviceType;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 
 public class ShoulderSubsystemConstants {
 
@@ -61,5 +63,27 @@ public class ShoulderSubsystemConstants {
             kShoulderConstants.kStatus4FrameRate = 20;
             kShoulderConstants.kStatus5FrameRate = 20;
     }
+
+    public static class ShoulderConstants {
+        public double mass;
+        public double length;
+        public double moi;
+        public double cgRadius;
+        public double minAngle;
+        public double maxAngle;
+        public double reduction;
+      }
+      public static final ShoulderConstants kShoulderJointConstants = new ShoulderConstants();
+      static {
+        kShoulderJointConstants.mass = 1.0;
+        kShoulderJointConstants.length = Units.inchesToMeters(12.5);
+        kShoulderJointConstants.moi = 1.0;
+        kShoulderJointConstants.cgRadius = Units.inchesToMeters(5.0);
+        kShoulderJointConstants.minAngle = Units.degreesToRadians(90.0); //degrees
+        kShoulderJointConstants.maxAngle = Units.degreesToRadians(344.0); //degrees
+        kShoulderJointConstants.reduction = 108.0 / 1.0;
+      }
+
+    public static MotionProfileConstraints motionConstraints = new MotionProfileConstraints(kShoulderConstants.kCruiseVelocity, -kShoulderConstants.kCruiseVelocity, kShoulderConstants.kAcceleration);
     
 }

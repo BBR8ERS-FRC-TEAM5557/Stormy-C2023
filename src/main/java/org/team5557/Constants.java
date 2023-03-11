@@ -82,6 +82,7 @@ public final class Constants {
 
     public int pigeon;
     public int candle;
+    public int ph;
     public int elevatorLimitSwitch;
     public String canbus_name;
 
@@ -98,6 +99,7 @@ public final class Constants {
     ports.primary_controller = 0;
     ports.danny_controller = 1;
 
+    ports.ph = 2;
     ports.candle = 16;
     ports.pigeon = 15;
     ports.canbus_name = "canivore1";
@@ -210,43 +212,7 @@ public final class Constants {
     supervisor.visionConvergenceExpiryTime = 5.0;
   }
 
-  public static class ShoulderConstants {
-    public double mass;
-    public double length;
-    public double moi;
-    public double cgRadius;
-    public double minAngle;
-    public double maxAngle;
-    public double reduction;
-  }
-  public static final ShoulderConstants kShoulderConstants = new ShoulderConstants();
-  static {
-    kShoulderConstants.mass = 1.0;
-    kShoulderConstants.length = Units.inchesToMeters(12.5);
-    kShoulderConstants.moi = 1.0;
-    kShoulderConstants.cgRadius = Units.inchesToMeters(5.0);
-    kShoulderConstants.minAngle = Units.degreesToRadians(90.0); //degrees
-    kShoulderConstants.maxAngle = Units.degreesToRadians(344.0); //degrees
-    kShoulderConstants.reduction = 108.0 / 1.0;
-  }
 
-  public static class WristConstants {
-    public double mass;
-    public double length;
-    public double moi;
-    public double cgRadius;
-    public double minAngle;
-    public double maxAngle;
-    public double reduction;
-  }
-  public static final WristConstants kWristConstants = new WristConstants();
-  static {
-    kWristConstants.mass = 1.0;
-    kWristConstants.length = Units.inchesToMeters(14.0);
-    kWristConstants.moi = 1.0;
-    kWristConstants.cgRadius = Units.inchesToMeters(5.0);
-    kWristConstants.minAngle = -90.0; //degrees
-    kWristConstants.maxAngle = 180.0; //degrees
-    kWristConstants.reduction = 50.0 / 1.0;
-  }
+
+
 }

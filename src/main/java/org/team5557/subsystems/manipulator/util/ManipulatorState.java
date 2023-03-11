@@ -9,7 +9,6 @@ public class ManipulatorState {
     public ManipulatorState(double motorSpeed, GamePiece observedPiece) {
         this.motorSpeed = motorSpeed;
         this.observedPiece = observedPiece;
-
     }
 
     public static enum ManipulatorStates {
