@@ -1,7 +1,5 @@
 package org.team5557.subsystems.intake.util;
 
-import org.team5557.state.goal.ObjectiveTracker.GamePiece;
-
 public class IntakeState {
     public double motorSpeed;
     public boolean deployed;

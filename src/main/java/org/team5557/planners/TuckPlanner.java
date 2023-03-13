@@ -7,7 +7,6 @@ import org.team5557.Constants;
 import org.team5557.planners.superstructure.util.SuperstructureConstants;
 import org.team5557.planners.superstructure.util.SuperstructureState;
 import org.team5557.subsystems.shoulder.util.ShoulderSubsystemConstants;
-import org.team5557.subsystems.wrist.util.WristSubsystemConstants;
 
 public class TuckPlanner {
 
@@ -66,7 +65,6 @@ public class TuckPlanner {
         SuperstructureState result = new SuperstructureState(state);
         result.shoulder = MathUtils.clamp(result.shoulder, ShoulderSubsystemConstants.kShoulderJointConstants.minAngle, ShoulderSubsystemConstants.kShoulderJointConstants.maxAngle);
         //result.elevator = MathUtils.clamp(result.elevator, Constants.kElevatorConstants.kMinUnitsLimit, Constants.kElevatorConstants.kMaxUnitsLimit);
-        result.wrist = MathUtils.clamp(result.wrist, WristSubsystemConstants.kWristJointConstants.minAngle, WristSubsystemConstants.kWristJointConstants.maxAngle);
         return result;
     }
     
