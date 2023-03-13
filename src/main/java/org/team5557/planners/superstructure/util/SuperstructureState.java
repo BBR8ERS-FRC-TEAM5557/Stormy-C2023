@@ -3,16 +3,15 @@ package org.team5557.planners.superstructure.util;
 public class SuperstructureState {
     public double elevator; // inches
     public double shoulder; // degrees
-    public double wrist; // degrees
 
     public static enum Preset {
-        HOLDING(new SuperstructureState(0.0,0.0,0.0)),
-        HIGH(new SuperstructureState(0.0, 0.0, 0.0)),
-        MID(new SuperstructureState(0.0, 0.0, 0.0)),
-        LOW(new SuperstructureState(0.0, 0.0, 0.0)),
-        INTAKING_SCORESIDE(new SuperstructureState(0.0, 0.0, 0.0)),
-        INTAKING_INTAKESIDE(new SuperstructureState(0.0, 0.0, 0.0)),
-        SHOOTING_INTAKESIDE(new SuperstructureState(0.0, 0.0, 0.0));
+        HOLDING(new SuperstructureState(0.0,0.0)),
+        HIGH(new SuperstructureState(0.0, 0.0)),
+        MID(new SuperstructureState(0.0, 0.0)),
+        LOW(new SuperstructureState(0.0, 0.0)),
+        INTAKING_SCORESIDE(new SuperstructureState(0.0, 0.0)),
+        INTAKING_INTAKESIDE(new SuperstructureState(0.0, 0.0)),
+        SHOOTING_INTAKESIDE(new SuperstructureState(0.0, 0.0));
         
         private SuperstructureState state;
         private Preset(SuperstructureState state) {
@@ -25,40 +24,35 @@ public class SuperstructureState {
 
 
 
-    public SuperstructureState(double elevator, double shoulder, double wrist) {
+    public SuperstructureState(double elevator, double shoulder) {
         this.elevator = elevator;
         this.shoulder = shoulder;
-        this.wrist = wrist;
     }
 
     public SuperstructureState(SuperstructureState other) {
         this.elevator = other.elevator;
         this.shoulder = other.shoulder;
-        this.wrist = other.wrist;
     }
 
     // default robot position
     public SuperstructureState() {
-        this(0, 0, 0);
+        this(0, 0);
     }
 
     public void setFrom(SuperstructureState source) {
         elevator = source.elevator;
         shoulder = source.shoulder;
-        wrist = source.wrist;
     }
 
     public boolean equals(SuperstructureState that) {
         return this.elevator == that.elevator &&
-                this.shoulder == that.shoulder &&
-                this.wrist == that.wrist;
+                this.shoulder == that.shoulder;
     }
 
     public boolean isAtDesiredState(SuperstructureState currentState) {
         double[] distances = {
                 currentState.elevator - this.elevator,
                 currentState.shoulder - this.shoulder,
-                currentState.wrist - this.wrist
         };
         for (int i = 0; i < distances.length; i++) {
             if (Math.abs(distances[i]) > SuperstructureConstants.kPadding[i]) {
@@ -103,11 +97,10 @@ public class SuperstructureState {
         return "SuperstructureState{" +
                 ", elevator=" + elevator +
                 ", shoulder=" + shoulder +
-                ", wrist=" + wrist +
                 '}';
     }
 
     public Double[] asVector() {
-        return new Double[]{elevator, shoulder, wrist};
+        return new Double[]{elevator, shoulder};
     }
 }

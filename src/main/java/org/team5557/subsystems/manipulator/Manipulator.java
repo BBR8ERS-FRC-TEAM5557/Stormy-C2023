@@ -22,7 +22,7 @@ public class Manipulator extends SubsystemBase {
     private ManipulatorState mWantedState = ManipulatorState.ManipulatorStates.DO_NOTHING.getManipulatorState();
 
     public Manipulator() {
-        mClawSolenoid = RobotContainer.pneumatics.getPH().makeDoubleSolenoid(Constants.ports.clawSolenoidForward, Constants.ports.clawSolenoidReverse);
+        mClawSolenoid = RobotContainer.pneumatics.getPH().makeDoubleSolenoid(0, 0);
 
         mTopRollerMotor = new CANSparkMax(kTopRollerMotorID, MotorType.kBrushless);
         mTopRollerMotor.setInverted(motorsInverted);

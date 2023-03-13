@@ -86,9 +86,6 @@ public final class Constants {
     public int elevatorLimitSwitch;
     public String canbus_name;
 
-    public int clawSolenoidForward;
-    public int clawSolenoidReverse;
-
     public int underglow_start_index;
     public int underglow_end_index;
     public int underglow_num_leds;
@@ -103,9 +100,6 @@ public final class Constants {
     ports.candle = 16;
     ports.pigeon = 15;
     ports.canbus_name = "canivore1";
-
-    ports.clawSolenoidForward = 9;
-    ports.clawSolenoidReverse = 8;
 
     ports.underglow_start_index = 0;
     ports.underglow_end_index = 67;
