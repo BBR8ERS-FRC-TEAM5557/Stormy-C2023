@@ -104,8 +104,8 @@ public final class Constants {
     ports.pigeon = 15;
     ports.canbus_name = "canivore1";
 
-    ports.clawSolenoidForward = 0;
-    ports.clawSolenoidReverse = 1;
+    ports.clawSolenoidForward = 9;
+    ports.clawSolenoidReverse = 8;
 
     ports.underglow_start_index = 0;
     ports.underglow_end_index = 67;

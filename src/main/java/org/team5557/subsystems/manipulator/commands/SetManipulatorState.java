@@ -5,6 +5,7 @@ import org.team5557.subsystems.manipulator.Manipulator;
 import org.team5557.subsystems.manipulator.util.ManipulatorState;
 import org.team5557.subsystems.manipulator.util.ManipulatorState.ManipulatorStates;
 
+import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class SetManipulatorState extends CommandBase {
@@ -14,6 +15,7 @@ public class SetManipulatorState extends CommandBase {
     
     public SetManipulatorState(ManipulatorState state) {
         this.state = state;
+        addRequirements(manipulator);
     }
 
     @Override

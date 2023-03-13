@@ -19,14 +19,18 @@ public class Manipulator extends SubsystemBase {
     private final CANSparkMax mBottomRollerMotor;
 
     private ManipulatorState mCurrentState;
-    private ManipulatorState mWantedState;
+    private ManipulatorState mWantedState = ManipulatorState.ManipulatorStates.DO_NOTHING.getManipulatorState();
 
     public Manipulator() {
         mClawSolenoid = RobotContainer.pneumatics.getPH().makeDoubleSolenoid(Constants.ports.clawSolenoidForward, Constants.ports.clawSolenoidReverse);
+
         mTopRollerMotor = new CANSparkMax(kTopRollerMotorID, MotorType.kBrushless);
         mTopRollerMotor.setInverted(motorsInverted);
+        mTopRollerMotor.setSmartCurrentLimit(40, 40, 0);
+
         mBottomRollerMotor = new CANSparkMax(kBottomRollerMotorID, MotorType.kBrushless);
         mBottomRollerMotor.setInverted(!motorsInverted);
+        mBottomRollerMotor.setSmartCurrentLimit(40, 40, 0);
     }
 
     @Override

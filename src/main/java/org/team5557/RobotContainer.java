@@ -24,6 +24,9 @@ import org.team5557.subsystems.elevator.commands.ElevatorManual;
 import org.team5557.subsystems.elevator.commands.HomeElevator;
 import org.team5557.subsystems.elevator.commands.SetElevatorHeight;
 import org.team5557.subsystems.elevator.util.ElevatorSubsystemConstants;
+import org.team5557.subsystems.intake.Intake;
+import org.team5557.subsystems.intake.commands.SetIntakeState;
+import org.team5557.subsystems.intake.util.IntakeState;
 import org.team5557.subsystems.manipulator.Manipulator;
 import org.team5557.subsystems.manipulator.commands.SetManipulatorState;
 import org.team5557.subsystems.manipulator.util.ManipulatorState;
@@ -61,6 +64,7 @@ public class RobotContainer {
   public static final Shoulder shoulder = new Shoulder(ShoulderSubsystemConstants.kShoulderConstants);
   public static final Wrist wrist = new Wrist(WristSubsystemConstants.kWristConstants);
   public static final Manipulator manipulator = new Manipulator();
+  public static final Intake intake = new Intake();
 
   // Controller
   public static final XboxController primary_controller = new XboxController(Constants.ports.primary_controller);
@@ -150,10 +154,21 @@ public class RobotContainer {
     /////////DANNY\\\\\\\\\\
     ////////////\\\\\\\\\\\\
 
-    //Manipulator
-    Command intakeCube = new SetManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CUBE.getManipulatorState());
+    Command intakeCube = new SetIntakeState(IntakeState.IntakeStates.INTAKING_CUBE.getIntakeState());
+    Command ejectCube = new SetIntakeState(IntakeState.IntakeStates.EJECT_CUBE.getIntakeState());
     new Trigger(() -> danny_controller.getLeftTriggerAxis() > 0.5).whileTrue(
       intakeCube
+    );
+
+    //Manipulator
+    Command manipulateCube = new SetManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CUBE.getManipulatorState());
+    new Trigger(() -> danny_controller.getLeftTriggerAxis() > 0.5).whileTrue(
+      intakeCube
+    );
+
+    Command ejectManipulateCube = new SetManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CONE.getManipulatorState());
+    new Trigger(() -> danny_controller.getRightTriggerAxis() > 0.5).whileTrue(
+      ejectCube
     );
 
     //Manual elevator control

@@ -12,9 +12,12 @@ public class ManipulatorState {
     }
 
     public static enum ManipulatorStates {
-        INTAKING_CUBE(new ManipulatorState(0.5, GamePiece.CUBE)),
-        INTAKING_CONE(new ManipulatorState(0.5, GamePiece.CONE)),
-        IDLE(new ManipulatorState(0.1, GamePiece.CONE));
+        INTAKING_CUBE(new ManipulatorState(-0.5, GamePiece.CUBE)),
+        INTAKING_CONE(new ManipulatorState(-0.5, GamePiece.CONE)),
+        IDLE(new ManipulatorState(0.1, GamePiece.CONE)),
+        EJECT_CUBE(new ManipulatorState(0.75, GamePiece.CUBE)),
+        EJECT_CONE(new ManipulatorState(0.75, GamePiece.CONE)),
+        DO_NOTHING(new ManipulatorState(0.0, GamePiece.CONE));
         
 
         ManipulatorState state;

@@ -94,5 +94,4 @@ public class SetSuperstructureSetpoint extends CommandBase {
         shoulder.setSetpointPositionPID(shoulderDemand, feedforward.get(0, 0));
         wrist.setSetpointPositionPID(wristDemand, feedforward.get(1, 0));
     }
-    
 }
