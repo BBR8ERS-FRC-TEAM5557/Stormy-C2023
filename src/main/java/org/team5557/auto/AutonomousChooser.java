@@ -5,8 +5,9 @@ import java.util.HashMap;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team5557.Constants;
 import org.team5557.RobotContainer;
-import org.team5557.commands.swerve.FeedForwardCharacterization;
-import org.team5557.commands.swerve.FeedForwardCharacterization.FeedForwardCharacterizationData;
+import org.team5557.subsystems.swerve.commands.AutoBalance;
+import org.team5557.subsystems.swerve.commands.FeedForwardCharacterization;
+import org.team5557.subsystems.swerve.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
@@ -23,6 +24,8 @@ public class AutonomousChooser {
 
     private final LoggedDashboardChooser<AutonomousMode> autonomousModeChooser = new LoggedDashboardChooser<>(Constants.shuffleboard.driver_readout_key);
 
+    private final AutoBalance engage = new AutoBalance();
+
     public static HashMap<String, Command> eventMap = new HashMap<>();
     static {
         eventMap.put("marker1", new PrintCommand("Passed marker 1"));
@@ -32,8 +35,9 @@ public class AutonomousChooser {
     public AutonomousChooser(AutonomousTrajectories trajectories) {
         this.trajectories = trajectories;
 
-        autonomousModeChooser.addDefaultOption("Five Ball (Orange)", AutonomousMode.CIRCLE_AUTO);
-        autonomousModeChooser.addOption("Test Auto", AutonomousMode.TEST_AUTO);
+        autonomousModeChooser.addDefaultOption("DO NOTHING", AutonomousMode.DO_NOTHING);
+        autonomousModeChooser.addOption("RED - Push and Charge", AutonomousMode.R_PUSH_AND_CHARGE);
+        autonomousModeChooser.addOption("BLUE - Push and Charge", AutonomousMode.B_PUSH_AND_CHARGE);
         autonomousModeChooser.addOption("FF Characterization", AutonomousMode.FF_CHARACTERIZATION);
     }
 
@@ -41,11 +45,22 @@ public class AutonomousChooser {
         return autonomousModeChooser;
     }
 
-    public Command getTestAuto() {
+    public Command getBPushAndCharge() {
         SequentialCommandGroup command = new SequentialCommandGroup();
 
-        resetRobotPose(command, trajectories.getTestAutoPartOne());
-        follow(command, trajectories.getTestAutoPartOne());
+        resetRobotPose(command, trajectories.getBPushAndCharge());
+        follow(command, trajectories.getBPushAndCharge());
+        command.addCommands(engage);
+
+        return command;
+    }
+
+    public Command getRPushAndCharge() {
+        SequentialCommandGroup command = new SequentialCommandGroup();
+
+        resetRobotPose(command, trajectories.getRPushAndCharge());
+        follow(command, trajectories.getRPushAndCharge());
+        command.addCommands(engage);
 
         return command;
     }
@@ -76,14 +91,17 @@ public class AutonomousChooser {
             RobotContainer.raw_controllers.yController, // Y controller (usually the same values as X controller)
             RobotContainer.raw_controllers.rotationController, // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
             chassisSpeed -> RobotContainer.swerve.drive(chassisSpeed), // Module states consumer
+            false, //flip path based on alliance
             RobotContainer.swerve // Requires this drive subsystem
         );
     }
 
     public Command getCommand() {
         switch (autonomousModeChooser.get()) {
-            case TEST_AUTO :
-                return getTestAuto();
+            case R_PUSH_AND_CHARGE :
+                return getRPushAndCharge();
+            case B_PUSH_AND_CHARGE :
+                return getBPushAndCharge();
             case FF_CHARACTERIZATION :
                 return getFFCharacterization();
             default:
@@ -93,9 +111,9 @@ public class AutonomousChooser {
     }
 
     private enum AutonomousMode {
-        RANDOM_THING,
-        TEST_AUTO,
-        CIRCLE_AUTO,
-        FF_CHARACTERIZATION
+        R_PUSH_AND_CHARGE,
+        B_PUSH_AND_CHARGE,
+        FF_CHARACTERIZATION,
+        DO_NOTHING
     }
 }

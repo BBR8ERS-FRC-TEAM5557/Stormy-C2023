@@ -39,7 +39,7 @@ public final class Constants {
     REPLAY
   }
 
-  public static final boolean tuning_mode = false;
+  public static final boolean tuning_mode = true;
   public static final double kloop_period = 0.02;
   public static final int klong_CAN_TimeoutMs = 100;
   public static final int kCAN_TimeoutMs = 10;
@@ -69,8 +69,8 @@ public final class Constants {
 
   public static final SuperstructureConstants superstructure = new SuperstructureConstants();
   static {
-    superstructure.trackwidth = 24.0;
-    superstructure.drivebase = 24.0;
+    superstructure.trackwidth = 26.0;
+    superstructure.drivebase = 26.0;
 
     superstructure.center_of_rotation = new Translation2d();
     superstructure.intake_center_of_rotation = new Translation2d(1.0, 0.0);
@@ -78,9 +78,16 @@ public final class Constants {
 
   public static class PortConstants {
     public int primary_controller;
+    public int danny_controller;
+
     public int pigeon;
     public int candle;
+    public int ph;
+    public int elevatorLimitSwitch;
     public String canbus_name;
+
+    public int clawSolenoidForward;
+    public int clawSolenoidReverse;
 
     public int underglow_start_index;
     public int underglow_end_index;
@@ -90,9 +97,15 @@ public final class Constants {
   public static final PortConstants ports = new PortConstants();
   static {
     ports.primary_controller = 0;
-    ports.candle = 13;
-    ports.pigeon = 2;
+    ports.danny_controller = 1;
+
+    ports.ph = 2;
+    ports.candle = 16;
+    ports.pigeon = 15;
     ports.canbus_name = "canivore1";
+
+    ports.clawSolenoidForward = 9;
+    ports.clawSolenoidReverse = 8;
 
     ports.underglow_start_index = 0;
     ports.underglow_end_index = 67;
@@ -109,7 +122,7 @@ public final class Constants {
   public static final PathPlannerConstants pathplanner = new PathPlannerConstants();
   static {
     pathplanner.fast_constraints = new PathConstraints(4.0, 3.0);
-    pathplanner.medium_constraints = new PathConstraints(3.0, 1);
+    pathplanner.medium_constraints = new PathConstraints(4.0, 3.0);
     pathplanner.slow_constraints = new PathConstraints(2.0, 1.0);
     pathplanner.hellaslow_constraints = new PathConstraints(1.0, 1.0);
   }
@@ -138,7 +151,7 @@ public final class Constants {
     follower.theta_kV = 2.0 * Math.PI;
     follower.theta_kA = Math.pow(2, follower.theta_kV);
 
-    follower.auto_kP = 0.06;
+    follower.auto_kP = 0.0;//0.06;
     follower.auto_kI = 0.0;
     follower.auto_kD = 0.0;
 
@@ -149,9 +162,14 @@ public final class Constants {
 
   public static class ShuffleboardConstants {
     public String driver_readout_key;
+
     public String swerve_readout_key;
+    public String elevator_readout_key;
+
+
     public String tunable_readout_key;
     public String vision_readout_key;
+    public String supervisor_readout_key;
   }
 
   public static final ShuffleboardConstants shuffleboard = new ShuffleboardConstants();
@@ -160,6 +178,9 @@ public final class Constants {
     shuffleboard.swerve_readout_key = "Swerve";
     shuffleboard.tunable_readout_key = "Tunable";
     shuffleboard.vision_readout_key = "Vision";
+    shuffleboard.supervisor_readout_key = "RobotStateSupervisor";
+
+    shuffleboard.elevator_readout_key = "Elevator";
   }
 
   public static class PoseEstimatorConstants {
@@ -178,4 +199,20 @@ public final class Constants {
     estimator.normalVisionStdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5)); //X, Y, Theta
     estimator.stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1); //X, Y, Theta
   }
+
+  public static class RobotStateSupervisorConstants {
+    public double maxSkidErrorMeters;
+    public double visionToEstimatorConvergenceThreshold;
+    public double visionConvergenceExpiryTime;
+  }
+  public static final RobotStateSupervisorConstants supervisor = new RobotStateSupervisorConstants();
+  static {
+    supervisor.maxSkidErrorMeters = 1.0;
+    supervisor.visionToEstimatorConvergenceThreshold = 0.25;
+    supervisor.visionConvergenceExpiryTime = 5.0;
+  }
+
+
+
+
 }

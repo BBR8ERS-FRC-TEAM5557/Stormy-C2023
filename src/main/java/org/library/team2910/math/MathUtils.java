@@ -37,6 +37,14 @@ public class MathUtils {
 		return max(min, min(value, max));
 	}
 
+	public static double truncate(double value, int decimalpoint)
+    {
+        value = value * Math.pow(10, decimalpoint);
+        value = Math.floor(value);
+        value = value / Math.pow(10, decimalpoint);
+        return value;
+    }
+
 	/**
 	 * Checks if two numbers are equal to each other using the default epsilon.
 	 *
