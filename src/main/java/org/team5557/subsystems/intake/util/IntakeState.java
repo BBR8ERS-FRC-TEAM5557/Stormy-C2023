@@ -11,7 +11,7 @@ public class IntakeState {
 
     public static enum IntakeStates {
         INTAKING_CUBE(new IntakeState(-0.75, true)),
-        EJECT_CUBE(new IntakeState(0.5, true)),
+        EJECT_CUBE(new IntakeState(0.25, false)),
         DO_NOTHING(new IntakeState(0.0, false));
         
 

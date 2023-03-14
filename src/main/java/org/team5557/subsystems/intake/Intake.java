@@ -22,7 +22,7 @@ public class Intake extends SubsystemBase {
     private final DigitalInput intake_gate;
 
     private IntakeState mWantedState = IntakeState.IntakeStates.DO_NOTHING.getIntakeState();
-    private IntakeState mCurrentState;
+    private IntakeState mCurrentState = IntakeState.IntakeStates.DO_NOTHING.getIntakeState();
 
     public Intake() {
         motor = new CANSparkMax(motorID.getDeviceNumber(), MotorType.kBrushless);
@@ -45,6 +45,7 @@ public class Intake extends SubsystemBase {
     public void periodic() {
         motor.set(mWantedState.motorSpeed);
 
+        
         if(mWantedState.deployed) {
             solenoid.set(Value.kForward);
         } else {
@@ -63,6 +64,6 @@ public class Intake extends SubsystemBase {
     }
 
     public synchronized boolean getCubeDetected() {
-        return intake_gate.get();
+        return !intake_gate.get();
     }
 }
