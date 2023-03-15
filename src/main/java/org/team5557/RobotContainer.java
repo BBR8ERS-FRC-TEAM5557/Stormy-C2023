@@ -28,8 +28,6 @@ import org.team5557.subsystems.intake.commands.IntakeShiver;
 import org.team5557.subsystems.intake.commands.SetIntakeState;
 import org.team5557.subsystems.intake.util.IntakeState;
 import org.team5557.subsystems.manipulator.Manipulator;
-import org.team5557.subsystems.manipulator.commands.SetManipulatorState;
-import org.team5557.subsystems.manipulator.util.ManipulatorState;
 import org.team5557.subsystems.pneumatics.Pneumatics;
 import org.team5557.subsystems.shoulder.Shoulder;
 import org.team5557.subsystems.shoulder.commands.SetShoulderAngle;
@@ -46,6 +44,7 @@ import org.team5557.subsystems.swerve.util.SwerveSubsystemConstants;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -100,20 +99,11 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
+    DriverStation.silenceJoystickConnectionWarning(true);
+    
     ///////////DRIVING\\\\\\\\\\\\\
     swerve.setDefaultCommand(
       new TeleopDrive(this::getForwardInput, this::getStrafeInput, this::getRotationInput)
-    );
-
-    new Trigger(primary_controller::getXButton).whileTrue(new AutoBalance());
-
-    /*
-    new Trigger(primary_controller::getRightStickButton).whileTrue(
-      new AimDrive(this::getForwardInput, this::getStrafeInput, () -> getRightStickAngle().getRadians())
-    );*/
-
-    new Trigger(primary_controller::getLeftBumper).whileTrue(
-      new RunCommand(() -> swerve.setDriveMode(DriveMode.X_OUT), swerve)
     );
 
     new Trigger(primary_controller::getStartButton).onTrue(
@@ -135,35 +125,50 @@ public class RobotContainer {
     
 
     ///////////INTAKING\\\\\\\\\\\\\\\\
-    //new Trigger(primary_controller::getLeftBumper).whileTrue(new )
+    Command intakeCube = new SetIntakeState(IntakeState.IntakeStates.INTAKING_CUBE.getIntakeState()).withName("Intaking Cube");
+    Command ejectCube = new SetIntakeState(IntakeState.IntakeStates.EJECT_CUBE.getIntakeState()).withName("Ejecting Cube");
+    Command stopIntake = new SetIntakeState(IntakeState.IntakeStates.DO_NOTHING.getIntakeState()).withName("Stop Intake");
+    Command intakeShiver = new IntakeShiver().withName("Controller Shiver");
 
+    new Trigger(() -> primary_controller.getLeftTriggerAxis() > 0.5).whileTrue(
+      intakeCube.alongWith(
+        intakeShiver
+      )
+    ).onFalse(stopIntake);
+
+    new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
+      ejectCube
+    ).onFalse(stopIntake);
 
 
     /////////CHARGE STATION\\\\\\\\\\\
+    new Trigger(primary_controller::getXButton).whileTrue(new AutoBalance());
+
+    new Trigger(() -> danny_controller.getLeftTriggerAxis() > 0.5 && danny_controller.getRightTriggerAxis() > 0.5).whileTrue(
+      new RunCommand(() -> swerve.setDriveMode(DriveMode.X_OUT), swerve)
+    );
+
     new Trigger(() -> primary_controller.getPOV() == 0).whileTrue(
       new AimDrive(this::getForwardInput, this::getStrafeInput, 0.0)
     );
 
+    new Trigger(() -> primary_controller.getPOV() == 90).whileTrue(
+      new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 0.5)
+    );
+
+    new Trigger(() -> primary_controller.getPOV() == 180).whileTrue(
+      new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI)
+    );
+
+    new Trigger(() -> primary_controller.getPOV() == 270).whileTrue(
+      new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 1.5)
+    );
 
     ////////////\\\\\\\\\\\\
     /////////DANNY\\\\\\\\\\
     ////////////\\\\\\\\\\\\
 
-    Command intakeCube = new SetIntakeState(IntakeState.IntakeStates.INTAKING_CUBE.getIntakeState());
-    Command ejectCube = new SetIntakeState(IntakeState.IntakeStates.EJECT_CUBE.getIntakeState());
-    Command idleIntake = new SetIntakeState(IntakeState.IntakeStates.DO_NOTHING.getIntakeState());
-    Command intakeShiver = new IntakeShiver();
 
-    //Intake
-    new Trigger(() -> danny_controller.getLeftTriggerAxis() > 0.5).whileTrue(
-      intakeCube.alongWith(
-        intakeShiver
-      )
-    ).onFalse(idleIntake);
-
-    new Trigger(() -> danny_controller.getRightTriggerAxis() > 0.5).whileTrue(
-      ejectCube
-    ).onFalse(idleIntake);
 
     //Manual elevator control
     Command manualElevatorControl = new ElevatorManual(() -> getElevatorJogger());
@@ -187,8 +192,8 @@ public class RobotContainer {
     );
 
     //Trigger Homing Command
-    new Trigger(() -> danny_controller.getRightBumper() && danny_controller.getLeftBumper() && danny_controller.getAButton()).onTrue(
-      new InstantCommand(() -> homeElevatorCommand.schedule())
+    new Trigger(() -> danny_controller.getRightBumper() && danny_controller.getLeftBumper() && danny_controller.getAButton()).whileTrue(
+      homeElevatorCommand
     );
 
     //Adjust Scoring objectives

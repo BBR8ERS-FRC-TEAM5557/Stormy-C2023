@@ -49,10 +49,18 @@ public final class Constants {
     public double max_path_length;
     public double min_path_length;
     public Pose2d error_radius;
+
+    public double bumper_offset;
+    public double chassis_offset;
+    public double alignment_offset;
   }
 
   public static final CoPilotConstants copilot = new CoPilotConstants();
   static {
+    copilot.chassis_offset = Constants.superstructure.drivebase/2.0;
+    copilot.bumper_offset = Units.inchesToMeters(5.0);
+    copilot.alignment_offset = Units.inchesToMeters(12.0);
+
     copilot.path_regeneration_time = 1.0;
     copilot.max_path_length = Units.inchesToMeters(150.0);
     copilot.min_path_length = Units.inchesToMeters(12.0);
@@ -69,8 +77,8 @@ public final class Constants {
 
   public static final SuperstructureConstants superstructure = new SuperstructureConstants();
   static {
-    superstructure.trackwidth = 26.0;
-    superstructure.drivebase = 26.0;
+    superstructure.trackwidth = Units.inchesToMeters(26.0);
+    superstructure.drivebase = Units.inchesToMeters(26.0);
 
     superstructure.center_of_rotation = new Translation2d();
     superstructure.intake_center_of_rotation = new Translation2d(1.0, 0.0);
@@ -135,10 +143,13 @@ public final class Constants {
     public double translation_kP;
     public double translation_kI;
     public double translation_kD;
+    public Pose2d tolerance;
   }
 
   public static final FollowerConstants follower = new FollowerConstants();
   static {
+    follower.tolerance = new Pose2d(new Translation2d(Units.inchesToMeters(2.0), Units.inchesToMeters(2.0)), Rotation2d.fromDegrees(3.0));
+
     follower.theta_kP = 0.1;
     follower.theta_kI = 0.0;
     follower.theta_kD = 0.0;

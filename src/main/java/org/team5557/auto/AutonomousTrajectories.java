@@ -1,13 +1,10 @@
 package org.team5557.auto;
 
-import java.util.List;
-
+import org.library.team2713.AutoPath;
 import org.team5557.Constants;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-
-import edu.wpi.first.wpilibj.Filesystem;
 
 public class AutonomousTrajectories {
 
@@ -16,9 +13,13 @@ public class AutonomousTrajectories {
     private final PathPlannerTrajectory RpushAndCharge;
     private final PathPlannerTrajectory BpushAndCharge;
 
+    private final AutoPath NoBump_3_Charge;
+
     public AutonomousTrajectories() {
         BpushAndCharge = PathPlanner.loadPath("BpushAndCharge", Constants.pathplanner.medium_constraints);
         RpushAndCharge = PathPlanner.loadPath("RpushAndCharge", Constants.pathplanner.medium_constraints);
+
+        NoBump_3_Charge = new AutoPath("NoBump_3_Charge", Constants.pathplanner.medium_constraints);
     }
 
     public PathPlannerTrajectory getRPushAndCharge() {
@@ -27,5 +28,9 @@ public class AutonomousTrajectories {
 
     public PathPlannerTrajectory getBPushAndCharge() {
         return BpushAndCharge;
+    }
+
+    public PathPlannerTrajectory getNoBump_3_Charge() {
+        return NoBump_3_Charge.getTrajectory();
     }
 }

@@ -14,7 +14,7 @@ public class ElevatorManual extends CommandBase {
     private final Elevator elevator = RobotContainer.elevator;
     private final DoubleSupplier elevatorJogger;
 
-    private final double maxPower = 1.0;
+    private final double maxPower = 5.0;
 
     public ElevatorManual(DoubleSupplier elevatorJogger) {
         ShuffleboardTab tab = Shuffleboard.getTab(Constants.shuffleboard.elevator_readout_key);

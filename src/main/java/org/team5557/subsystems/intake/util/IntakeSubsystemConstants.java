@@ -10,7 +10,7 @@ public class IntakeSubsystemConstants {
     public static final int kSolenoidReverse = 9;
     public static final int kProximitySwitch = 9;
 
-    public static final String kShuffleboardTab = "Intake";
+    public static final String kSubsystemID = "Intake";
 
     public static final double kShiverTime = 0.5;
     public static final double kShiverHard = 0.8;

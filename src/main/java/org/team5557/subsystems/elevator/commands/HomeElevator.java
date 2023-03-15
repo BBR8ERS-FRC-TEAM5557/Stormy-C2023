@@ -41,14 +41,9 @@ public class HomeElevator extends CommandBase {
     public boolean isFinished() {
         if(t.hasElapsed(timeoutS)) {
             System.out.println("Elevator Homing Timeout!!");
-            finishHoming();
             return true;
-        }
-            
-        if(!elevator.atHomingLocation())
+        } else if(!elevator.atHomingLocation())
             return false;
-
-        finishHoming();
         return true;
     }
 
@@ -59,6 +54,11 @@ public class HomeElevator extends CommandBase {
         elevator.zeroSensors();
         elevator.enableSoftLimits();
         elevator.setHomed(true);
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        finishHoming();
     }
 }
 

@@ -18,7 +18,7 @@ public class Shoulder extends ServoMotorSubsystemAbs {
         tab.addNumber("Angle", () -> getAngle());
 
         mMasterEncoder.setPositionConversionFactor(360.0);
-        mMasterEncoder.setZeroOffset(14.0);
+        mMasterEncoder.setZeroOffset(139.9736);
         mMotionProfileConstraints = ShoulderSubsystemConstants.motionConstraints;
     }
 

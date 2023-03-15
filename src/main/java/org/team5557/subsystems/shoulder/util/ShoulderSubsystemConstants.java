@@ -42,8 +42,8 @@ public class ShoulderSubsystemConstants {
             kShoulderConstants.kPositionIZone = 0; // Ticks
             kShoulderConstants.kPositionDeadband = 0; // Ticks
     
-            kShoulderConstants.kCruiseVelocity = 250.0; // units/s
-            kShoulderConstants.kAcceleration = Math.pow(kShoulderConstants.kCruiseVelocity, 3); // units / s / s
+            kShoulderConstants.kCruiseVelocity = 500.0; // units/s
+            kShoulderConstants.kAcceleration = 1500.0; // units / s / s
             kShoulderConstants.profileConstraints = new TrapezoidProfile.Constraints(kShoulderConstants.kCruiseVelocity, kShoulderConstants.kAcceleration);
             kShoulderConstants.kRampRate = 0.0; // s
             kShoulderConstants.kMaxVoltage = 12.0;
@@ -53,8 +53,8 @@ public class ShoulderSubsystemConstants {
             kShoulderConstants.kLimitRPM = 1000;
             kShoulderConstants.kEnableCurrentLimit = false;
     
-            kShoulderConstants.kMaxUnitsLimit = 270.0;
-            kShoulderConstants.kMinUnitsLimit = 180.0;
+            kShoulderConstants.kMaxUnitsLimit = 315.0;
+            kShoulderConstants.kMinUnitsLimit = 90.0;
     
             kShoulderConstants.kStatus0FrameRate = 20;
             kShoulderConstants.kStatus1FrameRate = 20;

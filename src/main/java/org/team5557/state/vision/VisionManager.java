@@ -5,14 +5,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.library.team6328.util.PolynomialRegression;
+import org.library.team6328.util.Alert;
+import org.library.team6328.util.Alert.AlertType;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.team5557.Constants;
 import org.team5557.FieldConstants;
+import org.team5557.state.vision.util.Limelight;
 import org.team5557.state.vision.util.PhotonCameraExtension;
 import org.team5557.state.vision.util.VisionUpdate;
-import org.team5557.state.vision.util.VisionUpdate.MeasurementFidelity;
+import org.team5557.state.vision.util.Limelight.CamMode;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,7 +24,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
+import static org.team5557.state.vision.util.VisionConstants.*;
+
 public class VisionManager {
+    private final Limelight limelight;
     private final PhotonCameraExtension anakin;
     private final PhotonCameraExtension obi_wan;
     private final List<PhotonCameraExtension> camera_list;
@@ -30,32 +35,15 @@ public class VisionManager {
     private Consumer<VisionUpdate> visionConsumer;
     private Consumer<Pose2d> disagreementConsumer;
 
-    private static final PolynomialRegression xyStdDevModel;
-    private static final PolynomialRegression thetaStdDevModel;
+    private final Alert anakinAlert;
+    private final Alert obiwanAlert;
 
-    static {
-        xyStdDevModel = new PolynomialRegression(
-            new double[] {
-                    0.752358, 1.016358, 1.296358, 1.574358, 1.913358, 2.184358, 2.493358, 2.758358,
-                    3.223358, 4.093358, 4.726358
-            },
-            new double[] {
-                    0.005, 0.0135, 0.016, 0.038, 0.0515, 0.0925, 0.0695, 0.046, 0.1245, 0.0815, 0.193
-            },
-            1);
-        thetaStdDevModel = new PolynomialRegression(
-            new double[] {
-                    0.752358, 1.016358, 1.296358, 1.574358, 1.913358, 2.184358, 2.493358, 2.758358,
-                    3.223358, 4.093358, 4.726358
-            },
-            new double[] {
-                    0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.049, 0.027, 0.059, 0.029, 0.068
-            },
-            1);
-    }
 
     public VisionManager() {
-        this.anakin = new PhotonCameraExtension("Arducam_OV9281_Anakin", new Transform3d());
+
+        this.limelight =  new Limelight("driver");
+
+        this.anakin = new PhotonCameraExtension("Arducam_OV9281_Anakin", kAnakinCameraToOrigin);
         this.obi_wan = new PhotonCameraExtension("Arducam_OV9281_Obi_Wan", new Transform3d());
         camera_list = Collections.unmodifiableList(
                 List.of(
@@ -64,19 +52,31 @@ public class VisionManager {
                     )
                 );
 
+        limelight.setCamMode(CamMode.DRIVER);
+
+        anakinAlert = new Alert("Camera Anakin disconnected", AlertType.WARNING);
+        obiwanAlert = new Alert("Camera Obiwan disconnected", AlertType.WARNING);
+
         ShuffleboardTab tab = Shuffleboard.getTab(Constants.shuffleboard.vision_readout_key);
+
         if (Constants.tuning_mode) {
             tab.addCamera("Anakin", "Arducam_OV9281_Anakin", "http://10.55.57.11:1184", "http://photonvision.local:1184")
-                .withSize(3, 3)
-                .withPosition(4, 0);
+                .withSize(2, 2)
+                .withPosition(1, 0);
 
             tab.addCamera("ObiWan", "Arducam_OV9281_Obi_Wan", "http://10.55.57.11:1185", "http://photonvision.local:1185")
-                .withSize(3, 3)
-                .withPosition(5, 0);
+                .withSize(2, 2)
+                .withPosition(4, 0);
+
+            tab.addCamera("Limelight", "limelight", "http://10.55.57.13:5800")
+                .withSize(3, 3);
         }
     }
 
     public void update() {
+        anakinAlert.set(!anakin.isConnected());
+        obiwanAlert.set(!obi_wan.isConnected());
+
         for (PhotonCameraExtension camera : camera_list) {
             var pipelineResult = camera.getLatestResult();
 

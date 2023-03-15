@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team5557.Constants;
 import org.team5557.RobotContainer;
+import org.team5557.subsystems.intake.commands.IntakeAuto;
 import org.team5557.subsystems.swerve.commands.AutoBalance;
 import org.team5557.subsystems.swerve.commands.FeedForwardCharacterization;
 import org.team5557.subsystems.swerve.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
@@ -16,7 +17,6 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class AutonomousChooser {
@@ -28,14 +28,19 @@ public class AutonomousChooser {
 
     public static HashMap<String, Command> eventMap = new HashMap<>();
     static {
-        eventMap.put("marker1", new PrintCommand("Passed marker 1"));
-        eventMap.put("intakeDown", new PrintCommand("THing Happened!!"));
+        //Intake
+        eventMap.put("startIntaking", IntakeAuto.startIntaking());
+        eventMap.put("stopIntaking", IntakeAuto.stopIntaking());
+        eventMap.put("spitCube", IntakeAuto.spitCube());
+
+
     }
     
     public AutonomousChooser(AutonomousTrajectories trajectories) {
         this.trajectories = trajectories;
 
         autonomousModeChooser.addDefaultOption("DO NOTHING", AutonomousMode.DO_NOTHING);
+        autonomousModeChooser.addOption("3-Charge-NoBump", AutonomousMode.THREE_CHARGE_NOBUMP);
         autonomousModeChooser.addOption("RED - Push and Charge", AutonomousMode.R_PUSH_AND_CHARGE);
         autonomousModeChooser.addOption("BLUE - Push and Charge", AutonomousMode.B_PUSH_AND_CHARGE);
         autonomousModeChooser.addOption("FF Characterization", AutonomousMode.FF_CHARACTERIZATION);
@@ -43,6 +48,16 @@ public class AutonomousChooser {
 
     public LoggedDashboardChooser<AutonomousMode> getModeChooser() {
         return autonomousModeChooser;
+    }
+
+    public Command get3ChargeNoBump() {
+        SequentialCommandGroup command = new SequentialCommandGroup();
+
+        resetRobotPose(command, trajectories.getNoBump_3_Charge());
+        follow(command, trajectories.getNoBump_3_Charge());
+        command.addCommands(engage);
+
+        return command;
     }
 
     public Command getBPushAndCharge() {
@@ -111,6 +126,7 @@ public class AutonomousChooser {
     }
 
     private enum AutonomousMode {
+        THREE_CHARGE_NOBUMP,
         R_PUSH_AND_CHARGE,
         B_PUSH_AND_CHARGE,
         FF_CHARACTERIZATION,

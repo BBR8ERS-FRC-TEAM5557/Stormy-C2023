@@ -13,7 +13,7 @@ import static org.team5557.subsystems.intake.util.IntakeSubsystemConstants.*;
 
 public class IntakeShiver extends CommandBase {
     Intake intake = RobotContainer.intake;
-    XboxController controller = RobotContainer.danny_controller;
+    XboxController controller = RobotContainer.primary_controller;
 
     Timer t = new Timer();
     LatchedBoolean gate = new LatchedBoolean();

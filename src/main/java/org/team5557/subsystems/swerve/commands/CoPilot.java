@@ -5,10 +5,7 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.team5557.Constants;
 import org.team5557.FieldConstants;
-import org.team5557.Robot;
 import org.team5557.RobotContainer;
-import org.team5557.paths.Pathweaver;
-import org.team5557.paths.pathfind.Node;
 import org.team5557.state.RobotStateSupervisor;
 import org.team5557.state.RobotStateSupervisor.LocalizationStatus;
 import org.team5557.state.RobotStateSupervisor.RobotState;
@@ -16,11 +13,10 @@ import org.team5557.state.goal.ObjectiveTracker;
 import org.team5557.subsystems.swerve.Swerve;
 import org.team5557.subsystems.swerve.Swerve.DriveMode;
 
-import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -30,10 +26,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class CoPilot extends CommandBase {
@@ -46,7 +38,6 @@ public class CoPilot extends CommandBase {
     private final RobotStateSupervisor state;
     private final ObjectiveTracker objective_tracker;
 
-    private Pathweaver path_weaver;
     private final PeriodicIO m_periodicIO;
     //private final LEDs leds;
 
@@ -59,7 +50,6 @@ public class CoPilot extends CommandBase {
 
         this.swerve = RobotContainer.swerve;
         this.objective_tracker = RobotContainer.objective_tracker;
-        this.path_weaver = RobotContainer.path_weaver;
         this.state = RobotContainer.state_supervisor;
         this.follower = RobotContainer.raw_controllers.follower;
         this.alignController = RobotContainer.raw_controllers.alignController;
@@ -95,31 +85,69 @@ public class CoPilot extends CommandBase {
         m_periodicIO.localizationStatus = m_periodicIO.state.localizationStatus;
 
         int column = objective_tracker.selectedColumn;
-        boolean isBlue = DriverStation.getAlliance() == Alliance.Blue;
-        Translation2d goalPoint = 
-            new Translation2d(
-                FieldConstants.Grids.outerX + Constants.superstructure.drivebase/2.0 + 5.0, //drivebase offset thing
-                isBlue ? FieldConstants.Grids.lowTranslations[8 - column].getY() : FieldConstants.Grids.lowTranslations[column].getY()
-            );
-
-        goalPoint = isBlue ? goalPoint : FieldConstants.allianceFlip(goalPoint);
-        Rotation2d goalRotation = isBlue ? new Rotation2d() : Rotation2d.fromDegrees(180);
-
-        if(m_periodicIO.active_trajectory == null) {         // && m_periodicIO.localizationStatus == LocalizationStatus.LOCALIZED) {
 
 
-            Translation2d robot_to_target = goalPoint.minus(m_periodicIO.state.estimatedPose.getTranslation());
-            //m_periodicIO.active_trajectory = path_weaver.generatePath(new Node(new Pose2d())); 
+
+        if(m_periodicIO.active_trajectory == null) {
+            Translation2d goalPoint;
+            Translation2d alignmentPoint;
+            Rotation2d goalRotation;
+            double goalX;
+            double goalY;
+
+            boolean isBlue;
+            Translation2d robotToAlignment;
+            Translation2d alignmentToTarget;
+
+
+            isBlue = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue);
+
+            goalX = FieldConstants.Grids.outerX + Constants.copilot.bumper_offset + Constants.copilot.chassis_offset;
+            goalY = isBlue ? FieldConstants.Grids.lowTranslations[8 - column].getY() : FieldConstants.Grids.lowTranslations[column].getY();
+
+            alignmentPoint = 
+                new Translation2d(
+                    goalX + Constants.copilot.alignment_offset, //drivebase offset thing
+                    goalY
+                );
+
+            goalPoint = 
+                new Translation2d(
+                    goalX, //drivebase offset thing
+                    goalY
+                );
+
+            goalPoint = FieldConstants.allianceFlip(goalPoint);
+            goalRotation = isBlue ? new Rotation2d() : Rotation2d.fromDegrees(180);
+
+            robotToAlignment = alignmentPoint.minus(m_periodicIO.state.estimatedPose.getTranslation());
+            alignmentToTarget = goalPoint.minus(alignmentPoint);
+
+            Translation2d initialVelocity = new Translation2d(swerve.getMeasuredVelocity().vxMetersPerSecond, swerve.getMeasuredVelocity().vyMetersPerSecond);
+            Rotation2d initialVelocityHeading = initialVelocity.getAngle();
+            double initialSpeed = initialVelocity.getNorm();
+
+            if(initialSpeed < 0.5) {
+                initialVelocityHeading = robotToAlignment.getAngle();
+                initialSpeed = 0.0;
+            }
+
             PathPlanner.generatePath(
                 Constants.pathplanner.medium_constraints, 
                 new PathPoint(
                     m_periodicIO.state.estimatedPose.getTranslation(),
-                    robot_to_target.getAngle(),
-                    swerve.getPose().getRotation()
+                    initialVelocityHeading,
+                    swerve.getPose().getRotation(),
+                    initialSpeed
+                ),
+                new PathPoint(
+                    alignmentPoint,
+                    robotToAlignment.getAngle(),
+                    goalRotation
                 ),
                 new PathPoint(
                     goalPoint,
-                    robot_to_target.getAngle(),
+                    alignmentToTarget.getAngle(),
                     goalRotation
                 )
             );
@@ -134,10 +162,23 @@ public class CoPilot extends CommandBase {
             //potentially use if the rotation on the path sucks
             //m_periodicIO.target_chassis_speeds.omegaRadiansPerSecond = RobotContainer.raw_controllers.calculateAlign(goalRotation.getRadians());
         } else {
-            m_periodicIO.target_chassis_speeds = new ChassisSpeeds(translationXSupplier.getAsDouble(), translationYSupplier.getAsDouble(), RobotContainer.raw_controllers.calculateAlign(goalRotation.getRadians()));
+            boolean isBlue = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue);
+            Rotation2d goalRotation = isBlue ? new Rotation2d() : Rotation2d.fromDegrees(180);
+
+            m_periodicIO.target_chassis_speeds = 
+                new ChassisSpeeds(
+                    translationXSupplier.getAsDouble(), 
+                    translationYSupplier.getAsDouble(), 
+                    RobotContainer.raw_controllers.calculateAlign(goalRotation.getRadians()));
         }
 
         Logger.getInstance().recordOutput("CoPilot/Active Trajectory", m_periodicIO.active_trajectory);
+        Logger.getInstance().recordOutput("CoPilot/At Goal", atGoal());
+        Logger.getInstance().recordOutput("CoPilot/Goal Pose", m_periodicIO.active_trajectory.getEndState().poseMeters);
+
+        Logger.getInstance().recordOutput("CoPilot/Next Pose", m_periodicIO.desired_state.poseMeters);
+        Logger.getInstance().recordOutput("CoPilot/Next Velocity", m_periodicIO.desired_state.velocityMetersPerSecond);
+        Logger.getInstance().recordOutput("CoPilot/Next Acceleration", m_periodicIO.desired_state.accelerationMetersPerSecondSq);
     }
 
     public synchronized void writeOutputs() {
@@ -149,10 +190,13 @@ public class CoPilot extends CommandBase {
         );
     }
 
+    public synchronized boolean atGoal() {
+        return follower.atReference();
+    }
+
     public static class PeriodicIO {
         // INPUTS
         public LocalizationStatus localizationStatus;
-        public Translation2d robot_to_target;
         public RobotState state;
         public PathPlannerState desired_state;
   
