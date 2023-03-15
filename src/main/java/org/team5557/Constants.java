@@ -44,6 +44,23 @@ public final class Constants {
   public static final int klong_CAN_TimeoutMs = 100;
   public static final int kCAN_TimeoutMs = 10;
 
+  public static class SuperstructureConstants {
+    public double trackwidth;
+    public double drivebase;
+
+    public Translation2d center_of_rotation;
+    public Translation2d intake_center_of_rotation;
+  }
+
+  public static final SuperstructureConstants superstructure = new SuperstructureConstants();
+  static {
+    superstructure.trackwidth = Units.inchesToMeters(26.0);
+    superstructure.drivebase = Units.inchesToMeters(26.0);
+
+    superstructure.center_of_rotation = new Translation2d();
+    superstructure.intake_center_of_rotation = new Translation2d(1.0, 0.0);
+  }
+
   public static class CoPilotConstants {
     public double path_regeneration_time;
     public double max_path_length;
@@ -65,23 +82,6 @@ public final class Constants {
     copilot.max_path_length = Units.inchesToMeters(150.0);
     copilot.min_path_length = Units.inchesToMeters(12.0);
     copilot.error_radius = new Pose2d(Units.inchesToMeters(4), Units.inchesToMeters(4), Rotation2d.fromDegrees(3));
-  }
-
-  public static class SuperstructureConstants {
-    public double trackwidth;
-    public double drivebase;
-
-    public Translation2d center_of_rotation;
-    public Translation2d intake_center_of_rotation;
-  }
-
-  public static final SuperstructureConstants superstructure = new SuperstructureConstants();
-  static {
-    superstructure.trackwidth = Units.inchesToMeters(26.0);
-    superstructure.drivebase = Units.inchesToMeters(26.0);
-
-    superstructure.center_of_rotation = new Translation2d();
-    superstructure.intake_center_of_rotation = new Translation2d(1.0, 0.0);
   }
 
   public static class PortConstants {

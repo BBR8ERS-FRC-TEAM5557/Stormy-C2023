@@ -23,4 +23,8 @@ public class IntakeAuto {
     public static Command stopIntaking() {
         return new InstantCommand(() -> RobotContainer.intake.setIntakeState(IntakeState.IntakeStates.DO_NOTHING.getIntakeState()));
     }
+
+    public static Command idleIntake() {
+        return new InstantCommand(() -> RobotContainer.intake.setIntakeState(IntakeState.IntakeStates.IDLE.getIntakeState()));
+    }
 }

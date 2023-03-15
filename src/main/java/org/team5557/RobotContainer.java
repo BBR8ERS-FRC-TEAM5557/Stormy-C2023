@@ -25,9 +25,12 @@ import org.team5557.subsystems.elevator.commands.SetElevatorHeight;
 import org.team5557.subsystems.elevator.util.ElevatorSubsystemConstants;
 import org.team5557.subsystems.intake.Intake;
 import org.team5557.subsystems.intake.commands.IntakeShiver;
+import org.team5557.subsystems.intake.commands.PassThrough;
 import org.team5557.subsystems.intake.commands.SetIntakeState;
 import org.team5557.subsystems.intake.util.IntakeState;
 import org.team5557.subsystems.manipulator.Manipulator;
+import org.team5557.subsystems.manipulator.commands.SetManipulatorState;
+import org.team5557.subsystems.manipulator.util.ManipulatorState;
 import org.team5557.subsystems.pneumatics.Pneumatics;
 import org.team5557.subsystems.shoulder.Shoulder;
 import org.team5557.subsystems.shoulder.commands.SetShoulderAngle;
@@ -116,22 +119,25 @@ public class RobotContainer {
       copilot
     );
 
+    /*
     Command setScorePosition = new SetSuperstructureSetpoint(objective_tracker::getDesiredSuperstructureState);
     new Trigger(() -> primary_controller.getRightTriggerAxis() >= 0.2)
       .whileTrue(setScorePosition)
       .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING.getState()));
+      */
 
     //new Trigger(() -> copilot.atPose() && setScorePosition.atSetpoint()).onTrue(new SignalEjectGamepiece());
     
 
     ///////////INTAKING\\\\\\\\\\\\\\\\
+    Command passThroughCube = new PassThrough();
     Command intakeCube = new SetIntakeState(IntakeState.IntakeStates.INTAKING_CUBE.getIntakeState()).withName("Intaking Cube");
     Command ejectCube = new SetIntakeState(IntakeState.IntakeStates.EJECT_CUBE.getIntakeState()).withName("Ejecting Cube");
     Command stopIntake = new SetIntakeState(IntakeState.IntakeStates.DO_NOTHING.getIntakeState()).withName("Stop Intake");
     Command intakeShiver = new IntakeShiver().withName("Controller Shiver");
 
     new Trigger(() -> primary_controller.getLeftTriggerAxis() > 0.5).whileTrue(
-      intakeCube.alongWith(
+      passThroughCube.alongWith(
         intakeShiver
       )
     ).onFalse(stopIntake);
@@ -140,6 +146,30 @@ public class RobotContainer {
       ejectCube
     ).onFalse(stopIntake);
 
+    ///////////MANIPULATING\\\\\\\\\\
+    Command scoopCube = new SetManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CUBE.getManipulatorState());
+    Command scoopCone = new SetManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CONE.getManipulatorState());
+    Command stopManipulator = new SetManipulatorState(ManipulatorState.ManipulatorStates.DO_NOTHING.getManipulatorState());
+    Command setShoulderConeIntake = new SetShoulderAngle(193.5);
+    Command setShoulderCubeIntake = new SetShoulderAngle(320.0);
+
+    new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
+      scoopCone
+    ).onFalse(stopManipulator);
+
+    new Trigger(() -> primary_controller.getLeftTriggerAxis() > 0.5).whileTrue(
+      scoopCube
+    ).onFalse(stopManipulator);
+
+
+    new Trigger(() -> danny_controller.getLeftTriggerAxis() > 0.5).onTrue(
+      setShoulderCubeIntake
+    );
+
+
+    new Trigger(() -> danny_controller.getAButton()).whileTrue(
+      setShoulderCubeIntake
+    );
 
     /////////CHARGE STATION\\\\\\\\\\\
     new Trigger(primary_controller::getXButton).whileTrue(new AutoBalance());
@@ -186,10 +216,7 @@ public class RobotContainer {
       setElevatorCommand
     );
 
-    Command setShoulderCommand = new SetShoulderAngle(180.0);
-    new Trigger(() -> danny_controller.getYButton()).whileTrue(
-      setShoulderCommand
-    );
+
 
     //Trigger Homing Command
     new Trigger(() -> danny_controller.getRightBumper() && danny_controller.getLeftBumper() && danny_controller.getAButton()).whileTrue(

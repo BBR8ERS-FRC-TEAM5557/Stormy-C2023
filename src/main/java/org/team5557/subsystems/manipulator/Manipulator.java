@@ -12,6 +12,7 @@ import org.team5557.Constants;
 import org.team5557.subsystems.manipulator.util.ManipulatorState;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -31,11 +32,13 @@ public class Manipulator extends SubsystemBase {
         can.isDevicePresent(CANDeviceType.SPARK_MAX, kBottomRollerMotorID.getDeviceNumber(), kSubsystemID + " Bottom Roller");
 
         mTopRollerMotor = new CANSparkMax(kTopRollerMotorID.getDeviceNumber(), MotorType.kBrushless);
+        mTopRollerMotor.setIdleMode(IdleMode.kBrake);
         mTopRollerMotor.setInverted(motorsInverted);
         mTopRollerMotor.setSmartCurrentLimit(40, 40, 0);
 
         mBottomRollerMotor = new CANSparkMax(kBottomRollerMotorID.getDeviceNumber(), MotorType.kBrushless);
-        mBottomRollerMotor.setInverted(!motorsInverted);
+        mBottomRollerMotor.setIdleMode(IdleMode.kBrake);
+        mBottomRollerMotor.setInverted(motorsInverted);
         mBottomRollerMotor.setSmartCurrentLimit(40, 40, 0);
 
         ShuffleboardTab tab = Shuffleboard.getTab(kSubsystemID);
