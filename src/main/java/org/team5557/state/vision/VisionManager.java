@@ -40,7 +40,6 @@ public class VisionManager {
 
 
     public VisionManager() {
-
         this.limelight =  new Limelight("driver");
 
         this.anakin = new PhotonCameraExtension("Arducam_OV9281_Anakin", kAnakinCameraToOrigin);
@@ -58,7 +57,6 @@ public class VisionManager {
         obiwanAlert = new Alert("Camera Obiwan disconnected", AlertType.WARNING);
 
         ShuffleboardTab tab = Shuffleboard.getTab(Constants.shuffleboard.vision_readout_key);
-
         if (Constants.tuning_mode) {
             tab.addCamera("Anakin", "Arducam_OV9281_Anakin", "http://10.55.57.11:1184", "http://photonvision.local:1184")
                 .withSize(2, 2)
@@ -68,6 +66,12 @@ public class VisionManager {
                 .withSize(2, 2)
                 .withPosition(4, 0);
 
+            tab.addCamera("Limelight", "limelight", "http://10.55.57.13:5800")
+                .withSize(3, 3);
+        }
+
+        ShuffleboardTab driver = Shuffleboard.getTab(Constants.shuffleboard.driver_readout_key);
+        if (Constants.tuning_mode) {
             tab.addCamera("Limelight", "limelight", "http://10.55.57.13:5800")
                 .withSize(3, 3);
         }

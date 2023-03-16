@@ -12,18 +12,17 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class SetShoulderAngle extends CommandBase {
     Shoulder shoulder = RobotContainer.shoulder;
     double setpoint;
+    MotionProfileGoal goal;
 
     public SetShoulderAngle(double setpoint) {
         this.setpoint = setpoint;
+        this.goal = new MotionProfileGoal(setpoint);
         addRequirements(shoulder);
     }
 
     @Override
     public void execute() {
-        //shoulder.setSetpointPositionPID(setpoint);
-        //TrapezoidProfile.State state = new TrapezoidProfile.State();
-        MotionProfileGoal state = new MotionProfileGoal(setpoint);
-        shoulder.setMotionProfilingGoal(state, 0.0);
+        shoulder.setMotionProfilingGoal(goal, 0.0);
     }
     
 }

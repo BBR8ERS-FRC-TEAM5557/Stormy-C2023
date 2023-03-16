@@ -4,16 +4,11 @@
 
 package org.team5557;
 
-import java.util.List;
-
 import org.library.team6328.util.Alert;
 import org.library.team6328.util.Alert.AlertType;
 import org.team5557.auto.AutonomousChooser;
 import org.team5557.auto.AutonomousTrajectories;
 import org.team5557.commands.superstructure.SetSuperstructureSetpoint;
-import org.team5557.paths.Pathweaver;
-import org.team5557.paths.pathfind.Node;
-import org.team5557.paths.pathfind.Obstacle;
 import org.team5557.planners.superstructure.util.SuperstructureState;
 import org.team5557.state.RobotStateSupervisor;
 import org.team5557.state.goal.ObjectiveTracker;
@@ -24,12 +19,14 @@ import org.team5557.subsystems.elevator.commands.HomeElevator;
 import org.team5557.subsystems.elevator.commands.SetElevatorHeight;
 import org.team5557.subsystems.elevator.util.ElevatorSubsystemConstants;
 import org.team5557.subsystems.intake.Intake;
+import org.team5557.subsystems.intake.commands.IntakeAuto;
 import org.team5557.subsystems.intake.commands.IntakeShiver;
 import org.team5557.subsystems.intake.commands.PassThrough;
 import org.team5557.subsystems.intake.commands.SetIntakeState;
 import org.team5557.subsystems.intake.util.IntakeState;
 import org.team5557.subsystems.manipulator.Manipulator;
 import org.team5557.subsystems.manipulator.commands.SetManipulatorState;
+import org.team5557.subsystems.manipulator.commands.SmartEject;
 import org.team5557.subsystems.manipulator.util.ManipulatorState;
 import org.team5557.subsystems.pneumatics.Pneumatics;
 import org.team5557.subsystems.shoulder.Shoulder;
@@ -49,8 +46,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -71,17 +71,14 @@ public class RobotContainer {
   // Dashboard inputs / Util
   private final AutonomousChooser autonomous_chooser = new AutonomousChooser(new AutonomousTrajectories());
 
-  private static final List<Obstacle> obstacles = FieldConstants.obstacles;
-  public static final Pathweaver path_weaver = new Pathweaver(0, obstacles);
-
   public static final RawControllers raw_controllers = new RawControllers();
   public static final RobotStateSupervisor state_supervisor = new RobotStateSupervisor();
   public static final ObjectiveTracker objective_tracker = new ObjectiveTracker();
 
-  //public static final PneumaticHub ph = new PneumaticHub(0);
-  // private final LoggedDashboardNumber flywheelSpeedInput = new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+  // private final LoggedDashboardNumber flywheelSpeedInput = new
+  // LoggedDashboardNumber("Flywheel Speed", 1500.0);
 
-  //Commands
+  // Commands
   public static final Command homeElevatorCommand = new HomeElevator();
 
   /**
@@ -97,158 +94,181 @@ public class RobotContainer {
     CommandScheduler.getInstance().registerSubsystem(pneumatics);
 
     configureButtonBindings();
-
-    configurePathWeaver();
   }
 
   private void configureButtonBindings() {
     DriverStation.silenceJoystickConnectionWarning(true);
-    
-    ///////////DRIVING\\\\\\\\\\\\\
+
+    /////////// DRIVING\\\\\\\\\\\\\
     swerve.setDefaultCommand(
-      new TeleopDrive(this::getForwardInput, this::getStrafeInput, this::getRotationInput)
-    );
+        new TeleopDrive(this::getForwardInput, this::getStrafeInput, this::getRotationInput));
 
     new Trigger(primary_controller::getStartButton).onTrue(
-      new InstantCommand(() -> swerve.setPose(new Pose2d()), swerve)
-    );
-
-    ////////////SCORING\\\\\\\\\\\\\\
-    Command copilot = new CoPilot(this::getForwardInput, this::getStrafeInput);
-    new Trigger(primary_controller::getRightBumper).whileTrue(
-      copilot
-    );
+        new InstantCommand(() -> swerve.setPose(new Pose2d()), swerve));
 
     /*
-    Command setScorePosition = new SetSuperstructureSetpoint(objective_tracker::getDesiredSuperstructureState);
-    new Trigger(() -> primary_controller.getRightTriggerAxis() >= 0.2)
-      .whileTrue(setScorePosition)
-      .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING.getState()));
-      */
+    Command copilot = new CoPilot(this::getForwardInput, this::getStrafeInput);
+    new Trigger(primary_controller::getRightBumper).whileTrue(
+        copilot);*/
 
-    //new Trigger(() -> copilot.atPose() && setScorePosition.atSetpoint()).onTrue(new SignalEjectGamepiece());
-    
+    /*
+     * Command setScorePosition = new
+     * SetSuperstructureSetpoint(objective_tracker::getDesiredSuperstructureState);
+     * new Trigger(() -> primary_controller.getRightTriggerAxis() >= 0.2)
+     * .whileTrue(setScorePosition)
+     * .onFalse(new
+     * SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING.getState()));
+     */
 
-    ///////////INTAKING\\\\\\\\\\\\\\\\
-    Command passThroughCube = new PassThrough();
-    Command intakeCube = new SetIntakeState(IntakeState.IntakeStates.INTAKING_CUBE.getIntakeState()).withName("Intaking Cube");
-    Command ejectCube = new SetIntakeState(IntakeState.IntakeStates.EJECT_CUBE.getIntakeState()).withName("Ejecting Cube");
-    Command stopIntake = new SetIntakeState(IntakeState.IntakeStates.DO_NOTHING.getIntakeState()).withName("Stop Intake");
-    Command intakeShiver = new IntakeShiver().withName("Controller Shiver");
-
-    new Trigger(() -> primary_controller.getLeftTriggerAxis() > 0.5).whileTrue(
-      passThroughCube.alongWith(
-        intakeShiver
-      )
-    ).onFalse(stopIntake);
-
-    new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
-      ejectCube
-    ).onFalse(stopIntake);
-
-    ///////////MANIPULATING\\\\\\\\\\
-    Command scoopCube = new SetManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CUBE.getManipulatorState());
-    Command scoopCone = new SetManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CONE.getManipulatorState());
-    Command stopManipulator = new SetManipulatorState(ManipulatorState.ManipulatorStates.DO_NOTHING.getManipulatorState());
-    Command setShoulderConeIntake = new SetShoulderAngle(193.5);
-    Command setShoulderCubeIntake = new SetShoulderAngle(320.0);
-
-    new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
-      scoopCone
-    ).onFalse(stopManipulator);
-
-    new Trigger(() -> primary_controller.getLeftTriggerAxis() > 0.5).whileTrue(
-      scoopCube
-    ).onFalse(stopManipulator);
+    // new Trigger(() -> copilot.atPose() &&
+    // setScorePosition.atSetpoint()).onTrue(new SignalEjectGamepiece());
+    ///////////Elevator\\\\\\\\\\\\\\\
+    Command setElevatorCommand = new SetElevatorHeight(12.0);
 
 
-    new Trigger(() -> danny_controller.getLeftTriggerAxis() > 0.5).onTrue(
-      setShoulderCubeIntake
-    );
-
-
-    new Trigger(() -> danny_controller.getAButton()).whileTrue(
-      setShoulderCubeIntake
-    );
-
-    /////////CHARGE STATION\\\\\\\\\\\
-    new Trigger(primary_controller::getXButton).whileTrue(new AutoBalance());
-
-    new Trigger(() -> danny_controller.getLeftTriggerAxis() > 0.5 && danny_controller.getRightTriggerAxis() > 0.5).whileTrue(
-      new RunCommand(() -> swerve.setDriveMode(DriveMode.X_OUT), swerve)
-    );
-
-    new Trigger(() -> primary_controller.getPOV() == 0).whileTrue(
-      new AimDrive(this::getForwardInput, this::getStrafeInput, 0.0)
-    );
-
-    new Trigger(() -> primary_controller.getPOV() == 90).whileTrue(
-      new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 0.5)
-    );
-
-    new Trigger(() -> primary_controller.getPOV() == 180).whileTrue(
-      new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI)
-    );
-
-    new Trigger(() -> primary_controller.getPOV() == 270).whileTrue(
-      new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 1.5)
-    );
-
-    ////////////\\\\\\\\\\\\
-    /////////DANNY\\\\\\\\\\
-    ////////////\\\\\\\\\\\\
-
-
-
-    //Manual elevator control
     Command manualElevatorControl = new ElevatorManual(() -> getElevatorJogger());
-    new Trigger(() -> danny_controller.getLeftBumper()).whileTrue(
-      manualElevatorControl
-    );
+
+    new Trigger(() -> danny_controller.getLeftBumper() && danny_controller.getRightBumper()).whileTrue(
+        manualElevatorControl);
+
+
+    new Trigger(() -> danny_controller.getBButton()).whileTrue(
+      setElevatorCommand);
+
+
+    /////////// SHOULDER\\\\\\\\\\\\\\\
+    Command setShoulderConeIntake = new SetShoulderAngle(193.5);
+    Command setShoulderConeIntakeSlide = new SetShoulderAngle(250.0);
+    Command setShoulderCubeIntake = new SetShoulderAngle(320.0);
+    Command setShoulderConeHold = new SetShoulderAngle(270.0);
+    Command setShoulderScoring = new SetShoulderAngle(200.0);
 
     Command manualShoulderControl = new ShoulderManual(() -> getShoulderJogger());
-    new Trigger(()-> danny_controller.getRightBumper()).whileTrue(
-      manualShoulderControl
-    );
 
-    Command setElevatorCommand = new SetElevatorHeight(12.0);
-    new Trigger(() -> danny_controller.getBButton() && false).whileTrue(
-      setElevatorCommand
-    );
+    //Manual
+
+    new Trigger(() -> danny_controller.getRightBumper() && danny_controller.getLeftBumper()).whileTrue(
+        manualShoulderControl);
+
+    new Trigger(() -> danny_controller.getRightBumper() && danny_controller.getLeftBumper() && danny_controller.getAButton())
+        .whileTrue(
+            homeElevatorCommand);
 
 
 
-    //Trigger Homing Command
-    new Trigger(() -> danny_controller.getRightBumper() && danny_controller.getLeftBumper() && danny_controller.getAButton()).whileTrue(
-      homeElevatorCommand
-    );
 
-    //Adjust Scoring objectives
+    /////////// MANIPULATOR\\\\\\\\\\
+    Command scoopCube = new SetManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CUBE.getManipulatorState());
+    Command scoopCone = new SetManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CONE.getManipulatorState());
+    Command stopManipulator = new SetManipulatorState(
+        ManipulatorState.ManipulatorStates.DO_NOTHING.getManipulatorState());
+    Command smartEject = new SmartEject();
+
+
+
+
+
+    /////////// INTAKE\\\\\\\\\\\\\\\\
+    Command passThroughCube = IntakeAuto.passThroughCube();
+    Command intakeCube = new SetIntakeState(IntakeState.IntakeStates.INTAKING_CUBE.getIntakeState())
+        .withName("Intaking Cube");
+    Command ejectCube = new SetIntakeState(IntakeState.IntakeStates.EJECT_CUBE.getIntakeState())
+        .withName("Ejecting Cube");
+    Command stopIntake = new SetIntakeState(IntakeState.IntakeStates.DO_NOTHING.getIntakeState())
+        .withName("Stop Intake");
+    Command intakeShiver = new IntakeShiver().withName("Controller Shiver");
+
+
+
+
+
+
+
+    //////////// \\\\\\\\\\\\
+    //////// INTAKING\\\\\\\\
+    //////////// \\\\\\\\\\\\
+
+    // potentially switch pass through cube and intake shive?
+    new Trigger(() -> primary_controller.getLeftTriggerAxis() > 0.5).whileTrue(
+        setShoulderCubeIntake
+            .alongWith(scoopCube)
+            .alongWith(passThroughCube.deadlineWith(intakeShiver))
+    // .alongWith(
+    // intakeCube
+    // .deadlineWith(intakeShiver)
+    // .until(intake::getCubeDetected))
+    // .andThen(null)
+    )
+        .onFalse(stopIntake)
+        .onFalse(stopManipulator);
+    // .onFalse(new InstantCommand(() -> passThroughCube.cancel()));
+
+    new Trigger(() -> primary_controller.getLeftBumper()).whileTrue(
+        setShoulderConeIntake
+            .alongWith(scoopCone.deadlineWith(intakeShiver)))
+        .onFalse(setShoulderConeHold);
+
+    new Trigger(() -> primary_controller.getRightBumper()).whileTrue(
+        setShoulderConeIntakeSlide
+            .alongWith(scoopCone.deadlineWith(intakeShiver)))
+        .onFalse(setShoulderConeHold);
+
+    ////////////\\\\\\\\\\\\
+    /////////SCORING\\\\\\\\
+    ////////////\\\\\\\\\\\\
+    Command setSuperstructureSetpointHold = new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING.getState());
+    Command objectiveSuperstructureSetter = new SetSuperstructureSetpoint(() -> objective_tracker.getDesiredSuperstructureState(), this::getElevatorJogger);
+
+    new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
+      objectiveSuperstructureSetter
+    )
+      .onFalse(setSuperstructureSetpointHold);
+
+    new Trigger(primary_controller::getAButton).onTrue(smartEject);
+    new Trigger(primary_controller::getBButton).onTrue(IntakeAuto.spitCube());
+
+    /*new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
+        setElevatorCommand
+            .alongWith(
+              Commands.waitUntil(() -> elevator.atSetpoint())
+                .andThen(setShoulderScoring)
+            )
+    );*/
+
+
+    ///////// CHARGE STATION\\\\\\\\\\\
+    new Trigger(primary_controller::getXButton).whileTrue(new AutoBalance());
+
+    new Trigger(() -> danny_controller.getLeftTriggerAxis() > 0.5 && danny_controller.getRightTriggerAxis() > 0.5)
+        .whileTrue(
+            new RunCommand(() -> swerve.setDriveMode(DriveMode.X_OUT), swerve));
+
+    new Trigger(() -> primary_controller.getPOV() == 0).whileTrue(
+        new AimDrive(this::getForwardInput, this::getStrafeInput, 0.0));
+
+    new Trigger(() -> primary_controller.getPOV() == 90).whileTrue(
+        new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 0.5));
+
+    new Trigger(() -> primary_controller.getPOV() == 180).whileTrue(
+        new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI));
+
+    new Trigger(() -> primary_controller.getPOV() == 270).whileTrue(
+        new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 1.5));
+
+    //////////// \\\\\\\\\\\\
+    ///////// DANNY\\\\\\\\\\
+    //////////// \\\\\\\\\\\\
+
+    // Adjust Scoring objectives
     new Trigger(() -> danny_controller.getPOV() == 0).whileTrue(
-      objective_tracker.shiftNodeCommand(Direction.DOWN)
-    );
+        objective_tracker.shiftNodeCommand(Direction.DOWN));
     new Trigger(() -> danny_controller.getPOV() == 90).whileTrue(
-      objective_tracker.shiftNodeCommand(Direction.RIGHT)
-    );
+        objective_tracker.shiftNodeCommand(Direction.RIGHT));
     new Trigger(() -> danny_controller.getPOV() == 180).whileTrue(
-      objective_tracker.shiftNodeCommand(Direction.UP)
-    );
+        objective_tracker.shiftNodeCommand(Direction.UP));
     new Trigger(() -> danny_controller.getPOV() == 270).whileTrue(
-      objective_tracker.shiftNodeCommand(Direction.LEFT)
-    );
+        objective_tracker.shiftNodeCommand(Direction.LEFT));
   }
-
-  private void configurePathWeaver() {
-    path_weaver.addNode(new Node(new Pose2d()));
-
-    path_weaver.addNode(new Node(1,0));
-    path_weaver.addNode(new Node(2.92-0.42,4.75));
-    path_weaver.addNode(new Node(2.92-0.42,1.51-0.42));
-    path_weaver.addNode(new Node(6,4.75));
-    path_weaver.addNode(new Node(6,1.51-0.42));
-
-    path_weaver.generateNodeEdges();
-}
 
   /**
    * Use this to pass the autonomous chooser to the main {@link Robot} class.
@@ -298,6 +318,7 @@ public class RobotContainer {
    *         being PI/2
    */
   public Rotation2d getRightStickAngle() {
-    return new Rotation2d(deadband(-primary_controller.getRightY(), 0.4), deadband(-primary_controller.getRightX(), 0.4));
+    return new Rotation2d(deadband(-primary_controller.getRightY(), 0.4),
+        deadband(-primary_controller.getRightX(), 0.4));
   }
 }

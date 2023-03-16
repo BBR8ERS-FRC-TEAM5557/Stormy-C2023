@@ -131,11 +131,15 @@ public class ObjectiveTracker extends SubsystemBase {
     public synchronized SuperstructureState getDesiredSuperstructureState() {
         switch(selectedLevel) {
             case HIGH:
-                return SuperstructureState.Preset.HIGH.getState();
+                if(selectedColumn == 1 || selectedColumn == 4 || selectedColumn == 7)
+                    return SuperstructureState.Preset.HIGH_CUBE.getState();
+                return SuperstructureState.Preset.HIGH_CONE.getState();
             case MID:
-                return SuperstructureState.Preset.MID.getState();
+                if(selectedColumn == 1 || selectedColumn == 4 || selectedColumn == 7)
+                    return SuperstructureState.Preset.MID_CUBE.getState();
+                return SuperstructureState.Preset.MID_CONE.getState();
             case HYBRID:
-                return SuperstructureState.Preset.LOW.getState();
+                return SuperstructureState.Preset.LOW_CUBE.getState();
         }
         return SuperstructureState.Preset.HOLDING.getState();
     }

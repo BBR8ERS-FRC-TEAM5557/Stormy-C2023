@@ -21,7 +21,7 @@ public class SetIntakeState extends CommandBase {
     }
 
     @Override
-    public void end(boolean interrupted) {
-        intake.setIntakeState(new IntakeState(0, intake.getIntakeState().deployed));
+    public boolean isFinished() {
+        return true;
     }
 }

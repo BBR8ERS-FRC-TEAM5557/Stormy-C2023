@@ -8,6 +8,7 @@ import org.library.team254.util.LatchedBoolean;
 import org.team5557.Constants;
 import org.team5557.Robot;
 import org.team5557.RobotContainer;
+import org.team5557.planners.superstructure.util.SuperstructureConstants;
 import org.team5557.subsystems.elevator.commands.HomeElevator;
 import static org.team5557.subsystems.elevator.util.ElevatorSubsystemConstants.*;
 
@@ -72,13 +73,17 @@ public class Elevator extends ServoMotorSubsystemRel {
         if (mJustReset.update(reset)) {
                 mHasBeenZeroed = false;
                 //set arm and wrist to viable spots
-                RobotContainer.homeElevatorCommand.schedule();
+                //RobotContainer.homeElevatorCommand.schedule();
         }
     }
 
     @Override
     public synchronized void writePeriodicOutputs() {
         super.writePeriodicOutputs();
+    }
+
+    public synchronized boolean atSetpoint() {
+        return Math.abs(getPosition() - getSetpoint()) < SuperstructureConstants.kElevatorPaddingInches;
     }
 
     public synchronized boolean isHoming() {
