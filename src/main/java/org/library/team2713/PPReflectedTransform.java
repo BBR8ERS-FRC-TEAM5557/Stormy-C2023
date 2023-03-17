@@ -68,6 +68,7 @@ public class PPReflectedTransform {
    */
   @SneakyThrows
   private static PathPlannerState reflectiveTransformState(PathPlannerState state) {
+    /* 
     PathPlannerState transformedState = new PathPlannerState();
 
     // Move it to the other side of the field, with an absolute origin on blue side
@@ -77,7 +78,7 @@ public class PPReflectedTransform {
             FieldConstants.fieldLength - state.poseMeters.getX(), state.poseMeters.getY());
 
     // The instantaneous heading of the trajectory needs to be negated
-    Rotation2d transformedHeading = state.poseMeters.getRotation().times(-1).plus(Rotation2d.fromDegrees(180));
+    Rotation2d transformedHeading = state.poseMeters.getRotation().times(-1);
     // The holonomic heading needs to be negated and rotated
     Rotation2d transformedHolonomicRotation =
         state.holonomicRotation.times(-1).plus(Rotation2d.fromDegrees(180));
@@ -99,6 +100,31 @@ public class PPReflectedTransform {
 
     // transformedState.curveRadius = -state.curveRadius;
     curveRadiusField.set(transformedState, (-1) * (Double) curveRadiusField.get(state));
+
+    return transformedState;
+    */
+    PathPlannerState transformedState = new PathPlannerState();
+
+    Translation2d transformedTranslation =
+        new Translation2d(FieldConstants.fieldLength - state.poseMeters.getX(), state.poseMeters.getY());
+    Rotation2d transformedHeading = state.poseMeters.getRotation().times(-1);
+    Rotation2d transformedHolonomicRotation = state.holonomicRotation.times(-1);
+
+    transformedState.timeSeconds = state.timeSeconds;
+    transformedState.velocityMetersPerSecond = state.velocityMetersPerSecond;
+    transformedState.accelerationMetersPerSecondSq = state.accelerationMetersPerSecondSq;
+    transformedState.poseMeters = new Pose2d(transformedTranslation, transformedHeading);
+    transformedState.angularVelocityRadPerSec = -state.angularVelocityRadPerSec;
+    transformedState.holonomicRotation = transformedHolonomicRotation;
+    transformedState.holonomicAngularVelocityRadPerSec = -state.holonomicAngularVelocityRadPerSec;
+
+    //transformedState.curveRadius = -state.curveRadius;
+    curveRadiusField.set(transformedState, (-1) * (Double) curveRadiusField.get(state));
+
+    transformedState.curvatureRadPerMeter = -state.curvatureRadPerMeter;
+
+    //transformedState.deltaPos = state.deltaPos;
+    deltaPosField.set(transformedState, deltaPosField.get(state));
 
     return transformedState;
   }
