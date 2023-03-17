@@ -148,14 +148,14 @@ public class ObjectiveTracker extends SubsystemBase {
     public synchronized void shiftNode(Direction direction) {
         switch (direction) {
             case RIGHT:
-                if (selectedRow < 8) {
-                    selectedRow += 1;
+                if (selectedColumn < 8) {
+                    selectedColumn += 1;
                 }
                 break;
 
             case LEFT:
-                if (selectedRow > 0) {
-                    selectedRow -= 1;
+                if (selectedColumn > 0) {
+                    selectedColumn -= 1;
                 }
                 break;
 

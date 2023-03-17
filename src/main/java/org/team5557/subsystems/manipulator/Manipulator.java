@@ -5,6 +5,7 @@ import static org.team5557.subsystems.manipulator.util.ManipulatorSubsystemConst
 import static org.team5557.subsystems.manipulator.util.ManipulatorSubsystemConstants.kTopRollerMotorID;
 import static org.team5557.subsystems.manipulator.util.ManipulatorSubsystemConstants.motorsInverted;
 
+import org.library.team254.drivers.SparkMaxUtil;
 import org.library.team3061.util.CANDeviceFinder;
 import org.library.team3061.util.CANDeviceId.CANDeviceType;
 import org.littletonrobotics.junction.Logger;
@@ -14,6 +15,7 @@ import org.team5557.subsystems.manipulator.util.ManipulatorState;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -36,10 +38,18 @@ public class Manipulator extends SubsystemBase {
         mTopRollerMotor.setInverted(motorsInverted);
         mTopRollerMotor.setSmartCurrentLimit(40, 40, 0);
 
+        SparkMaxUtil.checkError(mTopRollerMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100),"failed to set periodic status frame 0 rate");
+        SparkMaxUtil.checkError(mTopRollerMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 20), "failed to set periodic status frame 1 rate");
+        SparkMaxUtil.checkError(mTopRollerMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 20),"failed to set periodic status frame 2 rate");
+
         mBottomRollerMotor = new CANSparkMax(kBottomRollerMotorID.getDeviceNumber(), MotorType.kBrushless);
         mBottomRollerMotor.setIdleMode(IdleMode.kBrake);
         mBottomRollerMotor.setInverted(motorsInverted);
         mBottomRollerMotor.setSmartCurrentLimit(40, 40, 0);
+
+        SparkMaxUtil.checkError(mBottomRollerMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100),"failed to set periodic status frame 0 rate");
+        SparkMaxUtil.checkError(mBottomRollerMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 20), "failed to set periodic status frame 1 rate");
+        SparkMaxUtil.checkError(mBottomRollerMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 20),"failed to set periodic status frame 2 rate");
 
         ShuffleboardTab tab = Shuffleboard.getTab(kSubsystemID);
         if(Constants.tuning_mode) {

@@ -53,6 +53,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
@@ -137,10 +138,10 @@ public class RobotContainer {
 
 
     /////////// SHOULDER\\\\\\\\\\\\\\\
-    Command setShoulderConeIntake = new SetShoulderAngle(193.5);
-    Command setShoulderConeIntakeSlide = new SetShoulderAngle(250.0);
-    Command setShoulderCubeIntake = new SetShoulderAngle(320.0);
-    Command setShoulderConeHold = new SetShoulderAngle(270.0);
+    Command setShoulderConeIntake = new SetShoulderAngle(196.5);
+    Command setShoulderConeIntakeSlide = new SetShoulderAngle(296.0);
+    Command setShoulderCubeIntake = new SetShoulderAngle(323.0);
+    Command setShoulderConeHold = new SetShoulderAngle(300.0);
     Command setShoulderScoring = new SetShoulderAngle(200.0);
 
     Command manualShoulderControl = new ShoulderManual(() -> getShoulderJogger());
@@ -160,7 +161,11 @@ public class RobotContainer {
     /////////// MANIPULATOR\\\\\\\\\\
     Command scoopCube = new SetManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CUBE.getManipulatorState());
     Command scoopCone = new SetManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CONE.getManipulatorState());
+    Command scoopCone2 = new SetManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CONE.getManipulatorState());
+    Command scoopCone3 = new SetManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CONE.getManipulatorState());
     Command stopManipulator = new SetManipulatorState(
+        ManipulatorState.ManipulatorStates.DO_NOTHING.getManipulatorState());
+    Command stopManipulator2 = new SetManipulatorState(
         ManipulatorState.ManipulatorStates.DO_NOTHING.getManipulatorState());
     Command smartEject = new SmartEject();
 
@@ -192,7 +197,7 @@ public class RobotContainer {
     new Trigger(() -> primary_controller.getLeftTriggerAxis() > 0.5).whileTrue(
         setShoulderCubeIntake
             .alongWith(scoopCube)
-            .alongWith(passThroughCube.deadlineWith(intakeShiver))
+            .alongWith(passThroughCube.deadlineWith(intakeShiver))//intakeCube.deadlineWith(intakeShiver))
     // .alongWith(
     // intakeCube
     // .deadlineWith(intakeShiver)
@@ -200,17 +205,18 @@ public class RobotContainer {
     // .andThen(null)
     )
         .onFalse(stopIntake)
-        .onFalse(stopManipulator);
+        .onFalse(new WaitCommand(5.0).andThen(stopManipulator));
     // .onFalse(new InstantCommand(() -> passThroughCube.cancel()));
 
     new Trigger(() -> primary_controller.getLeftBumper()).whileTrue(
         setShoulderConeIntake
-            .alongWith(scoopCone.deadlineWith(intakeShiver)))
+            .alongWith(scoopCone))
         .onFalse(setShoulderConeHold);
+        //.onFalse(scoopCone3.raceWith(new WaitCommand(0.5).andThen(stopManipulator2)));
 
     new Trigger(() -> primary_controller.getRightBumper()).whileTrue(
         setShoulderConeIntakeSlide
-            .alongWith(scoopCone.deadlineWith(intakeShiver)))
+            .alongWith(scoopCone2))
         .onFalse(setShoulderConeHold);
 
     ////////////\\\\\\\\\\\\
@@ -225,6 +231,9 @@ public class RobotContainer {
       .onFalse(setSuperstructureSetpointHold);
 
     new Trigger(primary_controller::getAButton).onTrue(smartEject);
+    new Trigger(primary_controller::getYButton)
+      .onTrue(new SetManipulatorState(ManipulatorState.ManipulatorStates.EJECT_CONE.getManipulatorState()))
+      .onFalse(new SetManipulatorState(ManipulatorState.ManipulatorStates.DO_NOTHING.getManipulatorState()));
     new Trigger(primary_controller::getBButton).onTrue(IntakeAuto.spitCube());
 
     /*new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
@@ -261,11 +270,11 @@ public class RobotContainer {
 
     // Adjust Scoring objectives
     new Trigger(() -> danny_controller.getPOV() == 0).whileTrue(
-        objective_tracker.shiftNodeCommand(Direction.DOWN));
+        objective_tracker.shiftNodeCommand(Direction.UP));
     new Trigger(() -> danny_controller.getPOV() == 90).whileTrue(
         objective_tracker.shiftNodeCommand(Direction.RIGHT));
     new Trigger(() -> danny_controller.getPOV() == 180).whileTrue(
-        objective_tracker.shiftNodeCommand(Direction.UP));
+        objective_tracker.shiftNodeCommand(Direction.DOWN));
     new Trigger(() -> danny_controller.getPOV() == 270).whileTrue(
         objective_tracker.shiftNodeCommand(Direction.LEFT));
   }

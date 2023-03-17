@@ -72,7 +72,7 @@ public class VisionManager {
 
         ShuffleboardTab driver = Shuffleboard.getTab(Constants.shuffleboard.driver_readout_key);
         if (Constants.tuning_mode) {
-            tab.addCamera("Limelight", "limelight", "http://10.55.57.13:5800")
+            tab.addCamera("ll", "limelight-driver", "http://10.55.57.13:5800")
                 .withSize(3, 3);
         }
     }

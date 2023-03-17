@@ -18,7 +18,7 @@ public class IntakeAuto {
 
     public static Command spitCube() {
         return new InstantCommand(() -> RobotContainer.intake.setIntakeState(IntakeState.IntakeStates.EJECT_CUBE.getIntakeState()))
-                    .raceWith(new WaitCommand(1.0))
+                    .andThen(new WaitCommand(1.0))
                     .andThen(new InstantCommand(() -> RobotContainer.intake.setIntakeState(IntakeState.IntakeStates.DO_NOTHING.getIntakeState())));
     }
 
@@ -40,7 +40,7 @@ public class IntakeAuto {
             startIntaking(),
             waitForCube(),
             idleIntake(),
-            Commands.waitSeconds(1.0),
+            Commands.waitSeconds(5.0),
             stopIntaking()
         ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }

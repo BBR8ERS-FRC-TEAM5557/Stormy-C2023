@@ -2,6 +2,7 @@ package org.team5557.subsystems.elevator.util;
 
 import org.library.team254.drivers.ServoMotorSubsystemRel.ServoMotorSubsystemRelConstants;
 import org.library.team254.drivers.ServoMotorSubsystemRel.SparkMaxConstants;
+import org.library.team254.motion.MotionProfileConstraints;
 import org.library.team3061.util.CANDeviceId;
 import org.library.team3061.util.CANDeviceId.CANDeviceType;
 
@@ -69,10 +70,12 @@ public class ElevatorSubsystemConstants {
         kElevatorConstants.kMinUnitsLimit = 0.0;
 
         kElevatorConstants.kStatus0FrameRate = 20;
-        kElevatorConstants.kStatus1FrameRate = 20;
-        kElevatorConstants.kStatus2FrameRate = 20;
-        kElevatorConstants.kStatus3FrameRate = 20;
-        kElevatorConstants.kStatus4FrameRate = 20;
-        kElevatorConstants.kStatus5FrameRate = 20;
+        kElevatorConstants.kStatus1FrameRate = 200;
+        kElevatorConstants.kStatus2FrameRate = 200;
+        kElevatorConstants.kStatus3FrameRate = 200;
+        kElevatorConstants.kStatus4FrameRate = 200;
+        kElevatorConstants.kStatus5FrameRate = 200;
     }
+
+    public static MotionProfileConstraints motionConstraints = new MotionProfileConstraints(kElevatorConstants.kCruiseVelocity, kElevatorConstants.kCruiseVelocity, kElevatorConstants.kAcceleration);
 }

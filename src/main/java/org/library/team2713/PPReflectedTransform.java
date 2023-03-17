@@ -77,7 +77,7 @@ public class PPReflectedTransform {
             FieldConstants.fieldLength - state.poseMeters.getX(), state.poseMeters.getY());
 
     // The instantaneous heading of the trajectory needs to be negated
-    Rotation2d transformedHeading = state.poseMeters.getRotation().times(-1);
+    Rotation2d transformedHeading = state.poseMeters.getRotation().times(-1).plus(Rotation2d.fromDegrees(180));
     // The holonomic heading needs to be negated and rotated
     Rotation2d transformedHolonomicRotation =
         state.holonomicRotation.times(-1).plus(Rotation2d.fromDegrees(180));

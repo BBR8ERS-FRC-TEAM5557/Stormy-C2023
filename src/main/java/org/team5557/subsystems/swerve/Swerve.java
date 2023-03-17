@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -72,6 +73,7 @@ public class Swerve extends SubsystemBase {
     private double motorOutputLimiter;
     private double characterizationVolts = 0.0;
     private final TunableNumber skidVelocityDifference;
+    public static final Field2d field = new Field2d();
     
     public Swerve() {
         frontLeftModule = new SwerveModule(
@@ -168,6 +170,7 @@ public class Swerve extends SubsystemBase {
             tab.addNumber("Pose Est X", () -> MathUtils.truncate(getPose().getX(), 2));
             tab.addNumber("Pose Est Y", () -> MathUtils.truncate(getPose().getY(), 2));
             tab.addNumber("Pose Est Theta", () -> MathUtils.truncate(getPose().getRotation().getDegrees(), 2));
+            tab.add(field);
         }
         
         if (TESTING) {
@@ -250,6 +253,7 @@ public class Swerve extends SubsystemBase {
                 backRightModule.setVoltageForCharacterization(characterizationVolts);
                 break;
         }
+        field.setRobotPose(getPose());
 
         Logger.getInstance().recordOutput("Swerve/Drive Mode", getDriveMode().toString());
 

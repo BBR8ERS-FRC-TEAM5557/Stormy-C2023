@@ -32,19 +32,20 @@ public class SetSuperstructureSetpoint extends CommandBase {
     public SetSuperstructureSetpoint(Supplier<SuperstructureState> stateSupplier, DoubleSupplier elevatorJogger) {
         this.stateSupplier = stateSupplier;
         this.elevatorJogger = elevatorJogger;
+        addRequirements(elevator, shoulder);
     }
 
     @Override
     public void execute() {
         SuperstructureState state = stateSupplier.get();
 
-        MotionProfileGoal elevatorState = new MotionProfileGoal(state.elevator);
+        /*MotionProfileGoal elevatorState = new MotionProfileGoal(state.elevator);
 
         if(Math.abs(elevatorJogger.getAsDouble()) < 0.1) {
             elevator.setMotionProfilingGoal(elevatorState);
         } else {
             elevator.setOpenLoop(elevatorJogger.getAsDouble() * ElevatorSubsystemConstants.kMaxManualPower);
-        }
+        }*/
 
         MotionProfileGoal shoulderState = new MotionProfileGoal(state.shoulder);
         shoulder.setMotionProfilingGoal(shoulderState, 0.0);

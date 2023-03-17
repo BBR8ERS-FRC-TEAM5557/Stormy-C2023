@@ -10,6 +10,8 @@ import org.team5557.Robot;
 import org.team5557.RobotContainer;
 import org.team5557.planners.superstructure.util.SuperstructureConstants;
 import org.team5557.subsystems.elevator.commands.HomeElevator;
+import org.team5557.subsystems.elevator.util.ElevatorSubsystemConstants;
+
 import static org.team5557.subsystems.elevator.util.ElevatorSubsystemConstants.*;
 
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
@@ -33,6 +35,7 @@ public class Elevator extends ServoMotorSubsystemRel {
         super(constants);
 
         mHasBeenZeroed = true;
+        mMotionProfileConstraints = ElevatorSubsystemConstants.motionConstraints;
 
         tab.addString("Control Mode", () -> mControlState.toString());
         tab.addDouble("Height (in.)", () -> this.getPosition());
