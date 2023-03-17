@@ -7,13 +7,13 @@ public class SuperstructureState {
     public static enum Preset {
         HOLDING(new SuperstructureState(0.5, 270.0)),
 
-        HIGH_CUBE(new SuperstructureState(40.0, 200.0)),
-        MID_CUBE(new SuperstructureState(20.0, 200.0)),
-        LOW_CUBE(new SuperstructureState(0.0, 200.0)),
+        HIGH_CUBE(new SuperstructureState(40.0, 195.0)),
+        MID_CUBE(new SuperstructureState(20.0, 195.0)),
+        LOW_CUBE(new SuperstructureState(0.0, 195.0)),
 
         HIGH_CONE(new SuperstructureState(40.0, 200.0)),
-        MID_CONE(new SuperstructureState(20.0, 200.0)),
-        LOW_CONE(new SuperstructureState(0.0, 0.0)),
+        MID_CONE(new SuperstructureState(20.0, 235.0)),
+        LOW_CONE(new SuperstructureState(0.0, 235.0)),
 
         INTAKING_CONE(new SuperstructureState(0.0, 193.5)),
         INTAKING_CUBE(new SuperstructureState(0.0, 320.0));

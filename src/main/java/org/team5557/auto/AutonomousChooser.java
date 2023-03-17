@@ -9,6 +9,7 @@ import org.team5557.planners.superstructure.util.SuperstructureState;
 import org.team5557.subsystems.intake.commands.IntakeAuto;
 import org.team5557.subsystems.manipulator.commands.ManipulatorAuto;
 import org.team5557.subsystems.shoulder.commands.SetShoulderAngle;
+import org.team5557.subsystems.swerve.Swerve.DriveMode;
 import org.team5557.subsystems.swerve.commands.AutoBalance;
 import org.team5557.subsystems.swerve.commands.FeedForwardCharacterization;
 import org.team5557.subsystems.swerve.commands.FeedForwardCharacterization.FeedForwardCharacterizationData;
@@ -17,14 +18,17 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class AutonomousChooser {
@@ -76,14 +80,14 @@ public class AutonomousChooser {
     public Command getSpitChargeCenter() {
         SequentialCommandGroup command = new SequentialCommandGroup();
 
-        resetRobotPose(command, trajectories.getSpit_Charge_Center());
+        resetRobotPose(command, trajectories.getRPushAndCharge());//trajectories.getSpit_Charge_Center());
         command.addCommands(IntakeAuto.spitCube());
-        follow(command, trajectories.getSpit_Charge_Center());
-        command.addCommands(engage);
+        follow(command, trajectories.getRPushAndCharge());//getSpit_Charge_Center());
+        command.addCommands(engage.withTimeout(10.0));
+        command.addCommands(new RunCommand(() -> RobotContainer.swerve.drive(new ChassisSpeeds(), DriveMode.X_OUT, false, Constants.superstructure.center_of_rotation), RobotContainer.swerve));
 
         return command;
     }
-
     //Regular
     public Command get3ChargeNoBump() {
         SequentialCommandGroup command = new SequentialCommandGroup();

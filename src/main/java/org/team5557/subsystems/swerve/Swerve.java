@@ -27,7 +27,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -301,6 +303,14 @@ public class Swerve extends SubsystemBase {
      */
     public void setPose(Pose2d pose) {
         estimator.resetPosition(getGyroscopeAzimuth(), getModulePositions(), pose);
+    }
+
+    public void setPoseTeleop() {
+        if(DriverStation.getAlliance().equals(Alliance.Red)) {
+            setPose(new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(180)));
+        } else {
+            setPose(new Pose2d(getPose().getTranslation(), new Rotation2d()));
+        }
     }
 
     public void addVisionMeasurement(VisionUpdate update) {

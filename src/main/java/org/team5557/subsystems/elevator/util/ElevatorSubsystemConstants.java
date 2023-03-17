@@ -14,7 +14,7 @@ public class ElevatorSubsystemConstants {
     public static double kV = 0.0;
     public static double kA = 0.0;
 
-    public static double kMaxManualPower = 0.4;
+    public static double kMaxManualPower = 0.6;
     
     private static boolean invert_motors = true;
 
@@ -57,7 +57,7 @@ public class ElevatorSubsystemConstants {
         kElevatorConstants.kPositionIZone = 0; //
         kElevatorConstants.kPositionDeadband = 0.5;
 
-        kElevatorConstants.kCruiseVelocity = 10.0; // inches / s
+        kElevatorConstants.kCruiseVelocity = 20.0; // inches / s
         kElevatorConstants.kAcceleration = Math.pow(kElevatorConstants.kCruiseVelocity, 2); // inches / s / s
         kElevatorConstants.profileConstraints = new TrapezoidProfile.Constraints(kElevatorConstants.kCruiseVelocity, kElevatorConstants.kAcceleration);
 
@@ -66,8 +66,8 @@ public class ElevatorSubsystemConstants {
         kElevatorConstants.kLimitRPM = 1000;
         kElevatorConstants.kEnableCurrentLimit = true;
 
-        kElevatorConstants.kMaxUnitsLimit = 42.0;//inches
-        kElevatorConstants.kMinUnitsLimit = 0.0;
+        kElevatorConstants.kMaxUnitsLimit = 1000000;//inches
+        kElevatorConstants.kMinUnitsLimit = -10000000;
 
         kElevatorConstants.kStatus0FrameRate = 20;
         kElevatorConstants.kStatus1FrameRate = 200;

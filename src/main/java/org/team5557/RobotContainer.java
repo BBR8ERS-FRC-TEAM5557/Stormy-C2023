@@ -105,7 +105,7 @@ public class RobotContainer {
         new TeleopDrive(this::getForwardInput, this::getStrafeInput, this::getRotationInput));
 
     new Trigger(primary_controller::getStartButton).onTrue(
-        new InstantCommand(() -> swerve.setPose(new Pose2d()), swerve));
+        new InstantCommand(() -> swerve.setPoseTeleop(), swerve));
 
     /*
     Command copilot = new CoPilot(this::getForwardInput, this::getStrafeInput);
@@ -139,7 +139,7 @@ public class RobotContainer {
 
     /////////// SHOULDER\\\\\\\\\\\\\\\
     Command setShoulderConeIntake = new SetShoulderAngle(196.5);
-    Command setShoulderConeIntakeSlide = new SetShoulderAngle(296.0);
+    Command setShoulderConeIntakeSlide = new SetShoulderAngle(294.0);
     Command setShoulderCubeIntake = new SetShoulderAngle(323.0);
     Command setShoulderConeHold = new SetShoulderAngle(300.0);
     Command setShoulderScoring = new SetShoulderAngle(200.0);
@@ -309,7 +309,7 @@ public class RobotContainer {
   }
 
   public double getShoulderJogger() {
-    return -square(deadband(danny_controller.getLeftY(), 0.1));
+    return -square(deadband(danny_controller.getRightY(), 0.1));
   }
 
   public double getStrafeInput() {

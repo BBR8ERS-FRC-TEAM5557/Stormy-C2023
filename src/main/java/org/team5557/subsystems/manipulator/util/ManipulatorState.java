@@ -15,7 +15,8 @@ public class ManipulatorState {
         INTAKING_CONE(new ManipulatorState(1.0, 1.0)),
         IDLE(new ManipulatorState(0.1, 0.1)),
         EJECT_CUBE(new ManipulatorState(0.75, 0.75)),
-        EJECT_CONE(new ManipulatorState(-0.75, -0.75)),
+        EJECT_CONE(new ManipulatorState(-0.25, -0.25)),
+        EJECT_CONE_FAST(new ManipulatorState(-0.75, -0.75)),
         DO_NOTHING(new ManipulatorState(0.0, 0.0));
         
         ManipulatorState state;
