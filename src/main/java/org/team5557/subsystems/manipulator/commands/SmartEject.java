@@ -16,7 +16,7 @@ public class SmartEject extends CommandBase {
         if(ot.selectedColumn == 1 || ot.selectedColumn == 4 || ot.selectedColumn == 7 || ot.selectedLevel.equals(NodeLevel.HYBRID)) {
             ManipulatorAuto.ejectCube().schedule();
         } else {
-            ManipulatorAuto.ejectCone().schedule();
+            ManipulatorAuto.ejectCubeHigh().schedule();
         }
     }
 

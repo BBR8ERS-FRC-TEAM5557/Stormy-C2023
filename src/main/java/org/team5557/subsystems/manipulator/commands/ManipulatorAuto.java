@@ -16,7 +16,24 @@ public class ManipulatorAuto {
                 Commands.waitSeconds(1.0),
                 stopManipulator()
             );
+    }
 
+    public static Command ejectCubeMid() {
+        return 
+            Commands.sequence(
+                startEjectingCubeMid(),
+                Commands.waitSeconds(1.0),
+                stopManipulator()
+            );
+    }
+
+    public static Command ejectCubeHigh() {
+        return 
+            Commands.sequence(
+                startEjectingCubeHigh(),
+                Commands.waitSeconds(1.0),
+                stopManipulator()
+            );
     }
 
     public static Command ejectCone() {
@@ -31,6 +48,14 @@ public class ManipulatorAuto {
 
     public static Command startEjectingCube() {
         return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.EJECT_CUBE.getManipulatorState()));
+    }
+
+    public static Command startEjectingCubeMid() {
+        return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.EJECT_CUBE_MID.getManipulatorState()));
+    }
+
+    public static Command startEjectingCubeHigh() {
+        return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.EJECT_CUBE_HIGH.getManipulatorState()));
     }
 
     public static Command startEjectingCone() {

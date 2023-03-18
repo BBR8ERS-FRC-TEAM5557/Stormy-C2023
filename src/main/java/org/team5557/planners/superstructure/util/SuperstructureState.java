@@ -5,10 +5,11 @@ public class SuperstructureState {
     public double shoulder; // degrees
 
     public static enum Preset {
-        HOLDING(new SuperstructureState(0.5, 270.0)),
+        HOLDING(new SuperstructureState(0.5, 280.0)),
 
         HIGH_CUBE(new SuperstructureState(40.0, 195.0)),
         MID_CUBE(new SuperstructureState(20.0, 195.0)),
+        MID_CUBE_SHOOTER(new SuperstructureState(0.0, 230.0)),
         LOW_CUBE(new SuperstructureState(0.0, 195.0)),
 
         HIGH_CONE(new SuperstructureState(40.0, 200.0)),

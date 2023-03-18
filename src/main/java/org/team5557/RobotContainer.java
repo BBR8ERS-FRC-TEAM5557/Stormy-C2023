@@ -140,7 +140,7 @@ public class RobotContainer {
     /////////// SHOULDER\\\\\\\\\\\\\\\
     Command setShoulderConeIntake = new SetShoulderAngle(196.5);
     Command setShoulderConeIntakeSlide = new SetShoulderAngle(294.0);
-    Command setShoulderCubeIntake = new SetShoulderAngle(323.0);
+    Command setShoulderCubeIntake = new SetShoulderAngle(327.0);
     Command setShoulderConeHold = new SetShoulderAngle(300.0);
     Command setShoulderScoring = new SetShoulderAngle(200.0);
 
@@ -214,27 +214,30 @@ public class RobotContainer {
         .onFalse(setShoulderConeHold);
         //.onFalse(scoopCone3.raceWith(new WaitCommand(0.5).andThen(stopManipulator2)));
 
-    new Trigger(() -> primary_controller.getRightBumper()).whileTrue(
+    /*new Trigger(() -> primary_controller.getRightBumper()).whileTrue(
         setShoulderConeIntakeSlide
             .alongWith(scoopCone2))
-        .onFalse(setShoulderConeHold);
+        .onFalse(setShoulderConeHold);*/
 
     ////////////\\\\\\\\\\\\
     /////////SCORING\\\\\\\\
     ////////////\\\\\\\\\\\\
     Command setSuperstructureSetpointHold = new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING.getState());
     Command objectiveSuperstructureSetter = new SetSuperstructureSetpoint(() -> objective_tracker.getDesiredSuperstructureState(), this::getElevatorJogger);
+    Command midCubeShooter = new SetSuperstructureSetpoint(SuperstructureState.Preset.MID_CUBE_SHOOTER.getState());
 
     new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
-      objectiveSuperstructureSetter
+      midCubeShooter
     )
       .onFalse(setSuperstructureSetpointHold);
 
-    new Trigger(primary_controller::getAButton).onTrue(smartEject);
+    new Trigger(primary_controller::getRightBumper)
+      .onTrue(smartEject)
+      .onTrue(IntakeAuto.spitCube());
     new Trigger(primary_controller::getYButton)
       .onTrue(new SetManipulatorState(ManipulatorState.ManipulatorStates.EJECT_CONE.getManipulatorState()))
       .onFalse(new SetManipulatorState(ManipulatorState.ManipulatorStates.DO_NOTHING.getManipulatorState()));
-    new Trigger(primary_controller::getBButton).onTrue(IntakeAuto.spitCube());
+    //new Trigger(primary_controller::getBButton).onTrue(IntakeAuto.spitCube());
 
     /*new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
         setElevatorCommand

@@ -39,8 +39,8 @@ public class IntakeAuto {
         Commands.sequence(
             startIntaking(),
             waitForCube(),
-            idleIntake(),
-            Commands.waitSeconds(5.0),
+            //idleIntake(),
+            //Commands.waitSeconds(5.0),
             stopIntaking()
         ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
