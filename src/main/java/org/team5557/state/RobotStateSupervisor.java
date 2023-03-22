@@ -4,6 +4,11 @@ import org.library.team2910.util.MovingAverage;
 import org.littletonrobotics.junction.Logger;
 import org.team5557.Constants;
 import org.team5557.RobotContainer;
+import org.team5557.planners.superstructure.util.SuperstructureState;
+import org.team5557.state.goal.ObjectiveTracker;
+import org.team5557.state.goal.ObjectiveTracker.Direction;
+import org.team5557.state.goal.ObjectiveTracker.GamePiece;
+import org.team5557.state.goal.ObjectiveTracker.NodeLevel;
 import org.team5557.state.vision.VisionManager;
 import org.team5557.subsystems.swerve.Swerve;
 
@@ -13,6 +18,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class RobotStateSupervisor extends SubsystemBase {
@@ -20,6 +26,7 @@ public class RobotStateSupervisor extends SubsystemBase {
     private RobotState robot_state = new RobotState();
     private final Swerve swerve = RobotContainer.swerve;
     private final VisionManager vision_manager = new VisionManager();
+    private final ObjectiveTracker objective_tracker = new ObjectiveTracker();
 
     //private final GoalPlanner goal_planner = new GoalPlanner();
     private final SwerveDrivePoseEstimator pose_estimator = swerve.getEstimator();
@@ -121,6 +128,50 @@ public class RobotStateSupervisor extends SubsystemBase {
         robot_state.localizationStatus = LocalizationStatus.LOCALIZED;
         clearSkidAccumulator();
         clearVisionEstimatorDisagreement();
+    }
+
+    //////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
+    /////////////OBJECTIVE TRACKER\\\\\\\\\\\\\\\\
+    //////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
+
+    public int getColumn() {
+        return objective_tracker.getColumn();
+    }
+
+    public NodeLevel getNodeLevel() {
+        return objective_tracker.getNodeLeve();
+    }
+
+    public Command shiftNodeCommand(Direction direction) {
+        return objective_tracker.shiftNodeCommand(direction);
+    }
+
+    public SuperstructureState getDesiredSuperstructureState() {
+        NodeLevel selectedLevel = objective_tracker.getNodeLeve();
+        int selectedColumn = objective_tracker.getColumn();
+
+        switch(selectedLevel) {
+            case HIGH:
+                if(selectedColumn == 1 || selectedColumn == 4 || selectedColumn == 7)
+                    return SuperstructureState.Preset.HIGH_CUBE.getState();
+                return SuperstructureState.Preset.HIGH_CONE.getState();
+            case MID:
+                if(selectedColumn == 1 || selectedColumn == 4 || selectedColumn == 7)
+                    return SuperstructureState.Preset.MID_CUBE.getState();
+                return SuperstructureState.Preset.MID_CONE.getState();
+            case HYBRID:
+                return SuperstructureState.Preset.LOW_CUBE.getState();
+        }
+        return SuperstructureState.Preset.HOLDING.getState();
+    }
+
+    public SuperstructureState getDesiredHoldingSuperstructureState() {
+        if(RobotContainer.manipulator.getGamePieceDetected().equals(GamePiece.CONE)) {
+            return SuperstructureState.Preset.HOLDING_CONE.getState();
+        } else if(RobotContainer.manipulator.getGamePieceDetected().equals(GamePiece.CUBE)) {
+            return SuperstructureState.Preset.HOLDING_CUBE.getState();
+        }
+        return SuperstructureState.Preset.HOLDING_NADA.getState();
     }
 
 

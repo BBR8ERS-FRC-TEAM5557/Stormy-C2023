@@ -94,9 +94,9 @@ public final class Constants {
     public int elevatorLimitSwitch;
     public String canbus_name;
 
-    public int underglow_start_index;
-    public int underglow_end_index;
-    public int underglow_num_leds;
+    public int elevatorbeam_start_index;
+    public int elevatorbeam_end_index;
+    public int elevatorbeam_num_leds;
   }
 
   public static final PortConstants ports = new PortConstants();
@@ -105,13 +105,13 @@ public final class Constants {
     ports.danny_controller = 1;
 
     ports.ph = 2;
-    ports.candle = 16;
+    ports.candle = 5;
     ports.pigeon = 15;
     ports.canbus_name = "canivore1";
 
-    ports.underglow_start_index = 0;
-    ports.underglow_end_index = 67;
-    ports.underglow_num_leds = ports.underglow_end_index - ports.underglow_start_index;
+    ports.elevatorbeam_start_index = 0;
+    ports.elevatorbeam_end_index = 67;
+    ports.elevatorbeam_num_leds = ports.elevatorbeam_end_index - ports.elevatorbeam_start_index;
   }
 
   public static class PathPlannerConstants {
@@ -150,7 +150,7 @@ public final class Constants {
   static {
     follower.tolerance = new Pose2d(new Translation2d(Units.inchesToMeters(2.0), Units.inchesToMeters(2.0)), Rotation2d.fromDegrees(3.0));
 
-    follower.theta_kP = 0.1;
+    follower.theta_kP = 4.0;
     follower.theta_kI = 0.0;
     follower.theta_kD = 0.0;
     follower.theta_kV = 2.0 * Math.PI;

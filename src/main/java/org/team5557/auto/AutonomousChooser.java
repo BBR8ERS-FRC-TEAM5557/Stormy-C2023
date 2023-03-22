@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team5557.Constants;
+import org.team5557.FieldConstants;
 import org.team5557.RobotContainer;
 import org.team5557.planners.superstructure.util.SuperstructureState;
 import org.team5557.subsystems.intake.commands.IntakeAuto;
@@ -190,7 +191,7 @@ public class AutonomousChooser {
     }
 
     public void resetRobotPose(SequentialCommandGroup command, PathPlannerTrajectory trajectory) {
-        Pose2d start = trajectory.getInitialPose();
+        Pose2d start = FieldConstants.allianceFlip(trajectory.getInitialPose());
 
         command.addCommands(new InstantCommand(() -> RobotContainer.swerve.setPose(start)));
     }
@@ -198,12 +199,12 @@ public class AutonomousChooser {
     private Command getPathFollowingCommand(PathPlannerTrajectory trajectory) {
         return new PPSwerveControllerCommand(
             trajectory, 
-            () -> RobotContainer.swerve.getPose(), // Pose supplier
+            () -> FieldConstants.allianceFlip(RobotContainer.swerve.getPose()), // Pose supplier
             RobotContainer.raw_controllers.xController, // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
             RobotContainer.raw_controllers.yController, // Y controller (usually the same values as X controller)
             RobotContainer.raw_controllers.rotationController, // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
             chassisSpeed -> RobotContainer.swerve.drive(chassisSpeed), // Module states consumer
-            false, //flip path based on alliance
+            true, //flip path based on alliance
             RobotContainer.swerve // Requires this drive subsystem
         );
     }

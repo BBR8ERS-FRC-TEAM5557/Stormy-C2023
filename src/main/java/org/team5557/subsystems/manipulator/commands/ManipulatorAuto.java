@@ -39,7 +39,7 @@ public class ManipulatorAuto {
     public static Command ejectCone() {
         return 
             Commands.sequence(
-                startEjectingCube(),
+                startEjectingCone(),
                 Commands.waitSeconds(1.0),
                 stopManipulator()
             );

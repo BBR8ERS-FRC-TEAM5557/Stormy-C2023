@@ -84,14 +84,14 @@ public abstract class ServoMotorSubsystemAbs extends SubsystemBase {
         public double kMaxUnitsLimit = Double.POSITIVE_INFINITY;
         public double kMinUnitsLimit = Double.NEGATIVE_INFINITY;
 
-        public int kStatus0FrameRate = 20;
-        public int kStatus1FrameRate = 20;
-        public int kStatus2FrameRate = 20;
-        public int kStatus3FrameRate = 20;
-        public int kStatus4FrameRate = 20;
-        public int kStatus5FrameRate = 20;
+        public int kStatus0FrameRate = 10;
+        public int kStatus1FrameRate = 200;
+        public int kStatus2FrameRate = 1000;
+        public int kStatus3FrameRate = 1000;
+        public int kStatus4FrameRate = 1000;
+        public int kStatus5FrameRate = 10;
+        public int kStatus6FrameRate = 10;
 
-        public int kStatusFrame8UpdateRate = 1000;
         public boolean kRecoverPositionOnReset = false;
     }
 
@@ -250,6 +250,7 @@ public abstract class ServoMotorSubsystemAbs extends SubsystemBase {
         mMaster.setPeriodicFramePeriod(PeriodicFrame.kStatus3, mConstants.kStatus3FrameRate);
         mMaster.setPeriodicFramePeriod(PeriodicFrame.kStatus4, mConstants.kStatus4FrameRate);
         mMaster.setPeriodicFramePeriod(PeriodicFrame.kStatus5, mConstants.kStatus5FrameRate);
+        mMaster.setPeriodicFramePeriod(PeriodicFrame.kStatus5, mConstants.kStatus6FrameRate);
 
 
         for (int i = 0; i < mSlaves.length; ++i) {

@@ -106,7 +106,7 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
         mConstants = constants;
         mMaster = SparkMaxFactory.createDefaultSparkMax(mConstants.kMasterConstants.id.getDeviceNumber());//new CANSparkMax(mConstants.kMasterConstants.id.getDeviceNumber(), MotorType.kBrushless);
         mMasterPID = mMaster.getPIDController();
-        mMasterEncoder = mMaster.getAlternateEncoder(Type.kQuadrature, 8192);
+        mMasterEncoder = mMaster.getAlternateEncoder(8192);
 
         mSlaves = new CANSparkMax[mConstants.kSlaveConstants.length];
 
@@ -476,7 +476,7 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
     }
 
     public void zeroSensors() {
-        mMasterEncoder.setPosition(0.0);
+        mMasterEncoder.setPosition(10.0);
     }
 
     public boolean atHomingLocation() {

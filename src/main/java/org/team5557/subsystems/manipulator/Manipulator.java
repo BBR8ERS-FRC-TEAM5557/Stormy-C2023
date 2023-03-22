@@ -10,6 +10,7 @@ import org.library.team3061.util.CANDeviceFinder;
 import org.library.team3061.util.CANDeviceId.CANDeviceType;
 import org.littletonrobotics.junction.Logger;
 import org.team5557.Constants;
+import org.team5557.state.goal.ObjectiveTracker.GamePiece;
 import org.team5557.subsystems.manipulator.util.ManipulatorState;
 
 import com.revrobotics.CANSparkMax;
@@ -75,5 +76,9 @@ public class Manipulator extends SubsystemBase {
 
     public ManipulatorState getManipulatorState() {
         return new ManipulatorState(mTopRollerMotor.getAppliedOutput(), mBottomRollerMotor.getAppliedOutput());
+    }
+
+    public GamePiece getGamePieceDetected() {
+        return GamePiece.CONE;
     }
 }

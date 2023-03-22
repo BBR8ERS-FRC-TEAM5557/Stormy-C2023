@@ -23,7 +23,7 @@ public class ElevatorManual extends CommandBase {
 
     @Override
     public void execute() {
-        elevator.setOpenLoop(elevatorJogger.getAsDouble() * ElevatorSubsystemConstants.kMaxManualPower);
+        elevator.setOpenLoop(elevatorJogger.getAsDouble());// * ElevatorSubsystemConstants.kMaxManualPower);
     }
 
     @Override

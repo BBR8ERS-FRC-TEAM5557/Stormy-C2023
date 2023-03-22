@@ -113,20 +113,6 @@ public class Elevator extends ServoMotorSubsystemRel {
         mMaster.enableSoftLimit(SoftLimitDirection.kForward, true);
         mMaster.enableSoftLimit(SoftLimitDirection.kReverse, true);
     }
-    
-    //motion profiling with automatic feedforward
-    public synchronized void setMotionProfilingGoal(double position) {
-        if (mControlState != ControlState.MOTION_PROFILING_WPI) {
-            mControlState = ControlState.MOTION_PROFILING_WPI;
-            mPreviousProfiledState = new TrapezoidProfile.State(mPeriodicIO.position_units, mPeriodicIO.velocity_units_per_s);
-        }
-        TrapezoidProfile.State goal = new TrapezoidProfile.State(position, 0.0);
-
-        TrapezoidProfile profile = new TrapezoidProfile(mConstants.profileConstraints, goal, mPreviousProfiledState);
-        mPreviousProfiledState = profile.calculate(mConstants.kLooperDt);
-        mPeriodicIO.demand = constrainUnits(mPreviousProfiledState.position);
-        mPeriodicIO.feedforward = feedforward.calculate(goal.velocity);
-    }
 
     public synchronized void setMotionProfilingGoal(IMotionProfileGoal goal) {
         if (mControlState != ControlState.MOTION_PROFILING_254) {
@@ -136,7 +122,7 @@ public class Elevator extends ServoMotorSubsystemRel {
         }
         Setpoint setpoint = mSetpointGenerator.getSetpoint(mMotionProfileConstraints, goal, mMotionStateSetpoint, mPeriodicIO.timestamp + mConstants.kLooperDt);
         mPeriodicIO.demand = constrainUnits(setpoint.motion_state.pos());
-        mPeriodicIO.feedforward = feedforward.calculate(setpoint.motion_state.vel());
+        mPeriodicIO.feedforward = feedforward.calculate(setpoint.motion_state.vel(), setpoint.motion_state.acc());
         mMotionStateSetpoint = setpoint.motion_state;
     }
 }

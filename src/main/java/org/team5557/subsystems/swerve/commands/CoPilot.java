@@ -36,7 +36,6 @@ public class CoPilot extends CommandBase {
 
     private final Swerve swerve;
     private final RobotStateSupervisor state;
-    private final ObjectiveTracker objective_tracker;
 
     private final PeriodicIO m_periodicIO;
     //private final LEDs leds;
@@ -49,7 +48,6 @@ public class CoPilot extends CommandBase {
         m_periodicIO = new PeriodicIO();
 
         this.swerve = RobotContainer.swerve;
-        this.objective_tracker = RobotContainer.objective_tracker;
         this.state = RobotContainer.state_supervisor;
         this.follower = RobotContainer.raw_controllers.follower;
         this.alignController = RobotContainer.raw_controllers.alignController;
@@ -84,7 +82,7 @@ public class CoPilot extends CommandBase {
 
         m_periodicIO.localizationStatus = m_periodicIO.state.localizationStatus;
 
-        int column = objective_tracker.selectedColumn;
+        int column = state.getColumn();
 
 
 
@@ -131,7 +129,7 @@ public class CoPilot extends CommandBase {
                 initialVelocityHeading = robotToAlignment.getAngle();
                 initialSpeed = 0.0;
             }
-
+            //m_periodicIO.active_trajectory = 
             PathPlanner.generatePath(
                 Constants.pathplanner.medium_constraints, 
                 new PathPoint(
@@ -165,20 +163,28 @@ public class CoPilot extends CommandBase {
             boolean isBlue = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue);
             Rotation2d goalRotation = isBlue ? new Rotation2d() : Rotation2d.fromDegrees(180);
 
+            double multiplier = 1.0;
+            if(!isBlue) {
+                multiplier = -1.0;
+            }
+
+
             m_periodicIO.target_chassis_speeds = 
                 new ChassisSpeeds(
-                    translationXSupplier.getAsDouble(), 
-                    translationYSupplier.getAsDouble(), 
-                    RobotContainer.raw_controllers.calculateAlign(goalRotation.getRadians()));
+                    translationXSupplier.getAsDouble() * multiplier, 
+                    translationYSupplier.getAsDouble() * multiplier, 
+                    RobotContainer.raw_controllers.calculateTheta(goalRotation.getRadians()));
+            //System.out.println(m_periodicIO.target_chassis_speeds);
         }
 
-        Logger.getInstance().recordOutput("CoPilot/Active Trajectory", m_periodicIO.active_trajectory);
+        //Logger.getInstance().recordOutput("CoPilot/Active Trajectory", m_periodicIO.active_trajectory);
         Logger.getInstance().recordOutput("CoPilot/At Goal", atGoal());
-        Logger.getInstance().recordOutput("CoPilot/Goal Pose", m_periodicIO.active_trajectory.getEndState().poseMeters);
+        Logger.getInstance().recordOutput("CoPilot/TargetSpeeds", m_periodicIO.target_chassis_speeds.omegaRadiansPerSecond);
+        //Logger.getInstance().recordOutput("CoPilot/Goal Pose", m_periodicIO.active_trajectory.getEndState().poseMeters);
 
-        Logger.getInstance().recordOutput("CoPilot/Next Pose", m_periodicIO.desired_state.poseMeters);
-        Logger.getInstance().recordOutput("CoPilot/Next Velocity", m_periodicIO.desired_state.velocityMetersPerSecond);
-        Logger.getInstance().recordOutput("CoPilot/Next Acceleration", m_periodicIO.desired_state.accelerationMetersPerSecondSq);
+        //Logger.getInstance().recordOutput("CoPilot/Next Pose", m_periodicIO.desired_state.poseMeters);
+        //Logger.getInstance().recordOutput("CoPilot/Next Velocity", m_periodicIO.desired_state.velocityMetersPerSecond);
+        //Logger.getInstance().recordOutput("CoPilot/Next Acceleration", m_periodicIO.desired_state.accelerationMetersPerSecondSq);
     }
 
     public synchronized void writeOutputs() {

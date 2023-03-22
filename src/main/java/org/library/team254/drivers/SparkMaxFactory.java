@@ -22,6 +22,10 @@ public class SparkMaxFactory {
         public int STATUS_FRAME_0_RATE_MS = 10;
         public int STATUS_FRAME_1_RATE_MS = 1000;
         public int STATUS_FRAME_2_RATE_MS = 1000;
+        public int STATUS_FRAME_3_RATE_MS = 1000;
+        public int STATUS_FRAME_4_RATE_MS = 1000;
+        public int STATUS_FRAME_5_RATE_MS = 1000;
+        public int STATUS_FRAME_6_RATE_MS = 1000;
 
         public double OPEN_LOOP_RAMP_RATE = 0.0;
         public double CLOSED_LOOP_RAMP_RATE = 0.0;
@@ -70,6 +74,10 @@ public class SparkMaxFactory {
         handleCANError(id, sparkMax.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, config.STATUS_FRAME_0_RATE_MS), "set status0 rate");
         handleCANError(id, sparkMax.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, config.STATUS_FRAME_1_RATE_MS), "set status1 rate");
         handleCANError(id, sparkMax.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, config.STATUS_FRAME_2_RATE_MS), "set status2 rate");
+        handleCANError(id, sparkMax.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, config.STATUS_FRAME_3_RATE_MS), "set status3 rate");
+        handleCANError(id, sparkMax.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, config.STATUS_FRAME_4_RATE_MS), "set status4 rate");
+        handleCANError(id, sparkMax.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, config.STATUS_FRAME_5_RATE_MS), "set status5 rate");
+        handleCANError(id, sparkMax.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, config.STATUS_FRAME_6_RATE_MS), "set status6 rate");
 
         sparkMax.clearFaults();
 

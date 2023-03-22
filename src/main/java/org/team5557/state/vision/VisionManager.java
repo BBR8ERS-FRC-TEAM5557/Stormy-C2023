@@ -43,7 +43,7 @@ public class VisionManager {
         this.limelight =  new Limelight("driver");
 
         this.anakin = new PhotonCameraExtension("Arducam_OV9281_Anakin", kAnakinCameraToOrigin);
-        this.obi_wan = new PhotonCameraExtension("Arducam_OV9281_Obi_Wan", new Transform3d());
+        this.obi_wan = new PhotonCameraExtension("Arducam_OV9281_Obi_Wan", kObiwanCameraToOrigin);
         camera_list = Collections.unmodifiableList(
                 List.of(
                         anakin,
@@ -58,11 +58,11 @@ public class VisionManager {
 
         ShuffleboardTab tab = Shuffleboard.getTab(Constants.shuffleboard.vision_readout_key);
         if (Constants.tuning_mode) {
-            tab.addCamera("Anakin", "Arducam_OV9281_Anakin", "http://10.55.57.11:1184", "http://photonvision.local:1184")
+            tab.addCamera("ani", "Arducam_OV9281_Ani", "http://10.55.57.11:1184", "http://photonvision.local:1184")
                 .withSize(2, 2)
                 .withPosition(1, 0);
 
-            tab.addCamera("ObiWan", "Arducam_OV9281_Obi_Wan", "http://10.55.57.11:1185", "http://photonvision.local:1185")
+            tab.addCamera("obi", "Arducam_OV9281_Obi", "http://10.55.57.11:1185", "http://photonvision.local:1185")
                 .withSize(2, 2)
                 .withPosition(4, 0);
 
@@ -110,7 +110,9 @@ public class VisionManager {
                     }
 
                     Pose3d camPose = fieldToTag.transformBy(camToTarget.inverse());
-                    Pose2d visionMeasurement = camPose.transformBy(camera.CAMERA_TO_ROBOT).toPose2d();
+                    Pose3d robotPose = camPose.transformBy(camera.CAMERA_TO_ROBOT);
+                    Pose2d visionMeasurement = robotPose.toPose2d();
+                    
 
                     visionPose2ds.add(visionMeasurement);
                     tagPose3ds.add(camPose);

@@ -14,7 +14,7 @@ public class ElevatorSubsystemConstants {
     public static double kV = 0.0;
     public static double kA = 0.0;
 
-    public static double kMaxManualPower = 0.6;
+    public static double kMaxManualPower = 0.4;
     
     private static boolean invert_motors = true;
 
@@ -22,14 +22,14 @@ public class ElevatorSubsystemConstants {
     static {
         kElevatorConstants.kName = "Elevator";
 
-        kElevatorConstants.kMasterConstants.id = new CANDeviceId(CANDeviceType.SPARK_MAX, 30);
+        kElevatorConstants.kMasterConstants.id = new CANDeviceId(CANDeviceType.SPARK_MAX, 31);
         kElevatorConstants.kMasterConstants.invert_motor = invert_motors;
 
 
         kElevatorConstants.kSlaveConstants = new SparkMaxConstants[2];
 
         kElevatorConstants.kSlaveConstants[0] = new SparkMaxConstants();
-        kElevatorConstants.kSlaveConstants[0].id = new CANDeviceId(CANDeviceType.SPARK_MAX, 31);
+        kElevatorConstants.kSlaveConstants[0].id = new CANDeviceId(CANDeviceType.SPARK_MAX, 30);
         kElevatorConstants.kSlaveConstants[0].invert_motor = invert_motors;
 
         kElevatorConstants.kSlaveConstants[1] = new SparkMaxConstants();
@@ -49,7 +49,7 @@ public class ElevatorSubsystemConstants {
         kElevatorConstants.kIZone = 0; // Ticks
         kElevatorConstants.kDeadband = 0; // units
 
-        kElevatorConstants.kPositionKp = 0.2;
+        kElevatorConstants.kPositionKp = 0.002;
         kElevatorConstants.kPositionKi = 0;
         kElevatorConstants.kPositionKd = 0;
         kElevatorConstants.kPositionKf = 0;
@@ -72,8 +72,8 @@ public class ElevatorSubsystemConstants {
         kElevatorConstants.kStatus0FrameRate = 20;
         kElevatorConstants.kStatus1FrameRate = 200;
         kElevatorConstants.kStatus2FrameRate = 200;
-        kElevatorConstants.kStatus3FrameRate = 200;
-        kElevatorConstants.kStatus4FrameRate = 200;
+        kElevatorConstants.kStatus3FrameRate = 20;
+        kElevatorConstants.kStatus4FrameRate = 20;
         kElevatorConstants.kStatus5FrameRate = 200;
     }
 

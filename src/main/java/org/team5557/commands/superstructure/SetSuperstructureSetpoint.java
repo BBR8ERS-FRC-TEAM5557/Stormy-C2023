@@ -35,6 +35,12 @@ public class SetSuperstructureSetpoint extends CommandBase {
         addRequirements(shoulder);
     }
 
+    public SetSuperstructureSetpoint(Supplier<SuperstructureState> stateSupplier) {
+        this.stateSupplier = stateSupplier;
+        this.elevatorJogger = () -> 0.0;
+        addRequirements(shoulder, elevator);
+    }
+
     @Override
     public void execute() {
         SuperstructureState state = stateSupplier.get();
@@ -46,7 +52,7 @@ public class SetSuperstructureSetpoint extends CommandBase {
         } else {
             elevator.setOpenLoop(elevatorJogger.getAsDouble() * ElevatorSubsystemConstants.kMaxManualPower);
         }*/
-        //elevator.setOpenLoop(elevatorJogger.getAsDouble() * ElevatorSubsystemConstants.kMaxManualPower);
+        elevator.setOpenLoop(elevatorJogger.getAsDouble() * ElevatorSubsystemConstants.kMaxManualPower);
 
         MotionProfileGoal shoulderState = new MotionProfileGoal(state.shoulder);
         shoulder.setMotionProfilingGoal(shoulderState, 0.0);

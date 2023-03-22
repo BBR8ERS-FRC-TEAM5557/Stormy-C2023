@@ -128,6 +128,14 @@ public class ObjectiveTracker extends SubsystemBase {
         Logger.getInstance().recordOutput("ObjectiveTracker/SelectedLevel", selectedLevel.toString());
     }
 
+    public synchronized NodeLevel getNodeLeve() {
+        return selectedLevel;
+    }
+
+    public synchronized int getColumn() {
+        return selectedColumn;
+    }
+
     public synchronized SuperstructureState getDesiredSuperstructureState() {
         switch(selectedLevel) {
             case HIGH:
