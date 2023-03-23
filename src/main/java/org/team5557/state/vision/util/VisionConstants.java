@@ -5,6 +5,7 @@ import org.library.team6328.util.PolynomialRegression;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 
 public class VisionConstants {
         public static final PolynomialRegression xyStdDevModel;
@@ -35,10 +36,10 @@ public class VisionConstants {
                                 1);
         }
 
-        public static final Transform3d kAnakinCameraToOrigin = new Transform3d();
-                /*new Transform3d(
-                        new Translation3d(0.0, 0.0, 0.0),
-                        new Rotation3d(0.0, 180.0, 0.0));*/
+        public static final Transform3d kAnakinCameraToOrigin =
+                new Transform3d(
+                        new Translation3d(Units.inchesToMeters(-7.5), Units.inchesToMeters(10.0), Units.inchesToMeters(0.0)),
+                        new Rotation3d(0.0, Units.degreesToRadians(180.0), 0.0));
 
         public static final Transform3d kObiwanCameraToOrigin = new Transform3d();
                 /*new Transform3d(

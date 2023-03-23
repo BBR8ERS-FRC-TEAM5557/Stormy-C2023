@@ -129,7 +129,7 @@ public class CoPilot extends CommandBase {
                 initialVelocityHeading = robotToAlignment.getAngle();
                 initialSpeed = 0.0;
             }
-            //m_periodicIO.active_trajectory = 
+            m_periodicIO.active_trajectory = 
             PathPlanner.generatePath(
                 Constants.pathplanner.medium_constraints, 
                 new PathPoint(
@@ -156,6 +156,11 @@ public class CoPilot extends CommandBase {
             m_periodicIO.desired_state = (PathPlannerState) m_periodicIO.active_trajectory.sample(currentTimestamp - regenerationTimestamp);
             Pose2d currentPose = m_periodicIO.state.estimatedPose;
             m_periodicIO.target_chassis_speeds = this.follower.calculate(currentPose, m_periodicIO.desired_state);
+
+            boolean isBlue = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue);
+            Rotation2d goalRotation = isBlue ? new Rotation2d() : Rotation2d.fromDegrees(180);
+            
+            m_periodicIO.target_chassis_speeds.omegaRadiansPerSecond = RobotContainer.raw_controllers.calculateTheta(goalRotation.getRadians());
             
             //potentially use if the rotation on the path sucks
             //m_periodicIO.target_chassis_speeds.omegaRadiansPerSecond = RobotContainer.raw_controllers.calculateAlign(goalRotation.getRadians());
@@ -180,7 +185,7 @@ public class CoPilot extends CommandBase {
         //Logger.getInstance().recordOutput("CoPilot/Active Trajectory", m_periodicIO.active_trajectory);
         Logger.getInstance().recordOutput("CoPilot/At Goal", atGoal());
         Logger.getInstance().recordOutput("CoPilot/TargetSpeeds", m_periodicIO.target_chassis_speeds.omegaRadiansPerSecond);
-        //Logger.getInstance().recordOutput("CoPilot/Goal Pose", m_periodicIO.active_trajectory.getEndState().poseMeters);
+        Logger.getInstance().recordOutput("CoPilot/Goal Pose", m_periodicIO.active_trajectory.getEndState().poseMeters);
 
         //Logger.getInstance().recordOutput("CoPilot/Next Pose", m_periodicIO.desired_state.poseMeters);
         //Logger.getInstance().recordOutput("CoPilot/Next Velocity", m_periodicIO.desired_state.velocityMetersPerSecond);

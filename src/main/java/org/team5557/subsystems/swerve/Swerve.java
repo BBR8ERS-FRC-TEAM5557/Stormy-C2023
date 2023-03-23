@@ -29,6 +29,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -224,7 +225,7 @@ public class Swerve extends SubsystemBase {
         this.filteredVelocity = KINEMATICS.toChassisSpeeds(filteredStates);
         RobotContainer.state_supervisor.addSkidMeasurement(this.measuredVelocity, this.filteredVelocity);
 
-        estimator.update(getGyroscopeAzimuth(), filteredPositions);
+        estimator.updateWithTime(Timer.getFPGATimestamp(), getGyroscopeAzimuth(), filteredPositions);
 
         switch (driveMode) {
             case OPEN_LOOP:

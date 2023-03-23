@@ -76,7 +76,7 @@ public final class Constants {
   static {
     copilot.chassis_offset = Constants.superstructure.drivebase/2.0;
     copilot.bumper_offset = Units.inchesToMeters(5.0);
-    copilot.alignment_offset = Units.inchesToMeters(12.0);
+    copilot.alignment_offset = Units.inchesToMeters(4.0);
 
     copilot.path_regeneration_time = 1.0;
     copilot.max_path_length = Units.inchesToMeters(150.0);
