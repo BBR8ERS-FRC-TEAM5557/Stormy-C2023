@@ -1,6 +1,7 @@
 package org.team5557.subsystems.swerve;
 
 import org.team5557.Constants;
+import org.team5557.Robot;
 import org.team5557.RobotContainer;
 import org.team5557.state.vision.util.VisionUpdate;
 
@@ -315,7 +316,8 @@ public class Swerve extends SubsystemBase {
     }
 
     public void addVisionMeasurement(VisionUpdate update) {
-        estimator.addVisionMeasurement(update.measuredPose, update.timestamp, update.stdDevs);
+        if(RobotContainer.state_supervisor.getVisionActivated())
+            estimator.addVisionMeasurement(update.measuredPose, update.timestamp, update.stdDevs);
     }
     
     /* CHASSIS SPEEDS */
@@ -364,7 +366,7 @@ public class Swerve extends SubsystemBase {
      * Chassis speeds consumer for PathPlanner
      */
     public void drive(ChassisSpeeds chassisSpeeds) {
-        this.drive(chassisSpeeds, DriveMode.OPEN_LOOP, true, Constants.superstructure.center_of_rotation);
+        this.drive(chassisSpeeds, DriveMode.OPEN_LOOP, false, Constants.superstructure.center_of_rotation);
     }
 
     public void runCharacterizationVolts(double volts) {

@@ -150,13 +150,13 @@ public final class Constants {
   static {
     follower.tolerance = new Pose2d(new Translation2d(Units.inchesToMeters(2.0), Units.inchesToMeters(2.0)), Rotation2d.fromDegrees(3.0));
 
-    follower.theta_kP = 4.0;
+    follower.theta_kP = 3.0;
     follower.theta_kI = 0.0;
     follower.theta_kD = 0.0;
     follower.theta_kV = 2.0 * Math.PI;
     follower.theta_kA = Math.pow(2, follower.theta_kV);
 
-    follower.auto_kP = 0.0;//0.06;
+    follower.auto_kP = 0.06;
     follower.auto_kI = 0.0;
     follower.auto_kD = 0.0;
 

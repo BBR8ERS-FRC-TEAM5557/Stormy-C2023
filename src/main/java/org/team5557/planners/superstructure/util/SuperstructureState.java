@@ -7,20 +7,22 @@ public class SuperstructureState {
     public static enum Preset {
         HOLDING(new SuperstructureState(0.5, 245.0)),
         HOLDING_CONE(new SuperstructureState(0.5, 245.0)), 
-        HOLDING_CUBE(new SuperstructureState(0.5, 245.0)), 
-        HOLDING_NADA(new SuperstructureState(0.5, 245.0)),
+        HOLDING_CUBE(new SuperstructureState(0.5, 260.0)), 
+        HOLDING_NADA(new SuperstructureState(0.5, 270.0)),
 
-        HIGH_CUBE(new SuperstructureState(40.0, 240.0)),
-        MID_CUBE(new SuperstructureState(20.0, 240.0)),
+        HIGH_CUBE(new SuperstructureState(0.0, 240.0)),
+        MID_CUBE(new SuperstructureState(0.0, 240.0)),
         MID_CUBE_SHOOTER(new SuperstructureState(0.0, 230.0)),
-        LOW_CUBE(new SuperstructureState(0.0, 260.0)),
+        LOW_CUBE(new SuperstructureState(0.0, 240.0)),
 
-        HIGH_CONE(new SuperstructureState(40.0, 200.0)),
-        MID_CONE(new SuperstructureState(20.0, 235.0)),
+        HIGH_CONE(new SuperstructureState(0.0, 200.0)),
+        MID_CONE(new SuperstructureState(0.0, 235.0)),
         LOW_CONE(new SuperstructureState(0.0, 235.0)),
 
-        INTAKING_CONE(new SuperstructureState(0.0, 193.5)),
-        INTAKING_CUBE(new SuperstructureState(0.0, 320.0));
+        INTAKING_CONE(new SuperstructureState(0.5, 196.5)),
+        INTAKING_CUBE(new SuperstructureState(0.5, 188.0)),
+
+        INTAKING_CHUTE_CONE(new SuperstructureState(0.5, 245.0));
 
         
         private SuperstructureState state;

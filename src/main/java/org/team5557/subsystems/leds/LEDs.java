@@ -105,7 +105,7 @@ public class LEDs extends SubsystemBase {
             mElevatorBeamStatus.flush();
         }
         mElevatorBeamStatus.state.animation.setLedOffset(mElevatorBeamStatus.colorIndex);
-        mElevatorBeamStatus.state.animation.setLedOffset(mElevatorBeamStatus.LEDCount);
+        mElevatorBeamStatus.state.animation.setNumLed(mElevatorBeamStatus.LEDCount);
         mCandle.animate(mElevatorBeamStatus.state.animation);
     }
 

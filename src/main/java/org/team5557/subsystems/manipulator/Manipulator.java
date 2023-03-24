@@ -79,6 +79,6 @@ public class Manipulator extends SubsystemBase {
     }
 
     public GamePiece getGamePieceDetected() {
-        return GamePiece.CONE;
+        return GamePiece.NONE;
     }
 }

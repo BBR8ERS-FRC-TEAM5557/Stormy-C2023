@@ -10,6 +10,7 @@ import org.team5557.subsystems.swerve.Swerve.DriveMode;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
  
 public class AimDrive extends CommandBase {
@@ -42,11 +43,17 @@ public class AimDrive extends CommandBase {
     @Override
     public void execute() {
         Rotation2d goalAngle = Rotation2d.fromRadians(goalAngleSupplierRadians.getAsDouble());
-        double rotationalVelocity = RobotContainer.raw_controllers.calculateTheta(goalAngle.getRadians()) * swerve.getMotorOutputLimiter();
+        double rotationalVelocity = RobotContainer.raw_controllers.calculateTheta(goalAngle.getRadians());
+
+        boolean isBlue = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue);
+        double multiplier = 1.0;
+        if(!isBlue) {
+            multiplier = -1.0;
+        }
  
         swerve.drive(new ChassisSpeeds(
-                m_translationXSupplier.getAsDouble() * swerve.getMotorOutputLimiter(),
-                m_translationYSupplier.getAsDouble() * swerve.getMotorOutputLimiter(),
+                m_translationXSupplier.getAsDouble() * multiplier,
+                m_translationYSupplier.getAsDouble() * multiplier,
                 rotationalVelocity), DriveMode.OPEN_LOOP, true, Constants.superstructure.center_of_rotation);
     }
  

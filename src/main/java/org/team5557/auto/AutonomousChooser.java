@@ -81,10 +81,10 @@ public class AutonomousChooser {
     public Command getSpitChargeCenter() {
         SequentialCommandGroup command = new SequentialCommandGroup();
 
-        resetRobotPose(command, trajectories.getRPushAndCharge());//trajectories.getSpit_Charge_Center());
+        resetRobotPose(command, trajectories.getBPushAndCharge());//trajectories.getSpit_Charge_Center());
         command.addCommands(IntakeAuto.spitCube());
-        follow(command, trajectories.getRPushAndCharge());//getSpit_Charge_Center());
-        command.addCommands(engage.withTimeout(10.0));
+        follow(command, trajectories.getBPushAndCharge());//getSpit_Charge_Center());
+        command.addCommands(new AutoBalance().withTimeout(10.0));
         command.addCommands(new RunCommand(() -> RobotContainer.swerve.drive(new ChassisSpeeds(), DriveMode.X_OUT, false, Constants.superstructure.center_of_rotation), RobotContainer.swerve));
 
         return command;
@@ -191,20 +191,19 @@ public class AutonomousChooser {
     }
 
     public void resetRobotPose(SequentialCommandGroup command, PathPlannerTrajectory trajectory) {
-        Pose2d start = FieldConstants.allianceFlip(trajectory.getInitialPose());
-
+        Pose2d start = trajectory.getInitialHolonomicPose();
         command.addCommands(new InstantCommand(() -> RobotContainer.swerve.setPose(start)));
     }
 
     private Command getPathFollowingCommand(PathPlannerTrajectory trajectory) {
         return new PPSwerveControllerCommand(
             trajectory, 
-            () -> FieldConstants.allianceFlip(RobotContainer.swerve.getPose()), // Pose supplier
+            () -> RobotContainer.swerve.getPose(), // Pose supplier
             RobotContainer.raw_controllers.xController, // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
             RobotContainer.raw_controllers.yController, // Y controller (usually the same values as X controller)
             RobotContainer.raw_controllers.rotationController, // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
             chassisSpeed -> RobotContainer.swerve.drive(chassisSpeed), // Module states consumer
-            true, //flip path based on alliance
+            false, //flip path based on alliance
             RobotContainer.swerve // Requires this drive subsystem
         );
     }

@@ -3,11 +3,14 @@ package org.team5557.state.vision;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.library.team6328.util.Alert;
 import org.library.team6328.util.Alert.AlertType;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
+import org.littletonrobotics.junction.networktables.LoggedDashboardInput;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.team5557.Constants;
 import org.team5557.FieldConstants;
@@ -31,6 +34,7 @@ public class VisionManager {
     private final PhotonCameraExtension anakin;
     private final PhotonCameraExtension obi_wan;
     private final List<PhotonCameraExtension> camera_list;
+    private boolean visionActive = true;
 
     private Consumer<VisionUpdate> visionConsumer;
     private Consumer<Pose2d> disagreementConsumer;
@@ -58,23 +62,19 @@ public class VisionManager {
 
         ShuffleboardTab tab = Shuffleboard.getTab(Constants.shuffleboard.vision_readout_key);
         if (Constants.tuning_mode) {
-            tab.addCamera("ani", "Arducam_OV9281_Ani", "http://10.55.57.11:1184", "http://photonvision.local:1184")
-                .withSize(2, 2)
-                .withPosition(1, 0);
+            tab.addCamera("ani", "Arducam_OV9281_Ani", "http://10.55.57.11:1184/stream.mjpg")
+                .withSize(4, 4)
+                .withPosition(0, 0)
+                .withProperties(Map.of("Show controls", false));
 
-            tab.addCamera("obi", "Arducam_OV9281_Obi", "http://10.55.57.11:1185", "http://photonvision.local:1185")
-                .withSize(2, 2)
-                .withPosition(4, 0);
-
-            tab.addCamera("Limelight", "limelight", "http://10.55.57.13:5800")
-                .withSize(3, 3);
+            tab.addCamera("obi", "Arducam_OV9281_Obi", "http://10.55.57.11:1182/stream.mjpg")
+                .withSize(4, 4)
+                .withPosition(4, 0)
+                .withProperties(Map.of("Show controls", false));
         }
 
         ShuffleboardTab driver = Shuffleboard.getTab(Constants.shuffleboard.driver_readout_key);
-        if (Constants.tuning_mode) {
-            tab.addCamera("ll", "limelight-driver", "http://10.55.57.13:5800")
-                .withSize(3, 3);
-        }
+        driver.addBoolean("Vision Active", this::getVisionActivated);
     }
 
     public void update() {
@@ -156,5 +156,13 @@ public class VisionManager {
     public void setDataInterface(Consumer<VisionUpdate> visionConsumer, Consumer<Pose2d> disagreementConsumer) {
         this.visionConsumer = visionConsumer;
         this.disagreementConsumer = disagreementConsumer;
+    }
+
+    public boolean getVisionActivated() {
+        return visionActive;
+    }
+
+    public void setVisionActivated(boolean enable) {
+        visionActive = enable;
     }
 }

@@ -30,6 +30,7 @@ public class RobotStateSupervisor extends SubsystemBase {
 
     //private final GoalPlanner goal_planner = new GoalPlanner();
     private final SwerveDrivePoseEstimator pose_estimator = swerve.getEstimator();
+    private GamePiece lastIntaked = null;
 
     public RobotStateSupervisor() {
         vision_manager.setDataInterface(swerve::addVisionMeasurement, this::addVisionCheck);
@@ -131,6 +132,20 @@ public class RobotStateSupervisor extends SubsystemBase {
     }
 
     //////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
+    ///////////////////Vision\\\\\\\\\\\\\\\\\\\\\
+    //////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
+
+    public boolean getVisionActivated() {
+        return vision_manager.getVisionActivated();
+    }
+
+    public void setEnableVision(boolean enable) {
+        vision_manager.setVisionActivated(enable);
+    }
+
+    
+
+    //////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
     /////////////OBJECTIVE TRACKER\\\\\\\\\\\\\\\\
     //////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -173,7 +188,6 @@ public class RobotStateSupervisor extends SubsystemBase {
         }
         return SuperstructureState.Preset.HOLDING_NADA.getState();
     }
-
 
     public RobotState getRobotState() {
         return robot_state;

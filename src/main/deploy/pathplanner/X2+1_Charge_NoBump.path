@@ -10,14 +10,14 @@
         "x": 2.8316248931313908,
         "y": 4.893980683021587
       },
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "spitCube"
+          "ejectCube"
         ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
@@ -37,7 +37,7 @@
         "x": 5.334933478311511,
         "y": 4.6828782211845015
       },
-      "holonomicAngle": 179.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -76,18 +76,18 @@
     },
     {
       "anchorPoint": {
-        "x": 4.001836413544246,
-        "y": 4.753539725558184
+        "x": 3.9973977324259264,
+        "y": 4.742786923638826
       },
       "prevControl": {
-        "x": 5.325399441706002,
-        "y": 4.670723853491977
+        "x": 5.320960760587684,
+        "y": 4.659971051572619
       },
       "nextControl": {
-        "x": 2.6782733853824894,
-        "y": 4.836355597624391
+        "x": 2.67383470426417,
+        "y": 4.8256027957050325
       },
-      "holonomicAngle": 179.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -112,7 +112,7 @@
         "x": 2.655822983005558,
         "y": 4.782357025081889
       },
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 0.0,
       "isReversal": true,
       "velOverride": null,
       "isLocked": false,
@@ -126,18 +126,18 @@
     },
     {
       "anchorPoint": {
-        "x": 3.999654163397954,
-        "y": 4.757657777007178
+        "x": 4.0018860362872,
+        "y": 4.748248067457145
       },
       "prevControl": {
-        "x": 2.5079058028672447,
-        "y": 4.799229522591036
+        "x": 2.5101376757564906,
+        "y": 4.789819813041003
       },
       "nextControl": {
-        "x": 5.948036135926873,
-        "y": 4.703360657060398
+        "x": 5.950268008816121,
+        "y": 4.693950947510365
       },
-      "holonomicAngle": 179.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -155,39 +155,14 @@
         "y": 3.49406381644252
       },
       "prevControl": {
-        "x": 6.31176563508726,
-        "y": 4.569655816978192
+        "x": 6.545521250032343,
+        "y": 3.8033484392202066
       },
       "nextControl": {
-        "x": 6.31176563508726,
-        "y": 4.569655816978192
+        "x": 7.637906848108063,
+        "y": 2.9456737200121177
       },
       "holonomicAngle": -39.71718171139931,
-      "isReversal": true,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 4.004387430894003,
-        "y": 4.752158434153565
-      },
-      "prevControl": {
-        "x": 5.473193204948287,
-        "y": 4.708352152205063
-      },
-      "nextControl": {
-        "x": 2.5355816568397183,
-        "y": 4.795964716102067
-      },
-      "holonomicAngle": 179.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -201,45 +176,18 @@
     },
     {
       "anchorPoint": {
-        "x": 1.8619804516898533,
-        "y": 3.811001559611626
+        "x": 5.7882682582971245,
+        "y": 2.9548805730141474
       },
       "prevControl": {
-        "x": 1.8316478857716922,
-        "y": 4.291668020153669
+        "x": 6.484535059299707,
+        "y": 2.9548805730141474
       },
       "nextControl": {
-        "x": 1.8835555982472643,
-        "y": 3.4691099649668917
+        "x": 5.0920014572945425,
+        "y": 2.9548805730141474
       },
-      "holonomicAngle": 180.0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [
-          "spitCube"
-        ],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 2.4476398526907297,
-        "y": 3.25
-      },
-      "prevControl": {
-        "x": 2.019753538292004,
-        "y": 3.25
-      },
-      "nextControl": {
-        "x": 2.8755261670894554,
-        "y": 3.25
-      },
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -253,15 +201,15 @@
     },
     {
       "anchorPoint": {
-        "x": 4.2,
-        "y": 3.25
+        "x": 3.3768395978073675,
+        "y": 2.95
       },
       "prevControl": {
-        "x": 3.734039176900894,
-        "y": 3.25
+        "x": 4.392834431665431,
+        "y": 2.95
       },
       "nextControl": null,
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -274,44 +222,42 @@
       }
     }
   ],
-  "maxVelocity": null,
-  "maxAcceleration": 3.0,
-  "isReversed": null,
   "markers": [
     {
-      "position": 0.8549027876420452,
+      "position": 0.8033380681818179,
       "names": [
-        "startIntaking"
+        "startSuckingCube",
+        "startPassthroughCube",
+        "prepIntakeCube"
       ]
     },
     {
-      "position": 2.360429243607953,
+      "position": 2.504048295454545,
       "names": [
+        "stopManipulator",
+        "stopIntaking",
+        "prepLowCube"
+      ]
+    },
+    {
+      "position": 3.9753284801136357,
+      "names": [
+        "ejectCube"
+      ]
+    },
+    {
+      "position": 4.990846946022729,
+      "names": [
+        "startPassthroughCube",
+        "prepIntakeCube",
+        "startSuckingCube"
+      ]
+    },
+    {
+      "position": 6.914213423295453,
+      "names": [
+        "stopManipulator",
         "stopIntaking"
-      ]
-    },
-    {
-      "position": 3.937333540482956,
-      "names": [
-        "spitCube"
-      ]
-    },
-    {
-      "position": 5.025590376420457,
-      "names": [
-        "startIntaking"
-      ]
-    },
-    {
-      "position": 6.313887162642048,
-      "names": [
-        "stopIntaking"
-      ]
-    },
-    {
-      "position": 7.826305042613635,
-      "names": [
-        "spitCube"
       ]
     }
   ]

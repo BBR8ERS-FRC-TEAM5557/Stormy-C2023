@@ -13,6 +13,7 @@ import org.team5557.planners.superstructure.util.SuperstructureState;
 import org.team5557.state.RobotStateSupervisor;
 import org.team5557.state.goal.ObjectiveTracker;
 import org.team5557.state.goal.ObjectiveTracker.Direction;
+import org.team5557.state.vision.VisionManager;
 import org.team5557.subsystems.elevator.Elevator;
 import org.team5557.subsystems.elevator.commands.ElevatorManual;
 import org.team5557.subsystems.elevator.commands.HomeElevator;
@@ -26,6 +27,7 @@ import org.team5557.subsystems.intake.commands.SetIntakeState;
 import org.team5557.subsystems.intake.util.IntakeState;
 import org.team5557.subsystems.leds.LEDs;
 import org.team5557.subsystems.manipulator.Manipulator;
+import org.team5557.subsystems.manipulator.commands.ManipulatorAuto;
 import org.team5557.subsystems.manipulator.commands.SetManipulatorState;
 import org.team5557.subsystems.manipulator.commands.SmartEject;
 import org.team5557.subsystems.manipulator.util.ManipulatorState;
@@ -65,7 +67,7 @@ public class RobotContainer {
   public static final Shoulder shoulder = new Shoulder(ShoulderSubsystemConstants.kShoulderConstants);
   public static final Manipulator manipulator = new Manipulator();
   public static final Intake intake = new Intake();
-  public static final LEDs leds = new LEDs();
+  //public static final LEDs leds = new LEDs();
 
   // Controller
   public static final XboxController primary_controller = new XboxController(Constants.ports.primary_controller);
@@ -73,14 +75,8 @@ public class RobotContainer {
 
   // Dashboard inputs / Util
   private final AutonomousChooser autonomous_chooser = new AutonomousChooser(new AutonomousTrajectories());
-
   public static final RawControllers raw_controllers = new RawControllers();
   public static final RobotStateSupervisor state_supervisor = new RobotStateSupervisor();
-  // public static final ObjectiveTracker objective_tracker = new
-  // ObjectiveTracker();
-
-  // private final LoggedDashboardNumber flywheelSpeedInput = new
-  // LoggedDashboardNumber("Flywheel Speed", 1500.0);
 
   // Commands
   public static final Command homeElevatorCommand = new HomeElevator();
@@ -114,154 +110,82 @@ public class RobotContainer {
     new Trigger(primary_controller::getRightBumper).whileTrue(
         copilot);
 
-    /*
-     * Command setScorePosition = new
-     * SetSuperstructureSetpoint(objective_tracker::getDesiredSuperstructureState);
-     * new Trigger(() -> primary_controller.getRightTriggerAxis() >= 0.2)
-     * .whileTrue(setScorePosition)
-     * .onFalse(new
-     * SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING.getState()));
-     */
 
-    // new Trigger(() -> copilot.atPose() &&
-    // setScorePosition.atSetpoint()).onTrue(new SignalEjectGamepiece());
-    /////////// Elevator\\\\\\\\\\\\\\\
-    Command setElevatorCommand = new SetElevatorHeight(12.0);
 
-    Command manualElevatorControl = new ElevatorManual(() -> getElevatorJogger());
-
+    //MANUAL OPERATION FOR TESTING
     new Trigger(() -> danny_controller.getLeftBumper() && danny_controller.getRightBumper()).whileTrue(
-        manualElevatorControl);
-
-    new Trigger(() -> danny_controller.getBButton()).whileTrue(
-        setElevatorCommand);
-
-    /////////// SHOULDER\\\\\\\\\\\\\\\
-    Command setShoulderConeIntake = new SetShoulderAngle(196.5);
-    Command setShoulderConeIntakeSlide = new SetShoulderAngle(294.0);
-    Command setShoulderCubeIntake = new SetShoulderAngle(188.0);
-    Command setShoulderConeHold = new SetShoulderAngle(245.0);
-    Command setShoulderScoring = new SetShoulderAngle(200.0);
-
-    Command manualShoulderControl = new ShoulderManual(() -> getShoulderJogger());
-
-    // Manual
+        new ElevatorManual(() -> getElevatorJogger())
+    );
 
     new Trigger(() -> danny_controller.getRightBumper() && danny_controller.getLeftBumper()).whileTrue(
-        manualShoulderControl);
+        new ShoulderManual(() -> getShoulderJogger())
+    );
+
+    new Trigger(() -> danny_controller.getBButton() && false).whileTrue(
+        new SetElevatorHeight(12.0)
+    );
 
     new Trigger(
         () -> danny_controller.getRightBumper() && danny_controller.getLeftBumper() && danny_controller.getAButton())
         .whileTrue(
-            homeElevatorCommand);
+            homeElevatorCommand
+    );
 
-    /////////// MANIPULATOR\\\\\\\\\\
-    Command scoopCube = new SetManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CUBE.getManipulatorState());
-    Command scoopCone = new SetManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CONE.getManipulatorState());
-    Command scoopCone2 = new SetManipulatorState(
-        ManipulatorState.ManipulatorStates.INTAKING_CONE.getManipulatorState());
-    Command scoopCone3 = new SetManipulatorState(
-        ManipulatorState.ManipulatorStates.INTAKING_CONE.getManipulatorState());
-    Command stopManipulator = new SetManipulatorState(
-        ManipulatorState.ManipulatorStates.DO_NOTHING.getManipulatorState());
-    Command stopManipulator2 = new SetManipulatorState(
-        ManipulatorState.ManipulatorStates.DO_NOTHING.getManipulatorState());
-    Command smartEject = new SmartEject();
-
-    /////////// INTAKE\\\\\\\\\\\\\\\\
-    Command passThroughCube = IntakeAuto.passThroughCube();
-    Command blockedCube = IntakeAuto.blockedCube();
-    Command intakeCube = new SetIntakeState(IntakeState.IntakeStates.INTAKING_CUBE.getIntakeState())
-        .withName("Intaking Cube");
-    Command ejectCube = new SetIntakeState(IntakeState.IntakeStates.EJECT_CUBE.getIntakeState())
-        .withName("Ejecting Cube");
-    Command stopIntake = new SetIntakeState(IntakeState.IntakeStates.DO_NOTHING.getIntakeState())
-        .withName("Stop Intake");
-    Command intakeShiver = new IntakeShiver().withName("Controller Shiver");
-
-    ///////////SUPERSTRUCTURE\\\\\\\\\
 
     //////////// \\\\\\\\\\\\
     //////// INTAKING\\\\\\\\
     //////////// \\\\\\\\\\\\
 
-    // potentially switch pass through cube and intake shive?
-
-    /*
-     * new Trigger(() -> primary_controller.getLeftTriggerAxis() > 0.5).whileTrue(
-     * setShoulderCubeIntake
-     * .alongWith(scoopCube)
-     * .alongWith(passThroughCube.deadlineWith(intakeShiver))
-     * )
-     * .onFalse(stopIntake)
-     * .onFalse(new WaitCommand(5.0).andThen(stopManipulator));*/
-     
-
-    new Trigger(() -> primary_controller.getLeftTriggerAxis() > 0.5).whileTrue(
-        setShoulderCubeIntake
-            .alongWith(scoopCube)
-        //blockedCube.deadlineWith(intakeShiver)
-    )
-        .onFalse(stopIntake);
-
-    new Trigger(() -> primary_controller.getLeftBumper()).whileTrue(
-        setShoulderConeIntake
-          .alongWith(scoopCone)
-    )
-        .onFalse(setShoulderConeHold);
-
-    /*new Trigger(() -> primary_controller.getLeftBumper()).whileTrue(
-        setShoulderConeIntake
-            .alongWith(scoopCone)
-    )
-        .onFalse(setShoulderConeHold);
-    // .onFalse(scoopCone3.raceWith(new
-    // WaitCommand(0.5).andThen(stopManipulator2)));
-
-    /*
-     * new Trigger(() -> primary_controller.getRightBumper()).whileTrue(
-     * setShoulderConeIntakeSlide
-     * .alongWith(scoopCone2))
-     * .onFalse(setShoulderConeHold);
-     */
-
-    //////////// \\\\\\\\\\\\
-    ///////// SCORING\\\\\\\\
-    //////////// \\\\\\\\\\\\
-    Command setSuperstructureSetpointHold = new SetSuperstructureSetpoint(
-        () -> state_supervisor.getDesiredHoldingSuperstructureState());
-    Command objectiveSuperstructureSetter = new SetSuperstructureSetpoint(
-        () -> state_supervisor.getDesiredSuperstructureState(), this::getElevatorJogger);
-    Command specificThang = new SetSuperstructureSetpoint(SuperstructureState.Preset.MID_CUBE_SHOOTER.getState());
-
+    //INTAKING CUBES WITH MANIPULATOR -> Josh hold right Trigger
     new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
-        objectiveSuperstructureSetter)
-        .onFalse(setSuperstructureSetpointHold);
+        new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CUBE.getState(), this::getElevatorJogger)
+            .alongWith(ManipulatorAuto.startSuckingCube())
+    )
+    .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CUBE.getState(), this::getElevatorJogger))
+    .onFalse(ManipulatorAuto.stopManipulator());
+
+    //INTAKING CUBES WITH INTAKE -> Josh hold left Trigger
+    new Trigger(() -> primary_controller.getLeftTriggerAxis() > 0.5).whileTrue(
+        IntakeAuto.blockedCube()
+            .alongWith(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_NADA.getState(), this::getElevatorJogger))
+            .alongWith(ManipulatorAuto.stopManipulator())
+    )
+    .onFalse(IntakeAuto.stopIntaking());
+
+    //INTAKING CONES WITH MANIPULATOR -> Josh hold left Bumper
+    new Trigger(() -> primary_controller.getLeftBumper()).whileTrue(
+        new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CONE.getState(), this::getElevatorJogger)
+            .alongWith(ManipulatorAuto.startSuckingCone())
+    )
+    .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState(), this::getElevatorJogger))
+    .onFalse(ManipulatorAuto.stopManipulator());
+
+    //INTAKING SINGLE SUBSTATION -> danny hold A
+    new Trigger(() -> danny_controller.getAButton()).whileTrue(
+        new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CHUTE_CONE.getState(), this::getElevatorJogger)
+            .alongWith(ManipulatorAuto.startSuckingCone())
+            .alongWith(new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 0.5))
+    )
+        .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState(), this::getElevatorJogger))
+        .onFalse(ManipulatorAuto.stopManipulator());
+
+
+    //////////// \\\\\\\\\\\\
+    ////////SCORING\\\\\\\\\\
+    //////////// \\\\\\\\\\\\
+    new Trigger(() -> danny_controller.getRightTriggerAxis() > 0.5).whileTrue(
+        new SetSuperstructureSetpoint(state_supervisor.getDesiredSuperstructureState(), this::getElevatorJogger)
+    )
+        .onFalse(new SetSuperstructureSetpoint(state_supervisor.getDesiredHoldingSuperstructureState(), this::getElevatorJogger));
 
     new Trigger(primary_controller::getAButton)
-        .onTrue(smartEject)
+        .onTrue(new SmartEject())
         .onTrue(IntakeAuto.spitCube());
 
-    /*
-     * new Trigger(primary_controller::getYButton)
-     * .onTrue(new
-     * SetManipulatorState(ManipulatorState.ManipulatorStates.EJECT_CONE.
-     * getManipulatorState()))
-     * .onFalse(new
-     * SetManipulatorState(ManipulatorState.ManipulatorStates.DO_NOTHING.
-     * getManipulatorState()));
-     * new Trigger(primary_controller::getBButton).onTrue(IntakeAuto.spitCube());
-     * 
-     * new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
-     * setElevatorCommand
-     * .alongWith(
-     * Commands.waitUntil(() -> elevator.atSetpoint())
-     * .andThen(setShoulderScoring)
-     * )
-     * );
-     */
 
-    ///////// CHARGE STATION\\\\\\\\\\\
+    ////////////////\\\\\\\\\\\\\\\\\\
+    /////////CHARGE STATION\\\\\\\\\\\
+    ////////////////\\\\\\\\\\\\\\\\\\
     new Trigger(primary_controller::getXButton).whileTrue(new AutoBalance());
 
     new Trigger(() -> danny_controller.getLeftTriggerAxis() > 0.5 && danny_controller.getRightTriggerAxis() > 0.5)
@@ -279,10 +203,11 @@ public class RobotContainer {
 
     new Trigger(() -> primary_controller.getPOV() == 270).whileTrue(
         new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 1.5));
+    
 
-    //////////// \\\\\\\\\\\\
-    ///////// DANNY\\\\\\\\\\
-    //////////// \\\\\\\\\\\\
+    ////////////\\\\\\\\\\\\
+    ////////OBJECTIVE\\\\\\\
+    ////////////\\\\\\\\\\\\
 
     // Adjust Scoring objectives
     new Trigger(() -> danny_controller.getPOV() == 0).whileTrue(
@@ -293,6 +218,13 @@ public class RobotContainer {
         state_supervisor.shiftNodeCommand(Direction.DOWN));
     new Trigger(() -> danny_controller.getPOV() == 270).whileTrue(
         state_supervisor.shiftNodeCommand(Direction.LEFT));
+
+
+    new Trigger(() -> danny_controller.getAButton() && danny_controller.getYButton()).onTrue(
+        new InstantCommand(() -> RobotContainer.state_supervisor.setEnableVision(
+            !RobotContainer.state_supervisor.getVisionActivated()
+        )
+    ));
   }
 
   /**

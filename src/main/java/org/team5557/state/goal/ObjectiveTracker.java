@@ -213,7 +213,8 @@ public class ObjectiveTracker extends SubsystemBase {
 
     public static enum GamePiece {
         CUBE,
-        CONE
+        CONE,
+        NONE
     }
 
     public static enum NodeLevel {

@@ -24,7 +24,7 @@ public class SetManipulatorState extends CommandBase {
     }
 
     @Override
-    public void end(boolean interrupted) {
-        manipulator.setManipulatorState(new ManipulatorState(0, 0.0));
+    public boolean isFinished() {
+        return true;
     }
 }

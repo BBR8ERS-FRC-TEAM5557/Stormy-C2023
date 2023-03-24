@@ -5,6 +5,7 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.team5557.Constants;
 import org.team5557.FieldConstants;
+import org.team5557.Robot;
 import org.team5557.RobotContainer;
 import org.team5557.state.RobotStateSupervisor;
 import org.team5557.state.RobotStateSupervisor.LocalizationStatus;
@@ -152,7 +153,7 @@ public class CoPilot extends CommandBase {
             this.regenerationTimestamp = this.currentTimestamp;
         }
 
-        if(m_periodicIO.active_trajectory != null) {
+        if(m_periodicIO.active_trajectory != null && state.getVisionActivated()) {
             m_periodicIO.desired_state = (PathPlannerState) m_periodicIO.active_trajectory.sample(currentTimestamp - regenerationTimestamp);
             Pose2d currentPose = m_periodicIO.state.estimatedPose;
             m_periodicIO.target_chassis_speeds = this.follower.calculate(currentPose, m_periodicIO.desired_state);

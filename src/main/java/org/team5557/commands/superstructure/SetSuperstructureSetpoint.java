@@ -55,6 +55,6 @@ public class SetSuperstructureSetpoint extends CommandBase {
         elevator.setOpenLoop(elevatorJogger.getAsDouble() * ElevatorSubsystemConstants.kMaxManualPower);
 
         MotionProfileGoal shoulderState = new MotionProfileGoal(state.shoulder);
-        shoulder.setMotionProfilingGoal(shoulderState, 0.0);
+        shoulder.setMotionProfilingGoal(shoulderState);
     }
 }

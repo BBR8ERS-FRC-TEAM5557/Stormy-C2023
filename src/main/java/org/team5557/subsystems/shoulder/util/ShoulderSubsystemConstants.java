@@ -12,10 +12,10 @@ import edu.wpi.first.math.util.Units;
 
 public class ShoulderSubsystemConstants {
 
-    public static double kS = 0.0;
+    public static double kS = 0.0;//2.01922;
     public static double kG = 0.0;
     public static double kV = 0.0;
-    public static double kA = 0.0;
+    public static double kA = 0.0;//0.0016737;
 
     public static final ServoMotorSubsystemAbsConstants kShoulderConstants = new ServoMotorSubsystemAbsConstants();
     static {
@@ -39,7 +39,7 @@ public class ShoulderSubsystemConstants {
             kShoulderConstants.kIZone = 0; // Ticks
             kShoulderConstants.kDeadband = 0; // Ticks
     
-            kShoulderConstants.kPositionKp = 0.02;
+            kShoulderConstants.kPositionKp = 0.015;
             kShoulderConstants.kPositionKi = 0;
             kShoulderConstants.kPositionKd = 0;
             kShoulderConstants.kPositionKf = 0;
@@ -48,7 +48,7 @@ public class ShoulderSubsystemConstants {
             kShoulderConstants.kPositionDeadband = 0; // Ticks
     
             kShoulderConstants.kCruiseVelocity = 500.0; // units/s
-            kShoulderConstants.kAcceleration = 1200.0; // units / s / s
+            kShoulderConstants.kAcceleration = 500.0; // units / s / s
             kShoulderConstants.profileConstraints = new TrapezoidProfile.Constraints(kShoulderConstants.kCruiseVelocity, kShoulderConstants.kAcceleration);
             kShoulderConstants.kRampRate = 0.0; // s
             kShoulderConstants.kMaxVoltage = 12.0;
