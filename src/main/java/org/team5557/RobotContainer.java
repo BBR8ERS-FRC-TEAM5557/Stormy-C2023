@@ -137,12 +137,21 @@ public class RobotContainer {
     //////////// \\\\\\\\\\\\
 
     //INTAKING CUBES WITH MANIPULATOR -> Josh hold right Trigger
-    new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
+    /*new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
         new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CUBE.getState(), this::getElevatorJogger)
-            .alongWith(ManipulatorAuto.startSuckingCube())
+            .alongWith(ManipulatorAuto.suckCubeStop())
+    )
+    .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CUBE.getState(), this::getElevatorJogger))
+    .onFalse(ManipulatorAuto.stopManipulator());*/
+
+    new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
+        new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CUBE_REVERSED.getState(), this::getElevatorJogger)
+            .alongWith(ManipulatorAuto.suckCubeReverseStop())
     )
     .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CUBE.getState(), this::getElevatorJogger))
     .onFalse(ManipulatorAuto.stopManipulator());
+
+    
 
     //INTAKING CUBES WITH INTAKE -> Josh hold left Trigger
     new Trigger(() -> primary_controller.getLeftTriggerAxis() > 0.5).whileTrue(
@@ -164,7 +173,7 @@ public class RobotContainer {
     new Trigger(() -> danny_controller.getAButton()).whileTrue(
         new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CHUTE_CONE.getState(), this::getElevatorJogger)
             .alongWith(ManipulatorAuto.startSuckingCone())
-            .alongWith(new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 0.5))
+            .alongWith(new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 1.5))
     )
         .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState(), this::getElevatorJogger))
         .onFalse(ManipulatorAuto.stopManipulator());
@@ -174,9 +183,9 @@ public class RobotContainer {
     ////////SCORING\\\\\\\\\\
     //////////// \\\\\\\\\\\\
     new Trigger(() -> danny_controller.getRightTriggerAxis() > 0.5).whileTrue(
-        new SetSuperstructureSetpoint(state_supervisor.getDesiredSuperstructureState(), this::getElevatorJogger)
+        new SetSuperstructureSetpoint(() -> state_supervisor.getDesiredSuperstructureState(), this::getElevatorJogger)
     )
-        .onFalse(new SetSuperstructureSetpoint(state_supervisor.getDesiredHoldingSuperstructureState(), this::getElevatorJogger));
+        .onFalse(new SetSuperstructureSetpoint(() -> state_supervisor.getDesiredHoldingSuperstructureState(), this::getElevatorJogger));
 
     new Trigger(primary_controller::getAButton)
         .onTrue(new SmartEject())

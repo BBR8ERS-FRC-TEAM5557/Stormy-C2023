@@ -156,7 +156,7 @@ public final class Constants {
     follower.theta_kV = 2.0 * Math.PI;
     follower.theta_kA = Math.pow(2, follower.theta_kV);
 
-    follower.auto_kP = 0.06;
+    follower.auto_kP = 3.0;
     follower.auto_kI = 0.0;
     follower.auto_kD = 0.0;
 

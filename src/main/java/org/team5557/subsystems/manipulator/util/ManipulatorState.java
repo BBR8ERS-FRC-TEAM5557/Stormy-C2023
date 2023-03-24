@@ -12,10 +12,11 @@ public class ManipulatorState {
 
     public static enum ManipulatorStates {
         INTAKING_CUBE(new ManipulatorState(0.75, 0.75)),
+        INTAKING_CUBE_REVERSED(new ManipulatorState(0.75, -0.75)),
         INTAKING_CONE(new ManipulatorState(-0.75, -0.75)),
         IDLE(new ManipulatorState(0.1, 0.1)),
 
-        EJECT_CUBE(new ManipulatorState(-0.75, -0.75)),
+        EJECT_CUBE(new ManipulatorState(-0.25, -0.25)),
         EJECT_CUBE_MID(new ManipulatorState(-0.9, -0.9)),
         EJECT_CUBE_HIGH(new ManipulatorState(-1.0, -1.0)),
 

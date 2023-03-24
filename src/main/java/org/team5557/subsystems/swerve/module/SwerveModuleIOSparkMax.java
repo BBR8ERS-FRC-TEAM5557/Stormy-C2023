@@ -101,7 +101,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         SparkMaxUtil.checkError(mAngleMotor.setCANTimeout(Constants.kCAN_TimeoutMs),
                 "Motor ID " + angleMotorID + ": failed to set CAN timeout");
 
-        SparkMaxUtil.checkError(mAngleMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100),
+        SparkMaxUtil.checkError(mAngleMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200),
                 "Motor ID " + angleMotorID + ": failed to set periodic status frame 0 rate");
         SparkMaxUtil.checkError(mAngleMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 20),
                 "Motor ID " + angleMotorID + ": failed to set periodic status frame 1 rate");
@@ -142,7 +142,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         SparkMaxUtil.checkError(mDriveMotor.setCANTimeout(Constants.kCAN_TimeoutMs),
                 "Motor ID " + driveMotorID + ": failed to set CAN timeout");
 
-        SparkMaxUtil.checkError(mDriveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100),
+        SparkMaxUtil.checkError(mDriveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200),
                 "Motor ID " + driveMotorID + ": failed to set periodic status frame 0 rate");
         SparkMaxUtil.checkError(mDriveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 20),
                 "Motor ID " + driveMotorID + ": failed to set periodic status frame 1 rate");

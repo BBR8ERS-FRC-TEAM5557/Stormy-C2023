@@ -1,9 +1,6 @@
 package org.team5557.subsystems.manipulator;
 
-import static org.team5557.subsystems.manipulator.util.ManipulatorSubsystemConstants.kBottomRollerMotorID;
-import static org.team5557.subsystems.manipulator.util.ManipulatorSubsystemConstants.kSubsystemID;
-import static org.team5557.subsystems.manipulator.util.ManipulatorSubsystemConstants.kTopRollerMotorID;
-import static org.team5557.subsystems.manipulator.util.ManipulatorSubsystemConstants.motorsInverted;
+import static org.team5557.subsystems.manipulator.util.ManipulatorSubsystemConstants.*;
 
 import org.library.team254.drivers.SparkMaxUtil;
 import org.library.team3061.util.CANDeviceFinder;
@@ -18,6 +15,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,11 +24,15 @@ public class Manipulator extends SubsystemBase {
     private final CANSparkMax mTopRollerMotor;
     private final CANSparkMax mBottomRollerMotor;
 
+    private final DigitalInput cube_gate;
+
     private final CANDeviceFinder can = new CANDeviceFinder();
 
     private ManipulatorState mWantedState = ManipulatorState.ManipulatorStates.DO_NOTHING.getManipulatorState();
 
     public Manipulator() {
+        cube_gate = new DigitalInput(kCubeProximitySwitch);
+
         can.isDevicePresent(CANDeviceType.SPARK_MAX, kTopRollerMotorID.getDeviceNumber(), kSubsystemID + " Top Roller");
         can.isDevicePresent(CANDeviceType.SPARK_MAX, kBottomRollerMotorID.getDeviceNumber(), kSubsystemID + " Bottom Roller");
 
@@ -80,5 +82,9 @@ public class Manipulator extends SubsystemBase {
 
     public GamePiece getGamePieceDetected() {
         return GamePiece.NONE;
+    }
+
+    public boolean getCubeDetected() {
+        return !cube_gate.get();
     }
 }

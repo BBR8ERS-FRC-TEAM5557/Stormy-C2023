@@ -43,7 +43,8 @@ public class AimDrive extends CommandBase {
     @Override
     public void execute() {
         Rotation2d goalAngle = Rotation2d.fromRadians(goalAngleSupplierRadians.getAsDouble());
-        double rotationalVelocity = RobotContainer.raw_controllers.calculateTheta(goalAngle.getRadians());
+        //double rotationalVelocity = RobotContainer.raw_controllers.calculateTheta(goalAngle.getRadians());
+        double rotationalVelocity = RobotContainer.raw_controllers.calculateAlign(goalAngle.getRadians());
 
         boolean isBlue = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue);
         double multiplier = 1.0;

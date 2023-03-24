@@ -14,10 +14,10 @@ public class SmartEject extends CommandBase {
 
     @Override
     public void initialize() {
-        if(state.getColumn() == 1 || state.getColumn() == 4 || state.getColumn() == 7 || state.getNodeLevel().equals(NodeLevel.HYBRID)) {
+        if(state.getColumn() == 1 || state.getColumn() == 4 || state.getColumn() == 7) {
             ManipulatorAuto.ejectCube().schedule();
         } else {
-            ManipulatorAuto.ejectCubeHigh().schedule();
+            ManipulatorAuto.ejectCone().schedule();
         }
     }
 

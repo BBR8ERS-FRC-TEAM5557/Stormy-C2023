@@ -132,7 +132,7 @@ public class CoPilot extends CommandBase {
             }
             m_periodicIO.active_trajectory = 
             PathPlanner.generatePath(
-                Constants.pathplanner.medium_constraints, 
+                Constants.pathplanner.slow_constraints, 
                 new PathPoint(
                     m_periodicIO.state.estimatedPose.getTranslation(),
                     initialVelocityHeading,

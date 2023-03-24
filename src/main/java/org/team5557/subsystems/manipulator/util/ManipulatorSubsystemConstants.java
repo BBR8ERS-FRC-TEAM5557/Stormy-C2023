@@ -10,4 +10,6 @@ public class ManipulatorSubsystemConstants {
     public static final CANDeviceId kBottomRollerMotorID = new CANDeviceId(CANDeviceType.SPARK_MAX, 51);
 
     public static final boolean motorsInverted = true;
+
+    public static final int kCubeProximitySwitch = 1;
 }

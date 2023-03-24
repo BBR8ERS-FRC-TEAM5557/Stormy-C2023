@@ -55,7 +55,7 @@ public class SwerveModuleConstants {
     public static final double ANGLE_KF = 0.0;
 
     /* Drive Motor PID Values */
-    public static final double DRIVE_KP = 0.0000001;
+    public static final double DRIVE_KP = 0.00002;
     public static final double DRIVE_KI = 0.0;
     public static final double DRIVE_KD = 0.0;
     public static final double DRIVE_KF = 0.0;

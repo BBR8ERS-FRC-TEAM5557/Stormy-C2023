@@ -366,7 +366,7 @@ public class Swerve extends SubsystemBase {
      * Chassis speeds consumer for PathPlanner
      */
     public void drive(ChassisSpeeds chassisSpeeds) {
-        this.drive(chassisSpeeds, DriveMode.OPEN_LOOP, false, Constants.superstructure.center_of_rotation);
+        this.drive(chassisSpeeds, DriveMode.CLOSED_LOOP, false, Constants.superstructure.center_of_rotation);
     }
 
     public void runCharacterizationVolts(double volts) {

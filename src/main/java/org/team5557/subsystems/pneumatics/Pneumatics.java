@@ -16,8 +16,8 @@ public class Pneumatics extends SubsystemBase {
     public Pneumatics() {
         tab.addNumber("Pressure", () -> ph.getPressure(0));
 
-        ph.disableCompressor();
-        //ph.enableCompressorAnalog(PneumaticsSubsystemConstants.kMinPressure, PneumaticsSubsystemConstants.kMaxPressure);
+        //ph.disableCompressor();
+        ph.enableCompressorAnalog(PneumaticsSubsystemConstants.kMinPressure, PneumaticsSubsystemConstants.kMaxPressure);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class Intake extends SubsystemBase {
         can.isDevicePresent(CANDeviceType.SPARK_MAX, motorID.getDeviceNumber(), kSubsystemID);
 
         motor = new CANSparkMax(motorID.getDeviceNumber(), MotorType.kBrushless);
-        motor.setOpenLoopRampRate(0.5);
+        motor.setOpenLoopRampRate(1.0);
 
         solenoid = RobotContainer.pneumatics.getPH().makeDoubleSolenoid(kSolenoidForward, kSolenoidReverse);
 
