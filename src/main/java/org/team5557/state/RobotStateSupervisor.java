@@ -44,6 +44,9 @@ public class RobotStateSupervisor extends SubsystemBase {
         tab.add("Localization", robot_state.localizationStatus.toString());
         tab.add("Skid Accumulator", robot_state.skidAccumulator.getNorm());
         tab.add("Vision - Estimator Disagreement", robot_state.visionToEstimatorDisagreement.get());
+
+        ShuffleboardTab driver = Shuffleboard.getTab(Constants.shuffleboard.driver_readout_key);
+        driver.addBoolean("Vision Activated?", this::getVisionActivated);
     }
 
 
@@ -143,7 +146,10 @@ public class RobotStateSupervisor extends SubsystemBase {
         vision_manager.setVisionActivated(enable);
     }
 
-    
+    public void flipEnableVision() {
+        vision_manager.setVisionActivated(!getVisionActivated());
+    }
+
 
     //////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
     /////////////OBJECTIVE TRACKER\\\\\\\\\\\\\\\\
