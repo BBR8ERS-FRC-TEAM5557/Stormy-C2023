@@ -12,6 +12,7 @@ public class ManipulatorState {
 
     public static enum ManipulatorStates {
         INTAKING_CUBE(new ManipulatorState(0.75, 0.75)),
+        INTAKING_CUBE_SLOWED(new ManipulatorState(0.0, 0.75)),
         INTAKING_CUBE_REVERSED(new ManipulatorState(0.75, -0.75)),
         INTAKING_CONE(new ManipulatorState(-0.75, -0.75)),
         IDLE(new ManipulatorState(0.1, 0.1)),

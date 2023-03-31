@@ -25,7 +25,7 @@ public class SuperstructureState {
         INTAKING_CUBE_REVERSED(new SuperstructureState(0.5, 193.0)),
         INTAKING_CUBE_FOLLOW_THRU(new SuperstructureState(0.5, 190.0)),
 
-        INTAKING_CHUTE_CONE(new SuperstructureState(0.5, 270.0));
+        INTAKING_CHUTE_CONE(new SuperstructureState(0.5, 260.0));
 
         
         private SuperstructureState state;

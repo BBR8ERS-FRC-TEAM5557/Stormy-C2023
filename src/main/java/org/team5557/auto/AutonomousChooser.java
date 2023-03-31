@@ -6,6 +6,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team5557.Constants;
 import org.team5557.FieldConstants;
 import org.team5557.RobotContainer;
+import org.team5557.commands.superstructure.SetSuperstructureSetpoint;
 import org.team5557.planners.superstructure.util.SuperstructureState;
 import org.team5557.subsystems.intake.commands.IntakeAuto;
 import org.team5557.subsystems.manipulator.commands.ManipulatorAuto;
@@ -46,6 +47,7 @@ public class AutonomousChooser {
         eventMap.put("stopIntaking", IntakeAuto.stopIntaking());
         eventMap.put("spitCube", IntakeAuto.spitCube());
         eventMap.put("startPassthroughCube", IntakeAuto.passThroughCube());
+        eventMap.put("startSuckingCone", ManipulatorAuto.startSuckingCone().andThen(new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CONE.getState())));
 
         eventMap.put("ejectCube", ManipulatorAuto.ejectCube());
         eventMap.put("prepLowCube", Commands.sequence(new SetShoulderAngle(SuperstructureState.Preset.LOW_CUBE.getState().shoulder)));
@@ -60,6 +62,8 @@ public class AutonomousChooser {
 
         autonomousModeChooser.addDefaultOption("DO NOTHING", AutonomousMode.DO_NOTHING);
         autonomousModeChooser.addDefaultOption("Spit-Charge-Center", AutonomousMode.SPIT_CHARGE_CENTER);
+        autonomousModeChooser.addOption("Spit-Park-Bump", AutonomousMode.ONE_PARK_BUMP);
+        autonomousModeChooser.addOption("1+1-Park-NoBump", AutonomousMode.ONEPLUSONE_CHARGE_BUMP);
 
         autonomousModeChooser.addOption("3-Charge-NoBump", AutonomousMode.THREE_CHARGE_NOBUMP);
         autonomousModeChooser.addOption("3-Park-NoBump", AutonomousMode.THREE_PARK_NOBUMP);
@@ -81,11 +85,35 @@ public class AutonomousChooser {
     public Command getSpitChargeCenter() {
         SequentialCommandGroup command = new SequentialCommandGroup();
 
-        resetRobotPose(command, trajectories.getBPushAndCharge());//trajectories.getSpit_Charge_Center());
+        resetRobotPose(command, trajectories.getSpit_Charge_Center());
         command.addCommands(IntakeAuto.spitCube());
-        follow(command, trajectories.getBPushAndCharge());//getSpit_Charge_Center());
+        follow(command, trajectories.getSpit_Charge_Center());
         command.addCommands(new AutoBalance().withTimeout(10.0));
         command.addCommands(new RunCommand(() -> RobotContainer.swerve.drive(new ChassisSpeeds(), DriveMode.X_OUT, false, Constants.superstructure.center_of_rotation), RobotContainer.swerve));
+
+        return command;
+    }
+
+    public Command getSpitParkBump() {
+        SequentialCommandGroup command = new SequentialCommandGroup();
+
+        resetRobotPose(command, trajectories.get1_Park_Bump());
+        command.addCommands(IntakeAuto.spitCube());
+        follow(command, trajectories.get1_Park_Bump());
+        command.addCommands(new AutoBalance().withTimeout(10.0));
+        command.addCommands(new RunCommand(() -> RobotContainer.swerve.drive(new ChassisSpeeds(), DriveMode.X_OUT, false, Constants.superstructure.center_of_rotation), RobotContainer.swerve));
+
+        return command;
+    }
+
+    public Command get1plus1ParkNoBump() {
+        SequentialCommandGroup command = new SequentialCommandGroup();
+
+        resetRobotPose(command, trajectories.get1plus1_Park_NoBump());
+        command.addCommands(IntakeAuto.spitCube());
+        follow(command, trajectories.get1plus1_Park_NoBump());
+        command.addCommands(ManipulatorAuto.stopManipulator());
+        command.addCommands(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState()));
 
         return command;
     }
@@ -234,6 +262,10 @@ public class AutonomousChooser {
                 return getRPushAndCharge();
             case B_PUSH_AND_CHARGE :
                 return getBPushAndCharge();
+            case ONE_PARK_BUMP:
+                return getSpitParkBump();
+            case ONEPLUSONE_PARK_NOBUMP:
+                return get1plus1ParkNoBump();
             case FF_CHARACTERIZATION :
                 return getFFCharacterization();
             default:
@@ -249,6 +281,7 @@ public class AutonomousChooser {
         THREE_PARK_NOBUMP,
         TWOPLUSONE_CHARGE_NOBUMP,
         ONEPLUSONE_CHARGE_BUMP,
+        ONEPLUSONE_PARK_NOBUMP,
 
         I_THREE_CHARGE_NOBUMP,
         I_THREE_PARK_NOBUMP,
@@ -256,6 +289,7 @@ public class AutonomousChooser {
 
         R_PUSH_AND_CHARGE,
         B_PUSH_AND_CHARGE,
+        ONE_PARK_BUMP,
 
         FF_CHARACTERIZATION,
         DO_NOTHING

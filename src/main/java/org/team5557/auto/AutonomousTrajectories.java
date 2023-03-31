@@ -22,6 +22,8 @@ public class AutonomousTrajectories {
 
     private final PathPlannerTrajectory RpushAndCharge;
     private final PathPlannerTrajectory BpushAndCharge;
+    private final AutoPath one_Park_Bump;
+    private final AutoPath oneplusone_Park_NoBump;
 
     public AutonomousTrajectories() {
         spit_Charge_Center = new AutoPath("BpushAndCharge", Constants.pathplanner.medium_constraints);
@@ -37,7 +39,11 @@ public class AutonomousTrajectories {
 
         BpushAndCharge = PathPlanner.loadPath("BpushAndCharge", Constants.pathplanner.medium_constraints);
         RpushAndCharge = PathPlanner.loadPath("RpushAndCharge", Constants.pathplanner.medium_constraints);
+
+        one_Park_Bump = new AutoPath("1_Park_Bump", Constants.pathplanner.medium_constraints);
+        oneplusone_Park_NoBump = new AutoPath("1+1_Park_NoBump", Constants.pathplanner.medium_constraints);
     }
+
 
     public PathPlannerTrajectory getSpit_Charge_Center() {
         return spit_Charge_Center.getTrajectory();
@@ -69,6 +75,14 @@ public class AutonomousTrajectories {
     }
 
     ///RANDOM SHit
+
+    public PathPlannerTrajectory get1_Park_Bump() {
+        return one_Park_Bump.getTrajectory();
+    }
+
+    public PathPlannerTrajectory get1plus1_Park_NoBump() {
+        return oneplusone_Park_NoBump.getTrajectory();
+    }
     public PathPlannerTrajectory getRPushAndCharge() {
         return RpushAndCharge;
     }

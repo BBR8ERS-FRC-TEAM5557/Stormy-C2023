@@ -70,6 +70,10 @@ public class ManipulatorAuto {
         return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CUBE.getManipulatorState()));
     }
 
+    public static Command startSuckingCubeSlowed() {
+        return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CUBE_SLOWED.getManipulatorState()));
+    }
+
     public static Command startReversingCube() {
         return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CUBE_REVERSED.getManipulatorState()));
     }
@@ -89,7 +93,7 @@ public class ManipulatorAuto {
         Commands.sequence(
             startReversingCube(),
             waitForCube(),
-            startSuckingCube(),
+            startSuckingCubeSlowed(),
             Commands.waitSeconds(0.5),
             stopManipulator()
         );

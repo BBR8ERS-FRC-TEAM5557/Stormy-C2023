@@ -70,6 +70,7 @@ public final class Constants {
     public double bumper_offset;
     public double chassis_offset;
     public double alignment_offset;
+    public double score_offset;
   }
 
   public static final CoPilotConstants copilot = new CoPilotConstants();
@@ -77,6 +78,7 @@ public final class Constants {
     copilot.chassis_offset = Constants.superstructure.drivebase/2.0;
     copilot.bumper_offset = Units.inchesToMeters(5.0);
     copilot.alignment_offset = Units.inchesToMeters(4.0);
+    copilot.score_offset = Units.inchesToMeters(6.0);
 
     copilot.path_regeneration_time = 1.0;
     copilot.max_path_length = Units.inchesToMeters(150.0);

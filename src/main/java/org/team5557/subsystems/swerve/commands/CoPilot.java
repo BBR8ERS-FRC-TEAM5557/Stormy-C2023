@@ -13,6 +13,7 @@ import org.team5557.state.RobotStateSupervisor.RobotState;
 import org.team5557.state.goal.ObjectiveTracker;
 import org.team5557.subsystems.swerve.Swerve;
 import org.team5557.subsystems.swerve.Swerve.DriveMode;
+import org.team5557.subsystems.swerve.util.SwerveSubsystemConstants;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -85,6 +86,13 @@ public class CoPilot extends CommandBase {
 
         int column = state.getColumn();
 
+        boolean isBlue;
+        double multiplier = 1.0;
+
+        isBlue = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue);
+        if(!isBlue) {
+            multiplier = -1.0;
+        }
 
 
         if(m_periodicIO.active_trajectory == null) {
@@ -94,14 +102,12 @@ public class CoPilot extends CommandBase {
             double goalX;
             double goalY;
 
-            boolean isBlue;
+
             Translation2d robotToAlignment;
             Translation2d alignmentToTarget;
 
 
-            isBlue = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue);
-
-            goalX = FieldConstants.Grids.outerX + Constants.copilot.bumper_offset + Constants.copilot.chassis_offset;
+            goalX = FieldConstants.Grids.outerX + Constants.copilot.bumper_offset + Constants.copilot.chassis_offset + Constants.copilot.score_offset;
             goalY = isBlue ? FieldConstants.Grids.lowTranslations[8 - column].getY() : FieldConstants.Grids.lowTranslations[column].getY();
 
             alignmentPoint = 
@@ -118,6 +124,7 @@ public class CoPilot extends CommandBase {
 
             goalPoint = FieldConstants.allianceFlip(goalPoint);
             goalRotation = isBlue ? new Rotation2d() : Rotation2d.fromDegrees(180);
+            
 
             robotToAlignment = alignmentPoint.minus(m_periodicIO.state.estimatedPose.getTranslation());
             alignmentToTarget = goalPoint.minus(alignmentPoint);
@@ -156,38 +163,27 @@ public class CoPilot extends CommandBase {
         if(m_periodicIO.active_trajectory != null && state.getVisionActivated()) {
             m_periodicIO.desired_state = (PathPlannerState) m_periodicIO.active_trajectory.sample(currentTimestamp - regenerationTimestamp);
             Pose2d currentPose = m_periodicIO.state.estimatedPose;
-            m_periodicIO.target_chassis_speeds = this.follower.calculate(currentPose, m_periodicIO.desired_state);
-
-            boolean isBlue = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue);
             Rotation2d goalRotation = isBlue ? new Rotation2d() : Rotation2d.fromDegrees(180);
-            
-            m_periodicIO.target_chassis_speeds.omegaRadiansPerSecond = RobotContainer.raw_controllers.calculateTheta(goalRotation.getRadians());
-            
-            //potentially use if the rotation on the path sucks
-            //m_periodicIO.target_chassis_speeds.omegaRadiansPerSecond = RobotContainer.raw_controllers.calculateAlign(goalRotation.getRadians());
+            //m_periodicIO.target_chassis_speeds 
+            ChassisSpeeds raw = this.follower.calculate(currentPose, m_periodicIO.desired_state);
+            m_periodicIO.target_chassis_speeds = 
+                new ChassisSpeeds(
+                    raw.vxMetersPerSecond + (RobotContainer.square(translationXSupplier.getAsDouble()/SwerveSubsystemConstants.MAX_VELOCITY_METERS_PER_SECOND) * multiplier),
+                    raw.vyMetersPerSecond + (RobotContainer.square(translationYSupplier.getAsDouble()/SwerveSubsystemConstants.MAX_VELOCITY_METERS_PER_SECOND) * multiplier),
+                    RobotContainer.raw_controllers.calculateTheta(goalRotation.getRadians()));
         } else {
-            boolean isBlue = DriverStation.getAlliance().equals(DriverStation.Alliance.Blue);
-            Rotation2d goalRotation = isBlue ? new Rotation2d() : Rotation2d.fromDegrees(180);
-
-            double multiplier = 1.0;
-            if(!isBlue) {
-                multiplier = -1.0;
-            }
-
-
+            Rotation2d goalRotation = !isBlue ? new Rotation2d() : Rotation2d.fromDegrees(180);
             m_periodicIO.target_chassis_speeds = 
                 new ChassisSpeeds(
                     translationXSupplier.getAsDouble() * multiplier, 
                     translationYSupplier.getAsDouble() * multiplier, 
                     RobotContainer.raw_controllers.calculateTheta(goalRotation.getRadians()));
-            //System.out.println(m_periodicIO.target_chassis_speeds);
         }
 
         //Logger.getInstance().recordOutput("CoPilot/Active Trajectory", m_periodicIO.active_trajectory);
         Logger.getInstance().recordOutput("CoPilot/At Goal", atGoal());
         Logger.getInstance().recordOutput("CoPilot/TargetSpeeds", m_periodicIO.target_chassis_speeds.omegaRadiansPerSecond);
         Logger.getInstance().recordOutput("CoPilot/Goal Pose", m_periodicIO.active_trajectory.getEndState().poseMeters);
-
         //Logger.getInstance().recordOutput("CoPilot/Next Pose", m_periodicIO.desired_state.poseMeters);
         //Logger.getInstance().recordOutput("CoPilot/Next Velocity", m_periodicIO.desired_state.velocityMetersPerSecond);
         //Logger.getInstance().recordOutput("CoPilot/Next Acceleration", m_periodicIO.desired_state.accelerationMetersPerSecondSq);

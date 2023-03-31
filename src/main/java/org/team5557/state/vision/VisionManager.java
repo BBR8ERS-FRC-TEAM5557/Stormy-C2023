@@ -34,7 +34,7 @@ public class VisionManager {
     private final PhotonCameraExtension anakin;
     private final PhotonCameraExtension obi_wan;
     private final List<PhotonCameraExtension> camera_list;
-    private boolean visionActive = false;
+    private boolean visionActive = true;
 
     private Consumer<VisionUpdate> visionConsumer;
     private Consumer<Pose2d> disagreementConsumer;

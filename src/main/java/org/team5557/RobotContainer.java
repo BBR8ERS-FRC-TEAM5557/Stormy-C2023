@@ -28,6 +28,7 @@ import org.team5557.subsystems.intake.util.IntakeState;
 import org.team5557.subsystems.leds.LEDs;
 import org.team5557.subsystems.manipulator.Manipulator;
 import org.team5557.subsystems.manipulator.commands.ManipulatorAuto;
+import org.team5557.subsystems.manipulator.commands.ManipulatorShiver;
 import org.team5557.subsystems.manipulator.commands.SetManipulatorState;
 import org.team5557.subsystems.manipulator.commands.SmartEject;
 import org.team5557.subsystems.manipulator.util.ManipulatorState;
@@ -126,7 +127,7 @@ public class RobotContainer {
     );
 
     new Trigger(
-        () -> danny_controller.getRightBumper() && danny_controller.getLeftBumper() && danny_controller.getAButton())
+        () -> danny_controller.getRightBumper() && danny_controller.getLeftBumper() && danny_controller.getAButton() && false)
         .whileTrue(
             homeElevatorCommand
     );
@@ -146,7 +147,7 @@ public class RobotContainer {
 
     new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
         new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CUBE_REVERSED.getState(), this::getElevatorJogger)
-            .alongWith(ManipulatorAuto.suckCubeReverseStop())
+            .alongWith(ManipulatorAuto.suckCubeReverseStop().deadlineWith(new ManipulatorShiver()))
     )
     .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CUBE.getState(), this::getElevatorJogger))
     .onFalse(ManipulatorAuto.stopManipulator());
@@ -173,7 +174,7 @@ public class RobotContainer {
     new Trigger(() -> danny_controller.getAButton()).whileTrue(
         new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CHUTE_CONE.getState(), this::getElevatorJogger)
             .alongWith(ManipulatorAuto.startSuckingCone())
-            .alongWith(new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 1.5))
+            //.alongWith(new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 1.5))
     )
         .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState(), this::getElevatorJogger))
         .onFalse(ManipulatorAuto.stopManipulator());
@@ -183,9 +184,10 @@ public class RobotContainer {
     ////////SCORING\\\\\\\\\\
     //////////// \\\\\\\\\\\\
     new Trigger(() -> danny_controller.getRightTriggerAxis() > 0.5).whileTrue(
-        new SetSuperstructureSetpoint(() -> state_supervisor.getDesiredSuperstructureState(), this::getElevatorJogger)
+        IntakeAuto.startBallasting().andThen(new SetSuperstructureSetpoint(() -> state_supervisor.getDesiredSuperstructureState(), this::getElevatorJogger))
     )
-        .onFalse(new SetSuperstructureSetpoint(() -> state_supervisor.getDesiredHoldingSuperstructureState(), this::getElevatorJogger));
+        .onFalse(new SetSuperstructureSetpoint(() -> state_supervisor.getDesiredHoldingSuperstructureState(), this::getElevatorJogger))
+        .onFalse(IntakeAuto.stopIntaking());
 
     new Trigger(primary_controller::getAButton)
         .onTrue(new SmartEject())
@@ -229,11 +231,9 @@ public class RobotContainer {
         state_supervisor.shiftNodeCommand(Direction.LEFT));
 
 
-    new Trigger(() -> danny_controller.getAButton() && danny_controller.getYButton()).onTrue(
-        new InstantCommand(() -> RobotContainer.state_supervisor.setEnableVision(
-            !RobotContainer.state_supervisor.getVisionActivated()
-        )
-    ));
+    new Trigger(() -> danny_controller.getXButton()).onTrue(
+        new InstantCommand(() -> RobotContainer.state_supervisor.flipEnableVision()).ignoringDisable(true)
+    );
   }
 
   /**
@@ -252,7 +252,7 @@ public class RobotContainer {
     return Math.copySign(value, (value - tolerance) / (1.0 - tolerance));
   }
 
-  private static double square(double value) {
+  public static double square(double value) {
     return Math.copySign(value * value, value);
   }
 

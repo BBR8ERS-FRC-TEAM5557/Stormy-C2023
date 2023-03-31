@@ -30,20 +30,20 @@ public class VisionConstants {
                                                 3.223358, 4.093358, 4.726358
                                 },
                                 new double[] {
-                                                0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.049, 0.027, 0.059, 0.029,
-                                                0.068
+                                                0.08, 0.27, 0.15, 0.44, 0.4, 0.78, 0.49, 0.27, 0.59, 0.29,
+                                                0.68
                                 },
                                 1);
         }
 
         public static final Transform3d kAnakinCameraToOrigin =
                 new Transform3d(
-                        new Translation3d(Units.inchesToMeters(-7.5), Units.inchesToMeters(10.0), Units.inchesToMeters(0.0)),
-                        new Rotation3d(0.0, Units.degreesToRadians(180.0), 0.0));
+                        new Translation3d(Units.inchesToMeters(-7.5), Units.inchesToMeters(11.0), Units.inchesToMeters(0.0)),
+                        new Rotation3d(0.0, 0.0, Units.degreesToRadians(200.0)));
 
-        public static final Transform3d kObiwanCameraToOrigin = new Transform3d();
-                /*new Transform3d(
-                        new Translation3d(0.0, 0.0, 0.0),
-                        new Rotation3d(0.0, 0.0, 0.0));*/
+        public static final Transform3d kObiwanCameraToOrigin = 
+                new Transform3d(
+                        new Translation3d(Units.inchesToMeters(-7.5), Units.inchesToMeters(-11.0), 0.0),
+                        new Rotation3d(0.0, 0.0, Units.degreesToRadians(160.0)));
 
 }

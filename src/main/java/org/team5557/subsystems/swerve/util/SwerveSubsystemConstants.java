@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 
 public final class SwerveSubsystemConstants {
         public static final int FL_DRIVE_MOTOR = 20;
@@ -28,7 +29,7 @@ public final class SwerveSubsystemConstants {
         public static final int BR_DRIVE_MOTOR = 23;
         public static final int BR_STEER_MOTOR = 27;
         public static final int BR_CANCODER = 13;
-        public static final double BR_OFFSET = -282.39 + 180.0;
+        public static final double BR_OFFSET = -Units.radiansToDegrees(1.658233 + Math.PI);
 
         public static final SwerveModuleState[] X_OUT_STATES = {
                         new SwerveModuleState(0.0, Rotation2d.fromDegrees(45)),

@@ -52,9 +52,9 @@ public class SetSuperstructureSetpoint extends CommandBase {
         } else {
             elevator.setOpenLoop(elevatorJogger.getAsDouble() * ElevatorSubsystemConstants.kMaxManualPower);
         }*/
-        elevator.setOpenLoop(elevatorJogger.getAsDouble() * ElevatorSubsystemConstants.kMaxManualPower);
+        //elevator.setOpenLoop(elevatorJogger.getAsDouble() * ElevatorSubsystemConstants.kMaxManualPower);
 
         MotionProfileGoal shoulderState = new MotionProfileGoal(state.shoulder);
-        shoulder.setMotionProfilingGoal(shoulderState);
+        //shoulder.setMotionProfilingGoal(shoulderState);
     }
 }

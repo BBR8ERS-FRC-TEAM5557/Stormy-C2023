@@ -29,7 +29,7 @@ public class Shoulder extends ServoMotorSubsystemAbs {
 
         mMasterEncoder.setPositionConversionFactor(360.0);
         mMasterEncoder.setVelocityConversionFactor(360.0 / 60.0);
-        mMasterEncoder.setZeroOffset(139.9736);
+        mMasterEncoder.setZeroOffset(133.0 + 180.0);
 
         mMotionProfileConstraints = motionConstraints;
     }

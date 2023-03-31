@@ -26,6 +26,10 @@ public class IntakeAuto {
         return new InstantCommand(() -> RobotContainer.intake.setIntakeState(IntakeState.IntakeStates.INTAKING_CUBE.getIntakeState()));
     }
 
+    public static Command startBallasting() {
+        return new InstantCommand(() -> RobotContainer.intake.setIntakeState(IntakeState.IntakeStates.BALLAST.getIntakeState()));
+    }
+
     public static Command stopIntaking() {
         return new InstantCommand(() -> RobotContainer.intake.setIntakeState(IntakeState.IntakeStates.DO_NOTHING.getIntakeState()));
     }
