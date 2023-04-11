@@ -14,6 +14,8 @@ public class ElevatorSubsystemConstants {
     public static double kV = 0.0;
     public static double kA = 0.0;
 
+    public static double kHomingLocation = 0.0;
+
     public static double kMaxManualPower = 0.6;
     
     private static boolean invert_motors = true;
@@ -30,14 +32,10 @@ public class ElevatorSubsystemConstants {
 
         kElevatorConstants.kSlaveConstants[0] = new SparkMaxConstants();
         kElevatorConstants.kSlaveConstants[0].id = new CANDeviceId(CANDeviceType.SPARK_MAX, 30);
-        kElevatorConstants.kSlaveConstants[0].invert_motor = invert_motors;
-
-        kElevatorConstants.kSlaveConstants[1] = new SparkMaxConstants();
-        kElevatorConstants.kSlaveConstants[1].id = new CANDeviceId(CANDeviceType.SPARK_MAX, 32);
-        kElevatorConstants.kSlaveConstants[1].invert_motor = invert_motors;
+        kElevatorConstants.kSlaveConstants[0].invert_motor = !invert_motors;
 
 
-        kElevatorConstants.kRevsPerUnitDistance = 1.0 / (2.25 * Math.PI);
+        kElevatorConstants.kRevsPerUnitDistance = 1.0;
         kElevatorConstants.kEncoderInverted = true;
 
         kElevatorConstants.kKp = 0;  // Raw output / raw error
@@ -49,7 +47,7 @@ public class ElevatorSubsystemConstants {
         kElevatorConstants.kIZone = 0; // Ticks
         kElevatorConstants.kDeadband = 0; // units
 
-        kElevatorConstants.kPositionKp = 0.002;
+        kElevatorConstants.kPositionKp = 0.000;
         kElevatorConstants.kPositionKi = 0;
         kElevatorConstants.kPositionKd = 0;
         kElevatorConstants.kPositionKf = 0;
@@ -57,7 +55,7 @@ public class ElevatorSubsystemConstants {
         kElevatorConstants.kPositionIZone = 0; //
         kElevatorConstants.kPositionDeadband = 0.5;
 
-        kElevatorConstants.kCruiseVelocity = 20.0; // inches / s
+        kElevatorConstants.kCruiseVelocity = 0.0; // inches / s
         kElevatorConstants.kAcceleration = Math.pow(kElevatorConstants.kCruiseVelocity, 2); // inches / s / s
         kElevatorConstants.profileConstraints = new TrapezoidProfile.Constraints(kElevatorConstants.kCruiseVelocity, kElevatorConstants.kAcceleration);
 

@@ -106,7 +106,7 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
         mConstants = constants;
         mMaster = SparkMaxFactory.createDefaultSparkMax(mConstants.kMasterConstants.id.getDeviceNumber());//new CANSparkMax(mConstants.kMasterConstants.id.getDeviceNumber(), MotorType.kBrushless);
         mMasterPID = mMaster.getPIDController();
-        mMasterEncoder = mMaster.getAlternateEncoder(8192);
+        mMasterEncoder = mMaster.getEncoder();//mMaster.getAlternateEncoder(8192);
 
         mSlaves = new CANSparkMax[mConstants.kSlaveConstants.length];
 
@@ -251,7 +251,7 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
 
 
         mMaster.setInverted(mConstants.kMasterConstants.invert_motor);
-        mMaster.setIdleMode(IdleMode.kBrake);
+        mMaster.setIdleMode(IdleMode.kCoast);
 
         mMaster.setPeriodicFramePeriod(PeriodicFrame.kStatus0, mConstants.kStatus0FrameRate);
         mMaster.setPeriodicFramePeriod(PeriodicFrame.kStatus1, mConstants.kStatus1FrameRate);
@@ -264,7 +264,7 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
         for (int i = 0; i < mSlaves.length; ++i) {
             mSlaves[i] = SparkMaxFactory.createPermanentSlaveSparkMax(mConstants.kSlaveConstants[i].id.getDeviceNumber(), mMaster);
             mSlaves[i].setInverted(mConstants.kSlaveConstants[i].invert_motor);
-            mSlaves[i].setIdleMode(IdleMode.kBrake);
+            mSlaves[i].setIdleMode(IdleMode.kCoast);
             mSlaves[i].follow(mMaster);
         }
 
@@ -494,6 +494,13 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
                 //+ 0.5 * mPeriodicIO.active_trajectory_acceleration * lookahead_secs * lookahead_secs);
 
         return predicted_units;
+    }
+
+    public void setBrakeMode(IdleMode idleMode) {
+        mMaster.setIdleMode(idleMode);
+        for (int i = 0; i < mSlaves.length; ++i) {
+            mSlaves[i].setIdleMode(idleMode);
+        }
     }
 
     public void outputTelemetry() {

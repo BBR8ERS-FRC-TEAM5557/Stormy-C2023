@@ -14,14 +14,18 @@ import org.team5557.subsystems.elevator.util.ElevatorSubsystemConstants;
 
 import static org.team5557.subsystems.elevator.util.ElevatorSubsystemConstants.*;
 
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Elevator extends ServoMotorSubsystemRel {
     private ElevatorFeedforward feedforward = new ElevatorFeedforward(kS, kG, kV, kA);
@@ -47,12 +51,19 @@ public class Elevator extends ServoMotorSubsystemRel {
         tab.addBoolean("isHoming", () ->this.isHoming());
 
         this.outputTelemetry();
+
+        new Trigger(RobotState::isEnabled).onTrue(new StartEndCommand(() -> {
+            this.setBrakeMode(IdleMode.kBrake);
+        }, () -> {
+            this.setBrakeMode(IdleMode.kCoast);
+            }
+            )
+        );
     }
 
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-
     }
 
     @Override
