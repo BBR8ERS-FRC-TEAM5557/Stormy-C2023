@@ -48,13 +48,14 @@ public class TeleopDrive extends CommandBase {
         }
 
         double rotationalVelocity; 
+        /*
         if(m_rotationSupplier.getAsDouble() == 0.0) {
             rotationalVelocity = RobotContainer.raw_controllers.calculateAlign(sustain_heading.getRadians()) * swerve.getMotorOutputLimiter();
             //rotationalVelocity += Math.copySign(SwerveSubsystemConstants.ROTATIONAL_STATIC_CONSTANT / SwerveSubsystemConstants.MAX_VOLTAGE
                 //* SwerveSubsystemConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, rotationalVelocity);
         } else {
             rotationalVelocity = m_rotationSupplier.getAsDouble() * swerve.getMotorOutputLimiter();
-        }
+        }*/
         rotationalVelocity = m_rotationSupplier.getAsDouble();//* swerve.getMotorOutputLimiter();
 
         ChassisSpeeds velocity;

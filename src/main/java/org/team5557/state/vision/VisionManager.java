@@ -35,6 +35,7 @@ public class VisionManager {
     private final PhotonCameraExtension obi_wan;
     private final List<PhotonCameraExtension> camera_list;
     private boolean visionActive = true;
+    private boolean targetsVisible = false;
 
     private Consumer<VisionUpdate> visionConsumer;
     private Consumer<Pose2d> disagreementConsumer;
@@ -81,6 +82,8 @@ public class VisionManager {
         anakinAlert.set(!anakin.isConnected());
         obiwanAlert.set(!obi_wan.isConnected());
 
+        targetsVisible = false;
+        
         for (PhotonCameraExtension camera : camera_list) {
             var pipelineResult = camera.getLatestResult();
 
@@ -95,6 +98,8 @@ public class VisionManager {
             }
 
             if (pipelineResult.hasTargets()) {
+                targetsVisible = true;
+
                 List<PhotonTrackedTarget> targets = pipelineResult.getTargets();
                 List<Pose2d> visionPose2ds = new ArrayList<>();
                 List<Pose3d> tagPose3ds = new ArrayList<>();
@@ -164,5 +169,9 @@ public class VisionManager {
 
     public void setVisionActivated(boolean enable) {
         visionActive = enable;
+    }
+
+    public boolean getTargetsVisible() {
+        return targetsVisible;
     }
 }

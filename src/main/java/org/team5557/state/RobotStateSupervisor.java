@@ -10,6 +10,7 @@ import org.team5557.state.goal.ObjectiveTracker.Direction;
 import org.team5557.state.goal.ObjectiveTracker.GamePiece;
 import org.team5557.state.goal.ObjectiveTracker.NodeLevel;
 import org.team5557.state.vision.VisionManager;
+import org.team5557.subsystems.leds.LEDs.State;
 import org.team5557.subsystems.swerve.Swerve;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -66,7 +67,9 @@ public class RobotStateSupervisor extends SubsystemBase {
         
         //Update Vision Manager
         this.vision_manager.update();
-
+        if(vision_manager.getTargetsVisible()) {
+            RobotContainer.leds.requestState(State.COPILOT_FOLLOWING);
+        }
         //////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
         ///////////////SKID DETECTION\\\\\\\\\\\\\\\\\
         //////////////////////\\\\\\\\\\\\\\\\\\\\\\\\

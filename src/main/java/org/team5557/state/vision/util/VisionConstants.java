@@ -38,12 +38,12 @@ public class VisionConstants {
 
         public static final Transform3d kAnakinCameraToOrigin =
                 new Transform3d(
-                        new Translation3d(Units.inchesToMeters(-7.5), Units.inchesToMeters(11.0), Units.inchesToMeters(0.0)),
-                        new Rotation3d(0.0, 0.0, Units.degreesToRadians(200.0)));
+                        new Translation3d(Units.inchesToMeters(1.5), Units.inchesToMeters(-11.0), Units.inchesToMeters(-18.0)), //forward/back, left/right, up/down
+                        new Rotation3d(0.0, Units.degreesToRadians(-6.0), Units.degreesToRadians(150.0)));
 
         public static final Transform3d kObiwanCameraToOrigin = 
                 new Transform3d(
-                        new Translation3d(Units.inchesToMeters(-7.5), Units.inchesToMeters(-11.0), 0.0),
-                        new Rotation3d(0.0, 0.0, Units.degreesToRadians(160.0)));
+                        new Translation3d(Units.inchesToMeters(1.5), Units.inchesToMeters(11.0),  Units.inchesToMeters(-18.0)),
+                        new Rotation3d(0.0, Units.degreesToRadians(-6.0), Units.degreesToRadians(210.0)));
 
 }

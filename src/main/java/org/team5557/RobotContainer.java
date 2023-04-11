@@ -68,7 +68,7 @@ public class RobotContainer {
   public static final Shoulder shoulder = new Shoulder(ShoulderSubsystemConstants.kShoulderConstants);
   public static final Manipulator manipulator = new Manipulator();
   public static final Intake intake = new Intake();
-  //public static final LEDs leds = new LEDs();
+  public static final LEDs leds = new LEDs();
 
   // Controller
   public static final XboxController primary_controller = new XboxController(Constants.ports.primary_controller);

@@ -305,6 +305,7 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
     public synchronized void readPeriodicInputs() {
         mPeriodicIO.timestamp = Timer.getFPGATimestamp();
 
+        /*
         if (mMaster.getFault(FaultID.kHasReset)) {
             DriverStation.reportError(mConstants.kName + ": SparkMax Reset! ", false);
             mPeriodicIO.reset_occured = true;
@@ -348,7 +349,7 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
         if (mMaster.getStickyFault(FaultID.kDRVFault)) {
             DriverStation.reportError(mConstants.kName + ": SparkMax Fault! " + FaultID.kDRVFault.toString(), false);
             mMaster.clearFaults();
-        }
+        }*/
         
         mPeriodicIO.master_current = mMaster.getOutputCurrent();
         mPeriodicIO.output_voltage = mMaster.getAppliedOutput() * mMaster.getBusVoltage();
@@ -378,7 +379,7 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
     @Override
     public void periodic() {
         readPeriodicInputs();
-        if (mPeriodicIO.reset_occured) {
+        if (mPeriodicIO.reset_occured && false) {
             System.out.println(mConstants.kName + ": Master SparkMax reset occurred; resetting frame rates.");
             mMaster.setPeriodicFramePeriod(PeriodicFrame.kStatus0, mConstants.kStatus0FrameRate);
             mMaster.setPeriodicFramePeriod(PeriodicFrame.kStatus1, mConstants.kStatus1FrameRate);
@@ -389,7 +390,7 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
         }
         handleMasterReset(mPeriodicIO.reset_occured);
         for (CANSparkMax slave : mSlaves) {
-            if (slave.getFault(FaultID.kHasReset)) {
+            if (slave.getFault(FaultID.kHasReset) && false) {
                 System.out.println(mConstants.kName + ": Slave SparkMax reset occurred");
             }
         }

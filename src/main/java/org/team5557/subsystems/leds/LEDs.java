@@ -1,7 +1,5 @@
 package org.team5557.subsystems.leds;
 
-import org.team5557.Constants;
-
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdleConfiguration;
@@ -28,13 +26,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LEDs extends SubsystemBase {
 
-    private final CANdle mCandle = new CANdle(Constants.ports.candle);
+    private final CANdle mCandle = new CANdle(5);
     private double timestamp = 0.0;
 
-    private final boolean mUseSmartdash = false; // if we want to manual control lights using shuffleboard
+    private final boolean mUseSmartdash = true; // if we want to manual control lights using shuffleboard
 
-    private LEDStatus mElevatorBeamStatus = new LEDStatus(Constants.ports.elevatorbeam_start_index,
-            Constants.ports.elevatorbeam_end_index);
+    private LEDStatus mElevatorBeamStatus = new LEDStatus(8, 75);
 
     // shuffleboard selectors
 
@@ -42,14 +39,14 @@ public class LEDs extends SubsystemBase {
 
     // led states
     public enum State {
-        OFF("OFF", -100, null),
+        OFF("OFF", -100, new ColorFlowAnimation(0, 0, 0)),
         RAINBOW("RAINBOW", 0, new RainbowAnimation(1.0, 1.0, 0)),
-        BLUE_ALLIANCE("BLUE_ALLIANCE", 0, new LarsonAnimation(0, 0, 255, 0, 1.0, 0, BounceMode.Center, 7)),
-        RED_ALLIANCE("RED_ALLIANCE", 0, new LarsonAnimation(255, 0, 0, 0, 1.0, 0, BounceMode.Center, 7)),
-        IDLE("BASIC_BLUE", -1, new ColorFlowAnimation(0, 0, 255, 0, 0.5, 0, Direction.Forward)),
+        BLUE_ALLIANCE("BLUE_ALLIANCE", 0, new LarsonAnimation(0, 0, 255, 0, 0.25, 0, BounceMode.Center, 4)),
+        RED_ALLIANCE("RED_ALLIANCE", 0, new LarsonAnimation(255, 0, 0, 0, 0.25, 0, BounceMode.Center, 4)),
+        IDLE("BASIC_BLUE", -1, new ColorFlowAnimation(0, 0, 255, 0, 0.25, 0, Direction.Forward)),
 
-        PLEAD_FOR_CONE("YELLOW_FLASH", 1, new StrobeAnimation(0, 255, 50, 0, 0.25, 0)),
-        PLEAD_FOR_CUBE("PURPLE_FLASH", 1, new StrobeAnimation(0, 255, 50, 0, 0.25, 0)),
+        PLEAD_FOR_CONE("YELLOW_FLASH", 1, new StrobeAnimation(250, 253, 15, 0, 0.25, 0)),
+        PLEAD_FOR_CUBE("PURPLE_FLASH", 1, new StrobeAnimation(174, 55, 255, 0, 0.25, 0)),
 
         COPILOT_FOLLOWING("GREEN_FLASH", 2, new StrobeAnimation(0, 255, 50, 0, 0.25, 0)),
         COPILOT_AT_TARGET("GREEN_STROBE", 2, new StrobeAnimation(0, 255, 50, 0, 0.5, 0)),
@@ -72,7 +69,7 @@ public class LEDs extends SubsystemBase {
     }
 
     public LEDs() {
-        ShuffleboardTab tab = Shuffleboard.getTab(Constants.shuffleboard.tunable_readout_key);
+        ShuffleboardTab tab = Shuffleboard.getTab("Driver");
         configureCandle(); // set CTRE configurations for CANdle
 
         // create sendable choosers for shuffleboard
@@ -98,13 +95,23 @@ public class LEDs extends SubsystemBase {
 
     public void updateStates() {
         updateElevatorBeamLeds();
+        //updateUnderglowLeds();
     }
 
     private void updateElevatorBeamLeds() {
-        if (timestamp >= mElevatorBeamStatus.statusExpiryTime) {
+        if (timestamp >= mElevatorBeamStatus.statusExpiryTime && !mUseSmartdash) {
             mElevatorBeamStatus.flush();
         }
-        mElevatorBeamStatus.state.animation.setLedOffset(mElevatorBeamStatus.colorIndex);
+        mElevatorBeamStatus.state.animation.setLedOffset(mElevatorBeamStatus.startIDx);
+        mElevatorBeamStatus.state.animation.setNumLed(mElevatorBeamStatus.LEDCount);
+        mCandle.animate(mElevatorBeamStatus.state.animation);
+    }
+
+    private void updateUnderglowLeds() {
+        if (timestamp >= mElevatorBeamStatus.statusExpiryTime && !mUseSmartdash) {
+            mElevatorBeamStatus.flush();
+        }
+        mElevatorBeamStatus.state.animation.setLedOffset(mElevatorBeamStatus.startIDx);
         mElevatorBeamStatus.state.animation.setNumLed(mElevatorBeamStatus.LEDCount);
         mCandle.animate(mElevatorBeamStatus.state.animation);
     }
@@ -139,12 +146,12 @@ public class LEDs extends SubsystemBase {
     // apply configuration to candle
     private void configureCandle() {
         CANdleConfiguration configAll = new CANdleConfiguration();
-        configAll.statusLedOffWhenActive = true;
+        configAll.statusLedOffWhenActive = false;
         configAll.disableWhenLOS = false;
         configAll.stripType = LEDStripType.RGB;
         configAll.brightnessScalar = 1.0;
         configAll.vBatOutputMode = VBatOutputMode.Modulated;
-        mCandle.configAllSettings(configAll, Constants.klong_CAN_TimeoutMs);
+        mCandle.configAllSettings(configAll, 250);
         mCandle.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_1_General, 255);
         mCandle.setControlFramePeriod(CANdleControlFrame.CANdle_Control_1_General, 10);
         mCandle.setControlFramePeriod(CANdleControlFrame.CANdle_Control_2_ModulatedVBatOut, 255);
@@ -164,13 +171,14 @@ public class LEDs extends SubsystemBase {
     }
 
     private void outputTelemtry() {
+        //if (Timer.getFPGATimestamp() % 100 == 0)
+            
     }
 
     // class for holding information about each section
     private class LEDStatus {
         private State state = State.OFF; // current state
         private double statusExpiryTime = Timer.getFPGATimestamp(); // timestampe of last color cycle
-        private int colorIndex = 0; // tracks current color in array
         private int startIDx, LEDCount; // start and end of section
 
         public LEDStatus(int startIndex, int endIndex) {

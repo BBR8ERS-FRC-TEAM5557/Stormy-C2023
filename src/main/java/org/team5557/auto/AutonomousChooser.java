@@ -123,7 +123,7 @@ public class AutonomousChooser {
 
         resetRobotPose(command, trajectories.get3_Charge_NoBump());
         follow(command, trajectories.get3_Charge_NoBump());
-        command.addCommands(engage);
+        command.addCommands(new AutoBalance());
 
         return command;
     }
@@ -141,7 +141,7 @@ public class AutonomousChooser {
 
         resetRobotPose(command, trajectories.get2plus1_Charge_NoBump());
         follow(command, trajectories.get2plus1_Charge_NoBump());
-        command.addCommands(engage);
+        command.addCommands(new AutoBalance());
 
         return command;
     }
@@ -150,7 +150,7 @@ public class AutonomousChooser {
 
         resetRobotPose(command, trajectories.get1plus1_Charge_Bump());
         follow(command, trajectories.get1plus1_Charge_Bump());
-        command.addCommands(engage);
+        command.addCommands(new AutoBalance());
 
         return command;
     }
@@ -161,7 +161,7 @@ public class AutonomousChooser {
 
         resetRobotPose(command, trajectories.getI_3_Charge_NoBump());
         follow(command, trajectories.getI_3_Charge_NoBump());
-        command.addCommands(engage);
+        command.addCommands(new AutoBalance());
 
         return command;
     }
@@ -179,7 +179,7 @@ public class AutonomousChooser {
 
         resetRobotPose(command, trajectories.getI_2plus1_Charge_NoBump());
         follow(command, trajectories.getI_2plus1_Charge_NoBump());
-        command.addCommands(engage);
+        command.addCommands(new AutoBalance());
 
         return command;
     }
@@ -190,7 +190,7 @@ public class AutonomousChooser {
 
         resetRobotPose(command, trajectories.getBPushAndCharge());
         follow(command, trajectories.getBPushAndCharge());
-        command.addCommands(engage);
+        command.addCommands(new AutoBalance());
 
         return command;
     }
@@ -200,7 +200,7 @@ public class AutonomousChooser {
 
         resetRobotPose(command, trajectories.getRPushAndCharge());
         follow(command, trajectories.getRPushAndCharge());
-        command.addCommands(engage);
+        command.addCommands(new AutoBalance());
 
         return command;
     }
