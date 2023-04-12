@@ -11,7 +11,7 @@ public class SuperstructureState {
         HOLDING_NADA(new SuperstructureState(0.5, 270.0)),
 
         HIGH_CUBE(new SuperstructureState(0.0, 240.0)),
-        MID_CUBE(new SuperstructureState(0.0, 240.0)),
+        MID_CUBE(new SuperstructureState(20.0, 240.0)),
         MID_CUBE_SHOOTER(new SuperstructureState(0.0, 230.0)),
         LOW_CUBE(new SuperstructureState(0.0, 240.0)),
 

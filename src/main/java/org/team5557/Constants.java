@@ -118,6 +118,7 @@ public final class Constants {
 
   public static class PathPlannerConstants {
     public PathConstraints fast_constraints;
+    public PathConstraints auto_constraints;
     public PathConstraints medium_constraints;
     public PathConstraints slow_constraints;
     public PathConstraints hellaslow_constraints;
@@ -127,6 +128,7 @@ public final class Constants {
   static {
     pathplanner.fast_constraints = new PathConstraints(4.0, 3.0);
     pathplanner.medium_constraints = new PathConstraints(4.0, 3.0);
+    pathplanner.auto_constraints = new PathConstraints(4.0, 2.5);
     pathplanner.slow_constraints = new PathConstraints(2.0, 3.0);
     pathplanner.hellaslow_constraints = new PathConstraints(1.0, 1.0);
   }
@@ -204,7 +206,7 @@ public final class Constants {
 
     estimator.highAccuracyVisionStdDevs = VecBuilder.fill(0.02, 0.02, Units.degreesToRadians(3));
     estimator.normalVisionStdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5)); //X, Y, Theta
-    estimator.stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1); //X, Y, Theta
+    estimator.stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.01); //X, Y, Theta
   }
 
   public static class RobotStateSupervisorConstants {

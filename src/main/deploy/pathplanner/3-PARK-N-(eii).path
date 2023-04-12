@@ -10,7 +10,7 @@
         "x": 2.8316248931313908,
         "y": 4.893980683021587
       },
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -19,31 +19,6 @@
         "names": [
           "spitCube"
         ],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 4.015298681625467,
-        "y": 4.631864216622856
-      },
-      "prevControl": {
-        "x": 3.2063788658621437,
-        "y": 4.668977031357917
-      },
-      "nextControl": {
-        "x": 5.346225728082424,
-        "y": 4.57080198531328
-      },
-      "holonomicAngle": 179.0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -76,18 +51,18 @@
     },
     {
       "anchorPoint": {
-        "x": 4.033181625838621,
-        "y": 4.6304421524316135
+        "x": 4.835940712557966,
+        "y": 4.703335740357462
       },
       "prevControl": {
-        "x": 5.356744654000377,
-        "y": 4.547626280365407
+        "x": 5.4166276997211,
+        "y": 4.736713974033095
       },
       "nextControl": {
-        "x": 2.7096185976768643,
-        "y": 4.71325802449782
+        "x": 4.24159987922298,
+        "y": 4.669172675476428
       },
-      "holonomicAngle": 179.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -101,16 +76,16 @@
     },
     {
       "anchorPoint": {
-        "x": 2.0368595879811098,
-        "y": 4.39955905705949
+        "x": 2.0422614050251973,
+        "y": 4.393275460229849
       },
       "prevControl": {
-        "x": 2.842653076087183,
-        "y": 4.776556020987228
+        "x": 3.048299108859502,
+        "y": 4.729687645383322
       },
       "nextControl": {
-        "x": 2.842653076087183,
-        "y": 4.776556020987228
+        "x": 3.048299108859502,
+        "y": 4.729687645383322
       },
       "holonomicAngle": 180.0,
       "isReversal": true,
@@ -126,16 +101,16 @@
     },
     {
       "anchorPoint": {
-        "x": 4.204650673922659,
-        "y": 4.720313075676607
+        "x": 4.913342411591508,
+        "y": 4.803898647348076
       },
       "prevControl": {
-        "x": 2.71290231339195,
-        "y": 4.761884821260464
+        "x": 3.421594051060799,
+        "y": 4.845470392931933
       },
       "nextControl": {
-        "x": 6.153032646451578,
-        "y": 4.6660159557298275
+        "x": 6.861724384120427,
+        "y": 4.749601527401296
       },
       "holonomicAngle": 179.0,
       "isReversal": false,
@@ -176,16 +151,16 @@
     },
     {
       "anchorPoint": {
-        "x": 4.473259980075733,
-        "y": 4.722024173621915
+        "x": 4.956174676970665,
+        "y": 4.7091789337116
       },
       "prevControl": {
-        "x": 5.942065754130017,
-        "y": 4.678217891673413
+        "x": 6.424980451024944,
+        "y": 4.665372651763098
       },
       "nextControl": {
-        "x": 3.0044542060214487,
-        "y": 4.765830455570418
+        "x": 3.487368902916381,
+        "y": 4.752985215660102
       },
       "holonomicAngle": 179.0,
       "isReversal": false,
@@ -201,12 +176,12 @@
     },
     {
       "anchorPoint": {
-        "x": 2.024102054865132,
-        "y": 3.809237242605097
+        "x": 2.0591685205451573,
+        "y": 3.8544617259047884
       },
       "prevControl": {
-        "x": 1.993769488946971,
-        "y": 4.289903703147143
+        "x": 2.1849063581210926,
+        "y": 4.975046043448749
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -218,44 +193,44 @@
         "names": [
           "spitCube"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
     }
   ],
-  "maxVelocity": null,
+  "maxVelocity": 3.5,
   "maxAcceleration": 2.5,
   "isReversed": null,
   "markers": [
     {
-      "position": 0.9923650568181815,
+      "position": 0.4,
       "names": [
         "startIntaking"
       ]
     },
     {
-      "position": 2.4136629971590904,
+      "position": 1.1599809126420457,
       "names": [
-        "event"
+        "stopIntaking"
       ]
     },
     {
-      "position": 1.0718483664772729,
-      "names": [
-        "startIntaking"
-      ]
-    },
-    {
-      "position": 3.978000710227276,
+      "position": 2.8908402876420456,
       "names": [
         "spitCube"
       ]
     },
     {
-      "position": 6.623171164772728,
+      "position": 0.4870993874289774,
       "names": [
-        "event"
+        "startIntaking"
+      ]
+    },
+    {
+      "position": 5.200322931463067,
+      "names": [
+        "stopIntaking"
       ]
     }
   ]

@@ -34,7 +34,7 @@ public class AutonomousTrajectories {
         oneplusone_Charge_Bump = new AutoPath("1+1_Charge_Bump", Constants.pathplanner.medium_constraints);
 
         i_Three_Charge_NoBump = new AutoPath("I_3_Charge_NoBump", Constants.pathplanner.medium_constraints);
-        i_Three_Park_NoBump = new AutoPath("I_3_Park_NoBump", Constants.pathplanner.medium_constraints);
+        i_Three_Park_NoBump = new AutoPath("I_3_Park_NoBump", Constants.pathplanner.auto_constraints);
         i_Twoplusone_Charge_NoBump = new AutoPath("I_2+1_Charge_NoBump", Constants.pathplanner.medium_constraints);
 
         BpushAndCharge = PathPlanner.loadPath("BpushAndCharge", Constants.pathplanner.medium_constraints);

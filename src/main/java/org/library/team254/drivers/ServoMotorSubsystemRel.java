@@ -16,6 +16,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.SparkMaxAlternateEncoder.Type;
 import com.revrobotics.SparkMaxPIDController;
@@ -76,9 +77,9 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
         public double kRampRate = 0.0; // s
         public double kMaxVoltage = 12.0;
 
-        public int kStallCurrentLimit = 15;
-        public int kFreeCurrentLimit = 30;
-        public int kLimitRPM = 1000;
+        public int kStallCurrentLimit = 80;
+        public int kFreeCurrentLimit = 80;
+        public int kLimitRPM = 0;
         public boolean kEnableCurrentLimit = false;
 
         public double kMaxUnitsLimit = Double.POSITIVE_INFINITY;
@@ -123,9 +124,9 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
             1.0 / (mConstants.kRevsPerUnitDistance * 60.0)), 
                 getName());
 
-        SparkMaxUtil.checkError(mMasterEncoder.setInverted(
+        /*SparkMaxUtil.checkError(mMasterEncoder.setInverted(
             mConstants.kEncoderInverted), 
-                getName());
+                getName());*/
 
         SparkMaxUtil.checkError(mMasterEncoder.setAverageDepth(
             8), 
@@ -262,10 +263,10 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
 
 
         for (int i = 0; i < mSlaves.length; ++i) {
-            mSlaves[i] = SparkMaxFactory.createPermanentSlaveSparkMax(mConstants.kSlaveConstants[i].id.getDeviceNumber(), mMaster);
-            mSlaves[i].setInverted(mConstants.kSlaveConstants[i].invert_motor);
+            //mSlaves[i] = SparkMaxFactory.createPermanentSlaveSparkMax(mConstants.kSlaveConstants[i].id.getDeviceNumber(), mMaster, mConstants.kSlaveConstants[i].invert_motor);
+            mSlaves[i] = new CANSparkMax(mConstants.kSlaveConstants[i].id.getDeviceNumber(), MotorType.kBrushless);
             mSlaves[i].setIdleMode(IdleMode.kCoast);
-            mSlaves[i].follow(mMaster);
+            mSlaves[i].follow(mMaster, mConstants.kSlaveConstants[i].invert_motor);
         }
 
         mMaster.setCANTimeout(mConstants.kCANTimeoutMs);
@@ -477,7 +478,7 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
     }
 
     public void zeroSensors() {
-        mMasterEncoder.setPosition(10.0);
+        mMasterEncoder.setPosition(0.0);
     }
 
     public boolean atHomingLocation() {

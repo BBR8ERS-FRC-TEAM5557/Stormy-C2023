@@ -24,18 +24,18 @@ public class ElevatorSubsystemConstants {
     static {
         kElevatorConstants.kName = "Elevator";
 
-        kElevatorConstants.kMasterConstants.id = new CANDeviceId(CANDeviceType.SPARK_MAX, 31);
+        kElevatorConstants.kMasterConstants.id = new CANDeviceId(CANDeviceType.SPARK_MAX, 50);
         kElevatorConstants.kMasterConstants.invert_motor = invert_motors;
 
 
-        kElevatorConstants.kSlaveConstants = new SparkMaxConstants[2];
+        kElevatorConstants.kSlaveConstants = new SparkMaxConstants[1];
 
         kElevatorConstants.kSlaveConstants[0] = new SparkMaxConstants();
         kElevatorConstants.kSlaveConstants[0].id = new CANDeviceId(CANDeviceType.SPARK_MAX, 30);
-        kElevatorConstants.kSlaveConstants[0].invert_motor = !invert_motors;
+        kElevatorConstants.kSlaveConstants[0].invert_motor = invert_motors;
 
 
-        kElevatorConstants.kRevsPerUnitDistance = 1.0;
+        kElevatorConstants.kRevsPerUnitDistance = 15.0;
         kElevatorConstants.kEncoderInverted = true;
 
         kElevatorConstants.kKp = 0;  // Raw output / raw error

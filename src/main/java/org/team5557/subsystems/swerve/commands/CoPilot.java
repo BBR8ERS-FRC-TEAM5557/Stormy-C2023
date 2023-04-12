@@ -11,6 +11,7 @@ import org.team5557.state.RobotStateSupervisor;
 import org.team5557.state.RobotStateSupervisor.LocalizationStatus;
 import org.team5557.state.RobotStateSupervisor.RobotState;
 import org.team5557.state.goal.ObjectiveTracker;
+import org.team5557.state.goal.ObjectiveTracker.NodeLevel;
 import org.team5557.subsystems.swerve.Swerve;
 import org.team5557.subsystems.swerve.Swerve.DriveMode;
 import org.team5557.subsystems.swerve.util.SwerveSubsystemConstants;
@@ -164,13 +165,24 @@ public class CoPilot extends CommandBase {
             m_periodicIO.desired_state = (PathPlannerState) m_periodicIO.active_trajectory.sample(currentTimestamp - regenerationTimestamp);
             Pose2d currentPose = m_periodicIO.state.estimatedPose;
             Rotation2d goalRotation = isBlue ? new Rotation2d() : Rotation2d.fromDegrees(180);
+
+            if(RobotContainer.state_supervisor.getNodeLevel() == NodeLevel.HYBRID) {
+                goalRotation = Rotation2d.fromDegrees(goalRotation.getDegrees() + 180.0);
+            }
             //m_periodicIO.target_chassis_speeds 
             ChassisSpeeds raw = this.follower.calculate(currentPose, m_periodicIO.desired_state);
             m_periodicIO.target_chassis_speeds = 
                 new ChassisSpeeds(
-                    raw.vxMetersPerSecond + (RobotContainer.square(translationXSupplier.getAsDouble()/SwerveSubsystemConstants.MAX_VELOCITY_METERS_PER_SECOND) * multiplier),
-                    raw.vyMetersPerSecond + (RobotContainer.square(translationYSupplier.getAsDouble()/SwerveSubsystemConstants.MAX_VELOCITY_METERS_PER_SECOND) * multiplier),
+                    raw.vxMetersPerSecond,
+                    raw.vyMetersPerSecond,
                     RobotContainer.raw_controllers.calculateTheta(goalRotation.getRadians()));
+            if(Math.abs(translationXSupplier.getAsDouble()) > 0 || Math.abs(translationYSupplier.getAsDouble()) > 0 || true) {
+                m_periodicIO.target_chassis_speeds = 
+                    new ChassisSpeeds(
+                        translationXSupplier.getAsDouble()/SwerveSubsystemConstants.MAX_VELOCITY_METERS_PER_SECOND * multiplier,
+                        translationYSupplier.getAsDouble()/SwerveSubsystemConstants.MAX_VELOCITY_METERS_PER_SECOND * multiplier,
+                        RobotContainer.raw_controllers.calculateTheta(goalRotation.getRadians()));
+            }
         } else {
             Rotation2d goalRotation = !isBlue ? new Rotation2d() : Rotation2d.fromDegrees(180);
             m_periodicIO.target_chassis_speeds = 

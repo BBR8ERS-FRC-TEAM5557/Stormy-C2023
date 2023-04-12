@@ -34,6 +34,7 @@ public class Intake extends SubsystemBase {
 
         motor = new CANSparkMax(motorID.getDeviceNumber(), MotorType.kBrushless);
         motor.setOpenLoopRampRate(1.0);
+        motor.setInverted(true);
 
         solenoid = RobotContainer.pneumatics.getPH().makeDoubleSolenoid(kSolenoidForward, kSolenoidReverse);
 

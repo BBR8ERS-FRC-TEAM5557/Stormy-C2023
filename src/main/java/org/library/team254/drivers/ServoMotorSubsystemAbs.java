@@ -254,8 +254,7 @@ public abstract class ServoMotorSubsystemAbs extends SubsystemBase {
 
 
         for (int i = 0; i < mSlaves.length; ++i) {
-            mSlaves[i] = SparkMaxFactory.createPermanentSlaveSparkMax(mConstants.kSlaveConstants[i].id.getDeviceNumber(), mMaster);
-            mSlaves[i].setInverted(mConstants.kSlaveConstants[i].invert_motor);
+            mSlaves[i] = SparkMaxFactory.createPermanentSlaveSparkMax(mConstants.kSlaveConstants[i].id.getDeviceNumber(), mMaster, mConstants.kSlaveConstants[i].invert_motor);
             mSlaves[i].setIdleMode(IdleMode.kBrake);
             mSlaves[i].follow(mMaster);
         }

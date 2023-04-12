@@ -127,7 +127,7 @@ public class RobotContainer {
     );
 
     new Trigger(
-        () -> danny_controller.getRightBumper() && danny_controller.getLeftBumper() && danny_controller.getAButton() && false)
+        () -> danny_controller.getRightBumper() && danny_controller.getLeftBumper() && danny_controller.getAButton())
         .whileTrue(
             homeElevatorCommand
     );
@@ -184,7 +184,8 @@ public class RobotContainer {
     ////////SCORING\\\\\\\\\\
     //////////// \\\\\\\\\\\\
     new Trigger(() -> danny_controller.getRightTriggerAxis() > 0.5).whileTrue(
-        IntakeAuto.startBallasting().andThen(new SetSuperstructureSetpoint(() -> state_supervisor.getDesiredSuperstructureState(), this::getElevatorJogger))
+        //IntakeAuto.startBallasting().andThen(new SetSuperstructureSetpoint(() -> state_supervisor.getDesiredSuperstructureState(), this::getElevatorJogger))
+        new SetSuperstructureSetpoint(() -> state_supervisor.getDesiredSuperstructureState(), this::getElevatorJogger)
     )
         .onFalse(new SetSuperstructureSetpoint(() -> state_supervisor.getDesiredHoldingSuperstructureState(), this::getElevatorJogger))
         .onFalse(IntakeAuto.stopIntaking());

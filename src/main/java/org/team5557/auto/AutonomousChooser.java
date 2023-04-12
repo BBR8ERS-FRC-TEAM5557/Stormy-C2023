@@ -159,6 +159,7 @@ public class AutonomousChooser {
     public Command getI3ChargeNoBump() {
         SequentialCommandGroup command = new SequentialCommandGroup();
 
+        command.addCommands(IntakeAuto.spitCube());
         resetRobotPose(command, trajectories.getI_3_Charge_NoBump());
         follow(command, trajectories.getI_3_Charge_NoBump());
         command.addCommands(new AutoBalance());

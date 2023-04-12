@@ -55,9 +55,9 @@ public class SparkMaxFactory {
         }
     }
 
-    public static LazySparkMax createPermanentSlaveSparkMax(int id, CANSparkMax master) {
+    public static LazySparkMax createPermanentSlaveSparkMax(int id, CANSparkMax master, boolean invert) {
         final LazySparkMax sparkMax = createSparkMax(id, kSlaveConfiguration);
-        handleCANError(id, sparkMax.follow(master), "setting " + id + " as follower");
+        handleCANError(id, sparkMax.follow(master, invert), "setting " + id + " as follower");
         return sparkMax;
     }
 
