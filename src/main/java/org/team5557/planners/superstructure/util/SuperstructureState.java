@@ -6,7 +6,7 @@ public class SuperstructureState {
 
     public static enum Preset {
         HOLDING(new SuperstructureState(3.5, 244.0)),
-        HOLDING_CONE(new SuperstructureState(3.5, 244.0)), 
+        HOLDING_CONE(new SuperstructureState(3.5, 250.0)), 
         HOLDING_CUBE(new SuperstructureState(3.5, 244.0)), 
         HOLDING_NADA(new SuperstructureState(3.5, 244.0)),
 

@@ -7,6 +7,7 @@ import org.library.team3061.util.CANDeviceFinder;
 import org.library.team3061.util.CANDeviceId.CANDeviceType;
 import org.littletonrobotics.junction.Logger;
 import org.team5557.Constants;
+import org.team5557.RobotContainer;
 import org.team5557.state.goal.ObjectiveTracker.GamePiece;
 import org.team5557.subsystems.manipulator.util.ManipulatorState;
 
@@ -25,6 +26,7 @@ public class Manipulator extends SubsystemBase {
     private final CANSparkMax mBottomRollerMotor;
 
     private final DigitalInput cube_gate;
+    private final DigitalInput cone_gate;
 
     private final CANDeviceFinder can = new CANDeviceFinder();
 
@@ -32,13 +34,14 @@ public class Manipulator extends SubsystemBase {
 
     public Manipulator() {
         cube_gate = new DigitalInput(kCubeProximitySwitch);
+        cone_gate = new DigitalInput(kConeProximitySwitch);
 
         can.isDevicePresent(CANDeviceType.SPARK_MAX, kTopRollerMotorID.getDeviceNumber(), kSubsystemID + " Top Roller");
         can.isDevicePresent(CANDeviceType.SPARK_MAX, kBottomRollerMotorID.getDeviceNumber(), kSubsystemID + " Bottom Roller");
 
         mTopRollerMotor = new CANSparkMax(kTopRollerMotorID.getDeviceNumber(), MotorType.kBrushless);
         mTopRollerMotor.setIdleMode(IdleMode.kBrake);
-        mTopRollerMotor.setInverted(motorsInverted);
+        mTopRollerMotor.setInverted(true);
         mTopRollerMotor.setSmartCurrentLimit(40, 40, 0);
 
         SparkMaxUtil.checkError(mTopRollerMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100),"failed to set periodic status frame 0 rate");
@@ -47,7 +50,7 @@ public class Manipulator extends SubsystemBase {
 
         mBottomRollerMotor = new CANSparkMax(kBottomRollerMotorID.getDeviceNumber(), MotorType.kBrushless);
         mBottomRollerMotor.setIdleMode(IdleMode.kBrake);
-        mBottomRollerMotor.setInverted(motorsInverted);
+        mBottomRollerMotor.setInverted(true);
         mBottomRollerMotor.setSmartCurrentLimit(40, 40, 0);
 
         SparkMaxUtil.checkError(mBottomRollerMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100),"failed to set periodic status frame 0 rate");
@@ -59,6 +62,8 @@ public class Manipulator extends SubsystemBase {
             tab.add(this);
             tab.addNumber("Top Roller Speed", () -> mTopRollerMotor.getAppliedOutput());
             tab.addNumber("Bottom Roller Speed", () -> mBottomRollerMotor.getAppliedOutput());
+            tab.addBoolean("Cube Detected", this::getCubeDetected);
+            tab.addBoolean("Cone Detected", this::getConeDetected);
         }
     }
 
@@ -68,7 +73,6 @@ public class Manipulator extends SubsystemBase {
         mBottomRollerMotor.set(mWantedState.bottomRollerSpeed);
 
         Logger.getInstance().recordOutput(kSubsystemID + "/Top Roller/Applied Output", mTopRollerMotor.getAppliedOutput());
-
         Logger.getInstance().recordOutput(kSubsystemID + "/Bottom Roller/Applied Output", mBottomRollerMotor.getAppliedOutput());
     }
 
@@ -86,5 +90,9 @@ public class Manipulator extends SubsystemBase {
 
     public boolean getCubeDetected() {
         return !cube_gate.get();
+    }
+
+    public boolean getConeDetected() {
+        return !cone_gate.get() || RobotContainer.primary_controller.getYButton();
     }
 }

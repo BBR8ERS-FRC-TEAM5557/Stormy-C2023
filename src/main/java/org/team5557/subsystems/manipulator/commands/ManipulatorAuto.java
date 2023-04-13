@@ -18,24 +18,6 @@ public class ManipulatorAuto {
             );
     }
 
-    public static Command ejectCubeMid() {
-        return 
-            Commands.sequence(
-                startEjectingCubeMid(),
-                Commands.waitSeconds(1.0),
-                stopManipulator()
-            );
-    }
-
-    public static Command ejectCubeHigh() {
-        return 
-            Commands.sequence(
-                startEjectingCubeHigh(),
-                Commands.waitSeconds(1.0),
-                stopManipulator()
-            );
-    }
-
     public static Command ejectCone() {
         return 
             Commands.sequence(
@@ -50,14 +32,6 @@ public class ManipulatorAuto {
         return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.EJECT_CUBE.getManipulatorState()));
     }
 
-    public static Command startEjectingCubeMid() {
-        return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.EJECT_CUBE_MID.getManipulatorState()));
-    }
-
-    public static Command startEjectingCubeHigh() {
-        return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.EJECT_CUBE_HIGH.getManipulatorState()));
-    }
-
     public static Command startEjectingCone() {
         return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.EJECT_CONE.getManipulatorState()));
     }
@@ -70,12 +44,16 @@ public class ManipulatorAuto {
         return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CUBE.getManipulatorState()));
     }
 
-    public static Command startSuckingCubeSlowed() {
-        return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CUBE_SLOWED.getManipulatorState()));
+    public static Command startSuckingCone() {
+        return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CONE.getManipulatorState()));
     }
 
-    public static Command startReversingCube() {
-        return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CUBE_REVERSED.getManipulatorState()));
+    public static Command holdCube() {
+        return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.HOLDING_CUBE.getManipulatorState()));
+    }
+
+    public static Command holdCone() {
+        return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.HOLDING_CONE.getManipulatorState()));
     }
 
     public static Command suckCubeStop() {
@@ -83,24 +61,8 @@ public class ManipulatorAuto {
         Commands.sequence(
             startSuckingCube(),
             waitForCube(),
-            Commands.waitSeconds(0.25),
-            stopManipulator()
+            holdCube()
         );
-    }
-
-    public static Command suckCubeReverseStop() {
-        return 
-        Commands.sequence(
-            startReversingCube(),
-            waitForCube(),
-            startSuckingCubeSlowed(),
-            Commands.waitSeconds(0.5),
-            stopManipulator()
-        );
-    }
-
-    public static Command startSuckingCone() {
-        return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.INTAKING_CONE.getManipulatorState()));
     }
 
     public static Command waitForCube() {
