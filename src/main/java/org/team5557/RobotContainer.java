@@ -122,7 +122,7 @@ public class RobotContainer {
         new ShoulderManual(() -> getShoulderJogger())
     );
 
-    new Trigger(() -> danny_controller.getBButton()).whileTrue(
+    new Trigger(() -> danny_controller.getBButton() && false).whileTrue(
         new SetElevatorHeight(12.0)
     );
 
@@ -137,23 +137,16 @@ public class RobotContainer {
     //////// INTAKING\\\\\\\\
     //////////// \\\\\\\\\\\\
 
-    //INTAKING CUBES WITH MANIPULATOR -> Josh hold right Trigger
-    /*new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
+    //INTAKING CUBES WITH MANIPULATOR -> Josh hold left Trigger
+    new Trigger(() -> primary_controller.getLeftTriggerAxis() > 0.5).whileTrue(
         new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CUBE.getState(), this::getElevatorJogger)
             .alongWith(ManipulatorAuto.suckCubeStop())
     )
-    .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CUBE.getState(), this::getElevatorJogger))
-    .onFalse(ManipulatorAuto.stopManipulator());*/
-
-    new Trigger(() -> primary_controller.getLeftTriggerAxis() > 0.5).whileTrue(
-        new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CUBE.getState(), this::getElevatorJogger)
-            .alongWith(ManipulatorAuto.suckCubeReverseStop().deadlineWith(new ManipulatorShiver()))
-    )
-    .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CUBE.getState(), this::getElevatorJogger))
-    .onFalse(ManipulatorAuto.stopManipulator());
+        .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CUBE.getState(), this::getElevatorJogger))
+        .onFalse(ManipulatorAuto.holdCube());
     
 
-    //INTAKING CUBES WITH INTAKE -> Josh hold left Trigger
+    //INTAKING CUBES WITH INTAKE -> Josh hold right Trigger
     new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
         IntakeAuto.blockedCube()
             .alongWith(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_NADA.getState(), this::getElevatorJogger))
@@ -161,13 +154,28 @@ public class RobotContainer {
     )
     .onFalse(IntakeAuto.stopIntaking());
 
+
+
+    SuperstructureState followThruConeSetpoint = SuperstructureState.Preset.INTAKING_CONE_FOLLOW_THRU.getState();
     //INTAKING CONES WITH MANIPULATOR -> Josh hold left Bumper
     new Trigger(() -> primary_controller.getLeftBumper()).whileTrue(
-        new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CONE.getState(), this::getElevatorJogger)
+        new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CONE.getState())
             .alongWith(ManipulatorAuto.startSuckingCone())
+            //UNCOMMENT THE LINES BELOW TO TEST THE FOLLOW THRU MOTION WHEN INTAKING A CONE
+            //YOU MUST PRESS THE Y BUTTON ON PRIMARY CONTROLLER TO SIMULATE THE ROBOT DETECTING A CONE
+            //IF YOU WIRE THE BEAM BREAK MAKE SURE TO PLUG IT INTO THE 3rd DIO PORT
+            //IF IT DOESN'T TURN ON YOU PROBABLY PLUGGED IT IN BACKWARDS
+            //REMEMBER YOU CAN CHANGE THE DETECTION DISTANCE BY LOOSENING AND TIGHTENING THE SCREW ON THE BACK
+
+            //.until(manipulator::getConeDetected)
+            //.andThen(new SetSuperstructureSetpoint(followThruConeSetpoint))
+            //.until(() -> state_supervisor.isAtDesiredState(followThruConeSetpoint))
+            //.andThen(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState()).alongWith(ManipulatorAuto.holdCone()))
     )
-    .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState(), this::getElevatorJogger))
-    .onFalse(ManipulatorAuto.stopManipulator());
+        .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState()))
+        .onFalse(ManipulatorAuto.holdCone());
+
+
 
     //INTAKING SINGLE SUBSTATION -> danny hold A
     /*

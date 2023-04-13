@@ -104,6 +104,10 @@ public class RobotStateSupervisor extends SubsystemBase {
         return new SuperstructureState(RobotContainer.elevator.getPosition(), RobotContainer.shoulder.getAngle());
     }
 
+    public boolean isAtDesiredState(SuperstructureState des) {
+        return des.isAtDesiredState(getCurrentSuperstructureState());
+    }
+
     //////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
     ///////////////SKID DETECTION\\\\\\\\\\\\\\\\\
     //////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
