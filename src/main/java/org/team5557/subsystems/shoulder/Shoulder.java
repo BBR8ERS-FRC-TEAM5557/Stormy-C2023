@@ -2,6 +2,7 @@ package org.team5557.subsystems.shoulder;
 
 import org.library.team254.drivers.ServoMotorSubsystemAbs;
 import org.library.team254.motion.IMotionProfileGoal;
+import org.library.team254.motion.MotionProfileGoal;
 import org.library.team254.motion.MotionState;
 import org.library.team254.motion.SetpointGenerator.Setpoint;
 import org.library.team2910.math.MathUtils;
@@ -15,11 +16,13 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public class Shoulder extends ServoMotorSubsystemAbs {
     ArmFeedforward feedforward;
+    private IMotionProfileGoal prevProfileGoal;
 
     public Shoulder(ServoMotorSubsystemAbsConstants constants) {
         super(constants);
 
         feedforward = new ArmFeedforward(kS, kG, kV, kA);
+        prevProfileGoal = new MotionProfileGoal(0.0);
 
         ShuffleboardTab tab = Shuffleboard.getTab("Shoulder");
         tab.add(this);
@@ -29,7 +32,7 @@ public class Shoulder extends ServoMotorSubsystemAbs {
 
         mMasterEncoder.setPositionConversionFactor(360.0);
         mMasterEncoder.setVelocityConversionFactor(360.0 / 60.0);
-        mMasterEncoder.setZeroOffset(133.0 + 180.0);
+        mMasterEncoder.setZeroOffset(103.6 + 180.0);
 
         mMotionProfileConstraints = motionConstraints;
     }
@@ -48,17 +51,19 @@ public class Shoulder extends ServoMotorSubsystemAbs {
     }
 
     public synchronized void setMotionProfilingGoal(IMotionProfileGoal goal) {
-        if (mControlState != ControlState.MOTION_PROFILING_254) {
+        if (mControlState != ControlState.MOTION_PROFILING_254 || goal.pos() != prevProfileGoal.pos()) {
             mControlState = ControlState.MOTION_PROFILING_254;
             mMotionStateSetpoint = new MotionState(mPeriodicIO.timestamp, mPeriodicIO.position_units, mPeriodicIO.velocity_units_per_s, 0.0);
             mSetpointGenerator.reset();
         }
         Setpoint setpoint = mSetpointGenerator.getSetpoint(mMotionProfileConstraints, goal, mMotionStateSetpoint, mPeriodicIO.timestamp + mConstants.kLooperDt);
         mPeriodicIO.demand = constrainUnits(setpoint.motion_state.pos());
-        mPeriodicIO.feedforward = MathUtils.clamp(feedforward.calculate(
+        mPeriodicIO.feedforward = 0.0;
+        prevProfileGoal = goal;
+        /*MathUtils.clamp(feedforward.calculate(
             Units.degreesToRadians(mPeriodicIO.demand), 
             Units.degreesToRadians(setpoint.motion_state.vel()), 
-            Units.degreesToRadians(setpoint.motion_state.acc())), -2, 2);
+            Units.degreesToRadians(setpoint.motion_state.acc())), -2, 2);*/
         mMotionStateSetpoint = setpoint.motion_state;
     }
     

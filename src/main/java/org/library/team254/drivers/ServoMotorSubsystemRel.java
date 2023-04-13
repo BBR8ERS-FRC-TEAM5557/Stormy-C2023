@@ -117,11 +117,11 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
 
         /////////CONFIG ENCODER STUFF\\\\\\\\\\\
         SparkMaxUtil.checkError(mMasterEncoder.setPositionConversionFactor(
-            1.0 / mConstants.kRevsPerUnitDistance), 
+            1.0),//1.0 / mConstants.kRevsPerUnitDistance), 
                 getName());
 
         SparkMaxUtil.checkError(mMasterEncoder.setVelocityConversionFactor(
-            1.0 / (mConstants.kRevsPerUnitDistance * 60.0)), 
+            1.0),//1.0 / (mConstants.kRevsPerUnitDistance * 60.0)), 
                 getName());
 
         /*SparkMaxUtil.checkError(mMasterEncoder.setInverted(
@@ -129,7 +129,7 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
                 getName());*/
 
         SparkMaxUtil.checkError(mMasterEncoder.setAverageDepth(
-            8), 
+            4), 
                 getName());
                 
         SparkMaxUtil.checkError(
@@ -433,7 +433,7 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
     public synchronized void setMotionProfilingGoal(TrapezoidProfile.State goal, double feedforward_v) {
         if (mControlState != ControlState.MOTION_PROFILING_WPI) {
             mControlState = ControlState.MOTION_PROFILING_WPI;
-            mPreviousProfiledState = new TrapezoidProfile.State(mPeriodicIO.position_units, mPeriodicIO.velocity_units_per_s);
+            mPreviousProfiledState = new TrapezoidProfile.State(mPeriodicIO.position_units, 0.0);//mPeriodicIO.velocity_units_per_s);
         }
         TrapezoidProfile profile = new TrapezoidProfile(mConstants.profileConstraints, goal, mPreviousProfiledState);
         mPreviousProfiledState = profile.calculate(mConstants.kLooperDt);
@@ -444,7 +444,7 @@ public abstract class ServoMotorSubsystemRel extends SubsystemBase {
     public synchronized void setMotionProfilingGoal(IMotionProfileGoal goal, double feedforward_v) {
         if (mControlState != ControlState.MOTION_PROFILING_254) {
             mControlState = ControlState.MOTION_PROFILING_254;
-            mMotionStateSetpoint = new MotionState(mPeriodicIO.timestamp, mPeriodicIO.position_units, mPeriodicIO.velocity_units_per_s, 0.0);
+            mMotionStateSetpoint = new MotionState(mPeriodicIO.timestamp, mPeriodicIO.position_units, 0.0, 0.0);//mPeriodicIO.velocity_units_per_s, 0.0);
             mSetpointGenerator.reset();
         }
         Setpoint setpoint = mSetpointGenerator.getSetpoint(mMotionProfileConstraints, goal, mMotionStateSetpoint, mPeriodicIO.timestamp + mConstants.kLooperDt);

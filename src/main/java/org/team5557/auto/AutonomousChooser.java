@@ -46,6 +46,8 @@ public class AutonomousChooser {
         eventMap.put("startIntaking", IntakeAuto.startIntaking());
         eventMap.put("stopIntaking", IntakeAuto.stopIntaking());
         eventMap.put("spitCube", IntakeAuto.spitCube());
+        eventMap.put("startSpitting", IntakeAuto.startSpitting());
+
         eventMap.put("startPassthroughCube", IntakeAuto.passThroughCube());
         eventMap.put("startSuckingCone", ManipulatorAuto.startSuckingCone().andThen(new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CONE.getState())));
 
@@ -172,6 +174,7 @@ public class AutonomousChooser {
 
         resetRobotPose(command, trajectories.getI_3_Park_NoBump());
         follow(command, trajectories.getI_3_Park_NoBump());
+        command.addCommands(IntakeAuto.spitCube());
 
         return command;
     }

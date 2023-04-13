@@ -17,7 +17,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "spitCube"
+          "startSpitting"
         ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
@@ -191,9 +191,9 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "spitCube"
+          "startSpitting"
         ],
-        "executionBehavior": "sequential",
+        "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -218,19 +218,19 @@
     {
       "position": 2.8908402876420456,
       "names": [
-        "spitCube"
-      ]
-    },
-    {
-      "position": 0.4870993874289774,
-      "names": [
-        "startIntaking"
+        "startSpitting"
       ]
     },
     {
       "position": 5.200322931463067,
       "names": [
         "stopIntaking"
+      ]
+    },
+    {
+      "position": 3.8802956321022712,
+      "names": [
+        "startIntaking"
       ]
     }
   ]

@@ -20,6 +20,7 @@ public class SetElevatorHeight extends CommandBase {
     @Override
     public void execute() {
         elevator.setMotionProfilingGoal(goal);
+        //elevator.setSetpointPositionPID(goal.pos());
     }
     
 }

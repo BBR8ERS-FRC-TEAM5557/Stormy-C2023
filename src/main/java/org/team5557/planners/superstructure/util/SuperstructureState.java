@@ -5,25 +5,26 @@ public class SuperstructureState {
     public double shoulder; // degrees
 
     public static enum Preset {
-        HOLDING(new SuperstructureState(0.5, 245.0)),
-        HOLDING_CONE(new SuperstructureState(0.5, 254.0)), 
-        HOLDING_CUBE(new SuperstructureState(0.5, 260.0)), 
-        HOLDING_NADA(new SuperstructureState(0.5, 270.0)),
+        HOLDING(new SuperstructureState(3.5, 244.0)),
+        HOLDING_CONE(new SuperstructureState(3.5, 244.0)), 
+        HOLDING_CUBE(new SuperstructureState(3.5, 244.0)), 
+        HOLDING_NADA(new SuperstructureState(3.5, 244.0)),
 
-        HIGH_CUBE(new SuperstructureState(0.0, 240.0)),
-        MID_CUBE(new SuperstructureState(20.0, 240.0)),
+        HIGH_CUBE(new SuperstructureState(53.0, 242.0)),
+        MID_CUBE(new SuperstructureState(25.0, 240.0)),
         MID_CUBE_SHOOTER(new SuperstructureState(0.0, 230.0)),
         LOW_CUBE(new SuperstructureState(0.0, 240.0)),
 
-        HIGH_CONE(new SuperstructureState(0.0, 230.0)),
-        MID_CONE(new SuperstructureState(0.0, 230.0)),
+        HIGH_CONE(new SuperstructureState(67.0, 175.0)),
+        MID_CONE(new SuperstructureState(28.0, 220.0)),
         LOW_CONE(new SuperstructureState(0.0, 230.0)),
 
-        INTAKING_CONE(new SuperstructureState(0.5, 208.0)),
+        INTAKING_CONE(new SuperstructureState(0.5, 192.0)),
+        INTAKING_CONE_FOLLOW_THRU(new SuperstructureState(0.5, 177.0)),
 
-        INTAKING_CUBE(new SuperstructureState(0.5, 198.0)),
-        INTAKING_CUBE_REVERSED(new SuperstructureState(0.5, 193.0)),
-        INTAKING_CUBE_FOLLOW_THRU(new SuperstructureState(0.5, 190.0)),
+        INTAKING_CUBE(new SuperstructureState(0.5, 180.0)),
+        //INTAKING_CUBE_REVERSED(new SuperstructureState(0.5, 193.0)),
+        //INTAKING_CUBE_FOLLOW_THRU(new SuperstructureState(0.5, 190.0)),
 
         INTAKING_CHUTE_CONE(new SuperstructureState(0.5, 260.0));
 

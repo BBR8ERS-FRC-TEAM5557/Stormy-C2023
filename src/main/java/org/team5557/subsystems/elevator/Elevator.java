@@ -2,6 +2,7 @@ package org.team5557.subsystems.elevator;
 
 import org.library.team254.drivers.ServoMotorSubsystemRel;
 import org.library.team254.motion.IMotionProfileGoal;
+import org.library.team254.motion.MotionProfileConstraints;
 import org.library.team254.motion.MotionState;
 import org.library.team254.motion.SetpointGenerator.Setpoint;
 import org.library.team254.util.LatchedBoolean;
@@ -29,9 +30,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Elevator extends ServoMotorSubsystemRel {
     private ElevatorFeedforward feedforward = new ElevatorFeedforward(kS, kG, kV, kA);
-    private DigitalInput magLimitSwitch = new DigitalInput(Constants.ports.elevatorLimitSwitch);
+    private DigitalInput magLimitSwitch = new DigitalInput(kHomeLimitSwitchPort);
 
     private LatchedBoolean mJustReset = new LatchedBoolean();
+    private MotionProfileConstraints mMotionProfileConstraintsDown;
+    private IMotionProfileGoal p;
 
     ShuffleboardTab tab = Shuffleboard.getTab(Constants.shuffleboard.elevator_readout_key);
 
@@ -40,6 +43,7 @@ public class Elevator extends ServoMotorSubsystemRel {
 
         mHasBeenZeroed = true;
         mMotionProfileConstraints = ElevatorSubsystemConstants.motionConstraints;
+        mMotionProfileConstraintsDown = ElevatorSubsystemConstants.motionConstraintsDown;
 
         tab.addString("Control Mode", () -> mControlState.toString());
         tab.addDouble("Height (in.)", () -> this.getPosition());
@@ -70,7 +74,7 @@ public class Elevator extends ServoMotorSubsystemRel {
     public void periodic() {
         super.periodic();
 
-        if (!isHomed() && atHomingLocation()) {
+        if (atHomingLocation()) {//(!isHomed() && atHomingLocation()) {
             zeroSensors();
             mHasBeenZeroed = true;
         }
@@ -128,12 +132,17 @@ public class Elevator extends ServoMotorSubsystemRel {
     public synchronized void setMotionProfilingGoal(IMotionProfileGoal goal) {
         if (mControlState != ControlState.MOTION_PROFILING_254) {
             mControlState = ControlState.MOTION_PROFILING_254;
-            mMotionStateSetpoint = new MotionState(mPeriodicIO.timestamp, mPeriodicIO.position_units, mPeriodicIO.velocity_units_per_s, 0.0);
+            mMotionStateSetpoint = new MotionState(mPeriodicIO.timestamp, mPeriodicIO.position_units, 0.0, 0.0);
             mSetpointGenerator.reset();
         }
-        Setpoint setpoint = mSetpointGenerator.getSetpoint(mMotionProfileConstraints, goal, mMotionStateSetpoint, mPeriodicIO.timestamp + mConstants.kLooperDt);
+        Setpoint setpoint;
+        if(goal.pos() > this.getPosition() || true) {
+            setpoint = mSetpointGenerator.getSetpoint(mMotionProfileConstraints, goal, mMotionStateSetpoint, mPeriodicIO.timestamp + mConstants.kLooperDt);
+        } else {
+            setpoint = mSetpointGenerator.getSetpoint(mMotionProfileConstraintsDown, goal, mMotionStateSetpoint, mPeriodicIO.timestamp + mConstants.kLooperDt);
+        }
         mPeriodicIO.demand = constrainUnits(setpoint.motion_state.pos());
-        mPeriodicIO.feedforward = feedforward.calculate(setpoint.motion_state.vel(), setpoint.motion_state.acc());
+        mPeriodicIO.feedforward = 0.0;//feedforward.calculate(setpoint.motion_state.vel(), setpoint.motion_state.acc());
         mMotionStateSetpoint = setpoint.motion_state;
     }
 }

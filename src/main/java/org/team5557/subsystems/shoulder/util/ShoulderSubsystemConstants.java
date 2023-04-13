@@ -47,8 +47,8 @@ public class ShoulderSubsystemConstants {
             kShoulderConstants.kPositionIZone = 0; // Ticks
             kShoulderConstants.kPositionDeadband = 0; // Ticks
     
-            kShoulderConstants.kCruiseVelocity = 50.0; // units/s
-            kShoulderConstants.kAcceleration = 50.0; // units / s / s
+            kShoulderConstants.kCruiseVelocity = 180.0; // units/s
+            kShoulderConstants.kAcceleration = 360.0; // units / s / s
             kShoulderConstants.profileConstraints = new TrapezoidProfile.Constraints(kShoulderConstants.kCruiseVelocity, kShoulderConstants.kAcceleration);
             kShoulderConstants.kRampRate = 0.0; // s
             kShoulderConstants.kMaxVoltage = 12.0;

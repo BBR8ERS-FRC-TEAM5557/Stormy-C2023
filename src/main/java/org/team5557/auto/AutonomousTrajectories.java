@@ -28,13 +28,18 @@ public class AutonomousTrajectories {
     public AutonomousTrajectories() {
         spit_Charge_Center = new AutoPath("BpushAndCharge", Constants.pathplanner.medium_constraints);
 
+        
+
+
+
+
         three_Charge_NoBump = new AutoPath("3_Charge_NoBump", Constants.pathplanner.medium_constraints);
         three_Park_NoBump = new AutoPath("3_Park_NoBump", Constants.pathplanner.medium_constraints);
         twoplusone_Charge_NoBump = new AutoPath("2+1_Charge_NoBump", Constants.pathplanner.medium_constraints);
         oneplusone_Charge_Bump = new AutoPath("1+1_Charge_Bump", Constants.pathplanner.medium_constraints);
 
         i_Three_Charge_NoBump = new AutoPath("I_3_Charge_NoBump", Constants.pathplanner.medium_constraints);
-        i_Three_Park_NoBump = new AutoPath("I_3_Park_NoBump", Constants.pathplanner.auto_constraints);
+        i_Three_Park_NoBump = new AutoPath("3-PARK-N-(eii)", Constants.pathplanner.auto_constraints); //I_3_Park_NoBump
         i_Twoplusone_Charge_NoBump = new AutoPath("I_2+1_Charge_NoBump", Constants.pathplanner.medium_constraints);
 
         BpushAndCharge = PathPlanner.loadPath("BpushAndCharge", Constants.pathplanner.medium_constraints);
