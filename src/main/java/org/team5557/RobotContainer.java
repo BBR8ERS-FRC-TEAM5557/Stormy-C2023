@@ -122,7 +122,7 @@ public class RobotContainer {
         new ShoulderManual(() -> getShoulderJogger())
     );
 
-    new Trigger(() -> danny_controller.getBButton() && false).whileTrue(
+    new Trigger(() -> danny_controller.getBButton()).whileTrue(
         new SetElevatorHeight(12.0)
     );
 
@@ -145,17 +145,16 @@ public class RobotContainer {
     .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CUBE.getState(), this::getElevatorJogger))
     .onFalse(ManipulatorAuto.stopManipulator());*/
 
-    new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
-        new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CUBE_REVERSED.getState(), this::getElevatorJogger)
+    new Trigger(() -> primary_controller.getLeftTriggerAxis() > 0.5).whileTrue(
+        new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CUBE.getState(), this::getElevatorJogger)
             .alongWith(ManipulatorAuto.suckCubeReverseStop().deadlineWith(new ManipulatorShiver()))
     )
     .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CUBE.getState(), this::getElevatorJogger))
     .onFalse(ManipulatorAuto.stopManipulator());
-
     
 
     //INTAKING CUBES WITH INTAKE -> Josh hold left Trigger
-    new Trigger(() -> primary_controller.getLeftTriggerAxis() > 0.5).whileTrue(
+    new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
         IntakeAuto.blockedCube()
             .alongWith(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_NADA.getState(), this::getElevatorJogger))
             .alongWith(ManipulatorAuto.stopManipulator())
@@ -171,13 +170,14 @@ public class RobotContainer {
     .onFalse(ManipulatorAuto.stopManipulator());
 
     //INTAKING SINGLE SUBSTATION -> danny hold A
+    /*
     new Trigger(() -> danny_controller.getAButton()).whileTrue(
         new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CHUTE_CONE.getState(), this::getElevatorJogger)
             .alongWith(ManipulatorAuto.startSuckingCone())
             //.alongWith(new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 1.5))
     )
         .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState(), this::getElevatorJogger))
-        .onFalse(ManipulatorAuto.stopManipulator());
+        .onFalse(ManipulatorAuto.stopManipulator());*/
 
 
     //////////// \\\\\\\\\\\\
