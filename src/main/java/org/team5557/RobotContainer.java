@@ -197,15 +197,14 @@ public class RobotContainer {
 
 
 */
-    //INTAKING SINGLE SUBSTATION -> danny hold A
-    /*
-    new Trigger(() -> danny_controller.getAButton()).whileTrue(
+    //INTAKING SINGLE SUBSTATION -> JOSH hold X
+    new Trigger(() -> primary_controller.getXButton()).whileTrue(
         new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CHUTE_CONE.getState(), this::getElevatorJogger)
             .alongWith(ManipulatorAuto.startSuckingCone())
-            //.alongWith(new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 1.5))
+            .alongWith(new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 1.5))
     )
         .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState(), this::getElevatorJogger))
-        .onFalse(ManipulatorAuto.stopManipulator());*/
+        .onFalse(ManipulatorAuto.stopManipulator());
 
 
     //////////// \\\\\\\\\\\\

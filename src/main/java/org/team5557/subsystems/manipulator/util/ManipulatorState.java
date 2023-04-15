@@ -16,6 +16,7 @@ public class ManipulatorState {
         INTAKING_CUBE(new ManipulatorState(0.75, -0.75)),
         HOLDING_CUBE(new ManipulatorState(0.0, -0.025)),
         EJECT_CUBE(new ManipulatorState(0.0, 0.25)),
+        FIRE_CUBE(new ManipulatorState(0.0, 0.85)),
 
 
         INTAKING_CONE(new ManipulatorState(0.75, 0.75)),
