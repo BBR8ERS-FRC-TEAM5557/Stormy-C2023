@@ -25,9 +25,18 @@ public class AutonomousTrajectories {
     private final AutoPath one_Park_Bump;
     private final AutoPath oneplusone_Park_NoBump;
 
+    private AutoPath twoplusoneChargeNeie;
+    private AutoPath twoParkNee;
+    private AutoPath threeParkNeii;
+    private AutoPath twoParkNeeADD;
+
     public AutonomousTrajectories() {
         spit_Charge_Center = new AutoPath("BpushAndCharge", Constants.pathplanner.medium_constraints);
 
+        twoplusoneChargeNeie = new AutoPath("2+1-Charge-N-(eie)", Constants.pathplanner.auto_constraints);
+        threeParkNeii = new AutoPath("3-PARK-N-(eii)", Constants.pathplanner.auto_constraints);
+        twoParkNee = new AutoPath("2-Park-N-(ee)", Constants.pathplanner.auto_constraints);
+        twoParkNeeADD = new AutoPath("2-Charge-N-(ee)-ADDON", Constants.pathplanner.fast_constraints);
         
 
 
@@ -53,6 +62,27 @@ public class AutonomousTrajectories {
     public PathPlannerTrajectory getSpit_Charge_Center() {
         return spit_Charge_Center.getTrajectory();
     }
+
+    public PathPlannerTrajectory get21ChargeNeie() {
+        return twoplusoneChargeNeie.getTrajectory();
+    }
+
+    public PathPlannerTrajectory get3ParkNeii() {
+        return threeParkNeii.getTrajectory();
+    }
+
+    public PathPlannerTrajectory get2parkNee() {
+        return twoParkNee.getTrajectory();
+    }
+
+    public PathPlannerTrajectory get2parkNeeADDON() {
+        return twoParkNeeADD.getTrajectory();
+    }
+
+
+
+
+
 
     //REGULAR
     public PathPlannerTrajectory get3_Charge_NoBump() {

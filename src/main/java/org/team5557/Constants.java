@@ -128,7 +128,9 @@ public final class Constants {
   static {
     pathplanner.fast_constraints = new PathConstraints(4.0, 3.0);
     pathplanner.medium_constraints = new PathConstraints(4.0, 3.0);
-    pathplanner.auto_constraints = new PathConstraints(3.5, 2.5);
+
+    pathplanner.auto_constraints = new PathConstraints(3.0, 2.5);
+
     pathplanner.slow_constraints = new PathConstraints(2.0, 3.0);
     pathplanner.hellaslow_constraints = new PathConstraints(1.0, 1.0);
   }
@@ -164,7 +166,7 @@ public final class Constants {
     follower.auto_kI = 0.0;
     follower.auto_kD = 0.0;
 
-    follower.translation_kP = 5.0;
+    follower.translation_kP = 4.0;
     follower.translation_kI = 0.0;
     follower.translation_kD = 0.0;
   }

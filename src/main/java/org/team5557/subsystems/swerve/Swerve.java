@@ -148,13 +148,13 @@ public class Swerve extends SubsystemBase {
             backRightModule.setDriveBrakeMode(true);
             backRightModule.setAngleBrakeMode(true);
         }, () -> {
-            frontLeftModule.setDriveBrakeMode(false);
+            frontLeftModule.setDriveBrakeMode(true);
             frontLeftModule.setAngleBrakeMode(false);
-            frontRightModule.setDriveBrakeMode(false);
+            frontRightModule.setDriveBrakeMode(true);
             frontRightModule.setAngleBrakeMode(false);
-            backLeftModule.setDriveBrakeMode(false);
+            backLeftModule.setDriveBrakeMode(true);
             backLeftModule.setAngleBrakeMode(false);
-            backRightModule.setDriveBrakeMode(false);
+            backRightModule.setDriveBrakeMode(true);
             backRightModule.setAngleBrakeMode(false);
             }));
 
@@ -366,7 +366,7 @@ public class Swerve extends SubsystemBase {
      * Chassis speeds consumer for PathPlanner
      */
     public void drive(ChassisSpeeds chassisSpeeds) {
-        this.drive(chassisSpeeds, DriveMode.CLOSED_LOOP, false, Constants.superstructure.center_of_rotation);
+        this.drive(chassisSpeeds, DriveMode.OPEN_LOOP, false, Constants.superstructure.center_of_rotation);
     }
 
     public void runCharacterizationVolts(double volts) {

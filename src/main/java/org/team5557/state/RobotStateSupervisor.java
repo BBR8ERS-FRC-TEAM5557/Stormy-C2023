@@ -108,6 +108,10 @@ public class RobotStateSupervisor extends SubsystemBase {
         return des.isAtDesiredState(getCurrentSuperstructureState());
     }
 
+    public boolean isElevatorBelowThreshould(double des, double threshold) {
+        return Math.abs(RobotContainer.elevator.getPosition() - des) < threshold;
+    }
+
     //////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
     ///////////////SKID DETECTION\\\\\\\\\\\\\\\\\
     //////////////////////\\\\\\\\\\\\\\\\\\\\\\\\

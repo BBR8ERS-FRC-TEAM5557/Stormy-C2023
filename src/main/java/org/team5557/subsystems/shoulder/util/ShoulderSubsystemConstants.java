@@ -58,8 +58,8 @@ public class ShoulderSubsystemConstants {
             kShoulderConstants.kLimitRPM = 1000;
             kShoulderConstants.kEnableCurrentLimit = false;
     
-            kShoulderConstants.kMaxUnitsLimit = 330.0;
-            kShoulderConstants.kMinUnitsLimit = 193.0;
+            kShoulderConstants.kMaxUnitsLimit = 300.0;
+            kShoulderConstants.kMinUnitsLimit = 160.0;
     
             kShoulderConstants.kStatus0FrameRate = 20;
             kShoulderConstants.kStatus1FrameRate = 200;

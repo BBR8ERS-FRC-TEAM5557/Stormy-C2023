@@ -7,6 +7,7 @@ import org.team5557.Constants;
 import org.team5557.FieldConstants;
 import org.team5557.RobotContainer;
 import org.team5557.commands.superstructure.SetSuperstructureSetpoint;
+import org.team5557.commands.superstructure.SuperstructureAuto;
 import org.team5557.planners.superstructure.util.SuperstructureState;
 import org.team5557.subsystems.intake.commands.IntakeAuto;
 import org.team5557.subsystems.manipulator.commands.ManipulatorAuto;
@@ -43,20 +44,25 @@ public class AutonomousChooser {
     public static HashMap<String, Command> eventMap = new HashMap<>();
     static {
         //Intake
+        eventMap.put("none", new InstantCommand());
         eventMap.put("startIntaking", IntakeAuto.startIntaking());
         eventMap.put("stopIntaking", IntakeAuto.stopIntaking());
         eventMap.put("spitCube", IntakeAuto.spitCube());
         eventMap.put("startSpitting", IntakeAuto.startSpitting());
 
-        eventMap.put("startPassthroughCube", IntakeAuto.passThroughCube());
-        eventMap.put("startSuckingCone", ManipulatorAuto.startSuckingCone().andThen(new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CONE.getState())));
 
         eventMap.put("ejectCube", ManipulatorAuto.ejectCube());
-        eventMap.put("prepLowCube", Commands.sequence(new SetShoulderAngle(SuperstructureState.Preset.LOW_CUBE.getState().shoulder)));
-        eventMap.put("prepIntakeCube", Commands.sequence(new SetShoulderAngle(SuperstructureState.Preset.INTAKING_CUBE.getState().shoulder)));
-
+        eventMap.put("fireCube", ManipulatorAuto.fireCube());
         eventMap.put("startSuckingCube", ManipulatorAuto.startSuckingCube());
+        eventMap.put("startSuckingCone", ManipulatorAuto.startSuckingCone());
         eventMap.put("stopManipulator", ManipulatorAuto.stopManipulator());
+        eventMap.put("holdCube", ManipulatorAuto.holdCube());
+        eventMap.put("holdCone", ManipulatorAuto.holdCone());
+
+        //Superstructure
+        eventMap.put("holdItem", new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING.getState()));
+        eventMap.put("prepCubeSuck", new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CUBE.getState()));
+        eventMap.put("prepConeSuck", new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CONE.getState()));
     }
     
     public AutonomousChooser(AutonomousTrajectories trajectories) {
@@ -64,153 +70,15 @@ public class AutonomousChooser {
 
         autonomousModeChooser.addDefaultOption("DO NOTHING", AutonomousMode.DO_NOTHING);
         autonomousModeChooser.addDefaultOption("Spit-Charge-Center", AutonomousMode.SPIT_CHARGE_CENTER);
-        autonomousModeChooser.addOption("Spit-Park-Bump", AutonomousMode.ONE_PARK_BUMP);
-        autonomousModeChooser.addOption("1+1-Park-NoBump", AutonomousMode.ONEPLUSONE_CHARGE_BUMP);
 
-        autonomousModeChooser.addOption("3-Charge-NoBump", AutonomousMode.THREE_CHARGE_NOBUMP);
-        autonomousModeChooser.addOption("3-Park-NoBump", AutonomousMode.THREE_PARK_NOBUMP);
-        autonomousModeChooser.addOption("2+1-Charge-NoBump", AutonomousMode.TWOPLUSONE_CHARGE_NOBUMP);
-
-        autonomousModeChooser.addOption("I-3-Charge-NoBump", AutonomousMode.I_THREE_CHARGE_NOBUMP);
-        autonomousModeChooser.addOption("I-3-Park-NoBump", AutonomousMode.I_THREE_PARK_NOBUMP);
-        autonomousModeChooser.addOption("I-2+1-Charge-NoBump", AutonomousMode.I_TWOPLUSONE_CHARGE_NOBUMP);
-
-        autonomousModeChooser.addOption("RED - Push and Charge", AutonomousMode.R_PUSH_AND_CHARGE);
-        autonomousModeChooser.addOption("BLUE - Push and Charge", AutonomousMode.B_PUSH_AND_CHARGE);
-        autonomousModeChooser.addOption("FF Characterization", AutonomousMode.FF_CHARACTERIZATION);
+        autonomousModeChooser.addDefaultOption("2+1-Charge-N-(eie)", AutonomousMode.TWO_PLUS_ONE_CHARGE_N_EIE);
+        autonomousModeChooser.addDefaultOption("3-PARK-N-(eii)", AutonomousMode.THREE_PARK_N_EII);
+        autonomousModeChooser.addDefaultOption("2-Park-N-(ee)", AutonomousMode.TWO_PARK_N_EE);
+        autonomousModeChooser.addDefaultOption("2-Charge-N-(ee)", AutonomousMode.TWO_CHARGE_N_EE);
     }
 
     public LoggedDashboardChooser<AutonomousMode> getModeChooser() {
         return autonomousModeChooser;
-    }
-
-    public Command getSpitChargeCenter() {
-        SequentialCommandGroup command = new SequentialCommandGroup();
-
-        resetRobotPose(command, trajectories.getSpit_Charge_Center());
-        command.addCommands(IntakeAuto.spitCube());
-        follow(command, trajectories.getSpit_Charge_Center());
-        command.addCommands(new AutoBalance().withTimeout(10.0));
-        command.addCommands(new RunCommand(() -> RobotContainer.swerve.drive(new ChassisSpeeds(), DriveMode.X_OUT, false, Constants.superstructure.center_of_rotation), RobotContainer.swerve));
-
-        return command;
-    }
-
-    public Command getSpitParkBump() {
-        SequentialCommandGroup command = new SequentialCommandGroup();
-
-        resetRobotPose(command, trajectories.get1_Park_Bump());
-        command.addCommands(IntakeAuto.spitCube());
-        follow(command, trajectories.get1_Park_Bump());
-        command.addCommands(new AutoBalance().withTimeout(10.0));
-        command.addCommands(new RunCommand(() -> RobotContainer.swerve.drive(new ChassisSpeeds(), DriveMode.X_OUT, false, Constants.superstructure.center_of_rotation), RobotContainer.swerve));
-
-        return command;
-    }
-
-    public Command get1plus1ParkNoBump() {
-        SequentialCommandGroup command = new SequentialCommandGroup();
-
-        resetRobotPose(command, trajectories.get1plus1_Park_NoBump());
-        command.addCommands(IntakeAuto.spitCube());
-        follow(command, trajectories.get1plus1_Park_NoBump());
-        command.addCommands(ManipulatorAuto.stopManipulator());
-        command.addCommands(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState()));
-
-        return command;
-    }
-    //Regular
-    public Command get3ChargeNoBump() {
-        SequentialCommandGroup command = new SequentialCommandGroup();
-
-        resetRobotPose(command, trajectories.get3_Charge_NoBump());
-        follow(command, trajectories.get3_Charge_NoBump());
-        command.addCommands(new AutoBalance());
-
-        return command;
-    }
-
-    public Command get3ParkNoBump() {
-        SequentialCommandGroup command = new SequentialCommandGroup();
-
-        resetRobotPose(command, trajectories.get3_Park_NoBump());
-        follow(command, trajectories.get3_Park_NoBump());
-
-        return command;
-    }
-    public Command get2plus1ChargeNoBump() {
-        SequentialCommandGroup command = new SequentialCommandGroup();
-
-        resetRobotPose(command, trajectories.get2plus1_Charge_NoBump());
-        follow(command, trajectories.get2plus1_Charge_NoBump());
-        command.addCommands(new AutoBalance());
-
-        return command;
-    }
-    public Command get1plus1ChargeBump() {
-        SequentialCommandGroup command = new SequentialCommandGroup();
-
-        resetRobotPose(command, trajectories.get1plus1_Charge_Bump());
-        follow(command, trajectories.get1plus1_Charge_Bump());
-        command.addCommands(new AutoBalance());
-
-        return command;
-    }
-
-    //INTAKE ONLY
-    public Command getI3ChargeNoBump() {
-        SequentialCommandGroup command = new SequentialCommandGroup();
-
-        command.addCommands(IntakeAuto.spitCube());
-        resetRobotPose(command, trajectories.getI_3_Charge_NoBump());
-        follow(command, trajectories.getI_3_Charge_NoBump());
-        command.addCommands(new AutoBalance());
-
-        return command;
-    }
-
-    public Command getI3ParkNoBump() {
-        SequentialCommandGroup command = new SequentialCommandGroup();
-
-        resetRobotPose(command, trajectories.getI_3_Park_NoBump());
-        follow(command, trajectories.getI_3_Park_NoBump());
-        command.addCommands(IntakeAuto.spitCube());
-
-        return command;
-    }
-    public Command getI2plus1ChargeNoBump() {
-        SequentialCommandGroup command = new SequentialCommandGroup();
-
-        resetRobotPose(command, trajectories.getI_2plus1_Charge_NoBump());
-        follow(command, trajectories.getI_2plus1_Charge_NoBump());
-        command.addCommands(new AutoBalance());
-
-        return command;
-    }
-
-    //RANDOM STUFF
-    public Command getBPushAndCharge() {
-        SequentialCommandGroup command = new SequentialCommandGroup();
-
-        resetRobotPose(command, trajectories.getBPushAndCharge());
-        follow(command, trajectories.getBPushAndCharge());
-        command.addCommands(new AutoBalance());
-
-        return command;
-    }
-
-    public Command getRPushAndCharge() {
-        SequentialCommandGroup command = new SequentialCommandGroup();
-
-        resetRobotPose(command, trajectories.getRPushAndCharge());
-        follow(command, trajectories.getRPushAndCharge());
-        command.addCommands(new AutoBalance());
-
-        return command;
-    }
-
-    public Command getFFCharacterization() {
-        return new FeedForwardCharacterization(RobotContainer.swerve, true, new FeedForwardCharacterizationData("drive"), RobotContainer.swerve::runCharacterizationVolts, RobotContainer.swerve::getCharacterizationVelocity);
     }
 
     private void follow(SequentialCommandGroup command, PathPlannerTrajectory trajectory) {
@@ -240,36 +108,83 @@ public class AutonomousChooser {
         );
     }
 
+
+    public Command getSpitChargeCenter() {
+        SequentialCommandGroup command = new SequentialCommandGroup();
+
+        resetRobotPose(command, trajectories.getSpit_Charge_Center());
+        command.addCommands(IntakeAuto.spitCube());
+        follow(command, trajectories.getSpit_Charge_Center());
+        command.addCommands(new AutoBalance().withTimeout(10.0));
+        command.addCommands(new RunCommand(() -> RobotContainer.swerve.drive(new ChassisSpeeds(), DriveMode.X_OUT, false, Constants.superstructure.center_of_rotation), RobotContainer.swerve));
+
+        return command;
+    }
+
+    public Command get21ChargeNeie() {
+        SequentialCommandGroup command = new SequentialCommandGroup();
+
+        resetRobotPose(command, trajectories.get21ChargeNeie());
+        command.addCommands(SuperstructureAuto.scoreHighCone());
+        follow(command, trajectories.get21ChargeNeie());
+        command.addCommands(ManipulatorAuto.fireCube());
+        command.addCommands(new AutoBalance());
+
+        return command;
+    }
+
+    public Command get3ParkNeii() {
+        SequentialCommandGroup command = new SequentialCommandGroup();
+
+        resetRobotPose(command, trajectories.get3ParkNeii());
+        command.addCommands(SuperstructureAuto.scoreHighCone());
+        follow(command, trajectories.get3ParkNeii());
+
+        return command;
+    }
+
+    public Command get2parkNee() {
+        SequentialCommandGroup command = new SequentialCommandGroup();
+
+        resetRobotPose(command, trajectories.get2parkNee());
+        command.addCommands(SuperstructureAuto.scoreHighCone());
+        follow(command, trajectories.get2parkNee());
+
+        return command;
+    }
+
+    public Command get2parkNeeADDON() {
+        SequentialCommandGroup command = new SequentialCommandGroup();
+
+        resetRobotPose(command, trajectories.get2parkNee());
+        command.addCommands(SuperstructureAuto.scoreHighCone());
+        follow(command, trajectories.get2parkNee());
+
+        command.addCommands(SuperstructureAuto.scoreHighCone());
+        follow(command, trajectories.get2parkNeeADDON());
+        command.addCommands(new AutoBalance());
+
+        return command;
+    }
+
+    public Command getFFCharacterization() {
+        return new FeedForwardCharacterization(RobotContainer.swerve, true, new FeedForwardCharacterizationData("drive"), RobotContainer.swerve::runCharacterizationVolts, RobotContainer.swerve::getCharacterizationVelocity);
+    }
+
     public Command getCommand() {
         switch (autonomousModeChooser.get()) {
             case SPIT_CHARGE_CENTER:
                 return getSpitChargeCenter();
-            case THREE_CHARGE_NOBUMP:
-                return get3ChargeNoBump();
-            case THREE_PARK_NOBUMP:
-                return get3ParkNoBump();
-            case TWOPLUSONE_CHARGE_NOBUMP:
-                return get2plus1ChargeNoBump();
-            case ONEPLUSONE_CHARGE_BUMP:
-                return get1plus1ChargeBump();
-
-
-            case I_THREE_CHARGE_NOBUMP:
-                return getI3ChargeNoBump();
-            case I_THREE_PARK_NOBUMP:
-                return getI3ParkNoBump();
-            case I_TWOPLUSONE_CHARGE_NOBUMP:
-                return getI2plus1ChargeNoBump();
-
-
-            case R_PUSH_AND_CHARGE :
-                return getRPushAndCharge();
-            case B_PUSH_AND_CHARGE :
-                return getBPushAndCharge();
-            case ONE_PARK_BUMP:
-                return getSpitParkBump();
-            case ONEPLUSONE_PARK_NOBUMP:
-                return get1plus1ParkNoBump();
+            
+            case TWO_PLUS_ONE_CHARGE_N_EIE:
+                return get21ChargeNeie();
+            case THREE_PARK_N_EII:
+                return get3ParkNeii();
+            case TWO_PARK_N_EE:
+                return get2parkNee();
+            case TWO_CHARGE_N_EE:
+                return get2parkNeeADDON();
+            
             case FF_CHARACTERIZATION :
                 return getFFCharacterization();
             default:
@@ -281,19 +196,10 @@ public class AutonomousChooser {
     private enum AutonomousMode {
         SPIT_CHARGE_CENTER,
 
-        THREE_CHARGE_NOBUMP,
-        THREE_PARK_NOBUMP,
-        TWOPLUSONE_CHARGE_NOBUMP,
-        ONEPLUSONE_CHARGE_BUMP,
-        ONEPLUSONE_PARK_NOBUMP,
-
-        I_THREE_CHARGE_NOBUMP,
-        I_THREE_PARK_NOBUMP,
-        I_TWOPLUSONE_CHARGE_NOBUMP,
-
-        R_PUSH_AND_CHARGE,
-        B_PUSH_AND_CHARGE,
-        ONE_PARK_BUMP,
+        TWO_PLUS_ONE_CHARGE_N_EIE,
+        THREE_PARK_N_EII,
+        TWO_PARK_N_EE,
+        TWO_CHARGE_N_EE,
 
         FF_CHARACTERIZATION,
         DO_NOTHING

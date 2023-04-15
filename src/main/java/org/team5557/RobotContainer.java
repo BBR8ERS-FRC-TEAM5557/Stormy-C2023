@@ -159,33 +159,44 @@ public class RobotContainer {
     SuperstructureState followThruConeSetpoint = SuperstructureState.Preset.INTAKING_CONE_FOLLOW_THRU.getState();
     //INTAKING CONES WITH MANIPULATOR -> Josh hold left Bumper
     new Trigger(() -> primary_controller.getLeftBumper()).whileTrue(
-        new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CONE.getState())
+        Commands.sequence(
+            new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CONE.getState())
+                .alongWith(ManipulatorAuto.startSuckingCone())
+                .until(manipulator::getConeDetected),
+
+            new SetSuperstructureSetpoint(followThruConeSetpoint)
+                .until(() -> state_supervisor.isAtDesiredState(followThruConeSetpoint)),
+
+            new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState())
+                .alongWith(ManipulatorAuto.holdCone())
+        )
+    )
+        .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState()))
+        .onFalse(ManipulatorAuto.holdCone());
+
+
+                /*new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CONE.getState())
             .alongWith(ManipulatorAuto.startSuckingCone())
             //UNCOMMENT THE LINES BELOW TO TEST THE FOLLOW THRU MOTION WHEN INTAKING A CONE
             //YOU MUST PRESS THE Y BUTTON ON PRIMARY CONTROLLER TO SIMULATE THE ROBOT DETECTING A CONE
             //IF YOU WIRE THE BEAM BREAK MAKE SURE TO PLUG IT INTO THE 3rd DIO PORT
             //IF IT DOESN'T TURN ON YOU PROBABLY PLUGGED IT IN BACKWARDS
             //REMEMBER YOU CAN CHANGE THE DETECTION DISTANCE BY LOOSENING AND TIGHTENING THE SCREW ON THE BACK
-
-            //.until(manipulator::getConeDetected)
+            .until(manipulator::getConeDetected)
             //.andThen(new SetSuperstructureSetpoint(followThruConeSetpoint))
             //.until(() -> state_supervisor.isAtDesiredState(followThruConeSetpoint))
-            //.andThen(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState()).alongWith(ManipulatorAuto.holdCone()))
-    )
-        .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState()))
-        .onFalse(ManipulatorAuto.holdCone());
+            //.andThen(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState()).alongWith(ManipulatorAuto.holdCone()))*/
 
 
 
-    //INTAKING SINGLE SUBSTATION -> danny hold A
-    /*
-    new Trigger(() -> danny_controller.getAButton()).whileTrue(
+    //INTAKING SINGLE SUBSTATION -> Josh hold X
+    new Trigger(() -> primary_controller.getXButton()).whileTrue(
         new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CHUTE_CONE.getState(), this::getElevatorJogger)
             .alongWith(ManipulatorAuto.startSuckingCone())
-            //.alongWith(new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 1.5))
+            .alongWith(new AimDrive(this::getForwardInput, this::getStrafeInput, Math.PI * 1.5))
     )
         .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState(), this::getElevatorJogger))
-        .onFalse(ManipulatorAuto.stopManipulator());*/
+        .onFalse(ManipulatorAuto.holdCone());
 
 
     //////////// \\\\\\\\\\\\

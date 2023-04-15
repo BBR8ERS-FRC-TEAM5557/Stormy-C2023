@@ -50,7 +50,7 @@ public class Manipulator extends SubsystemBase {
 
         mBottomRollerMotor = new CANSparkMax(kBottomRollerMotorID.getDeviceNumber(), MotorType.kBrushless);
         mBottomRollerMotor.setIdleMode(IdleMode.kBrake);
-        mBottomRollerMotor.setInverted(true);
+        mBottomRollerMotor.setInverted(false);
         mBottomRollerMotor.setSmartCurrentLimit(40, 40, 0);
 
         SparkMaxUtil.checkError(mBottomRollerMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100),"failed to set periodic status frame 0 rate");

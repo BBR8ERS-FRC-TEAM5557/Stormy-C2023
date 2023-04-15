@@ -18,21 +18,46 @@ public class ManipulatorAuto {
             );
     }
 
+    public static Command fireCube() {
+        return 
+        Commands.sequence(
+            startFiringCube(),
+            Commands.waitSeconds(1.0),
+            stopManipulator()
+        );
+    }
+
     public static Command ejectCone() {
         return 
             Commands.sequence(
                 startEjectingCone(),
+                Commands.waitSeconds(3.0),
+                stopManipulator()
+            );
+    }
+
+    public static Command ejectConeAuto() {
+        return 
+            Commands.sequence(
+                startEjectingConeFast(),
                 Commands.waitSeconds(1.0),
                 stopManipulator()
             );
-
     }
 
     public static Command startEjectingCube() {
         return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.EJECT_CUBE.getManipulatorState()));
     }
 
+    public static Command startFiringCube() {
+        return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.FIRE_CUBE.getManipulatorState()));
+    }
+
     public static Command startEjectingCone() {
+        return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.EJECT_CONE.getManipulatorState()));
+    }
+
+    public static Command startEjectingConeFast() {
         return new InstantCommand(() -> RobotContainer.manipulator.setManipulatorState(ManipulatorState.ManipulatorStates.EJECT_CONE.getManipulatorState()));
     }
 
