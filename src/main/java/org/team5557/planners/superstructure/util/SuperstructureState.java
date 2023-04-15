@@ -19,14 +19,14 @@ public class SuperstructureState {
         MID_CONE(new SuperstructureState(32.0, 220.0)),
         LOW_CONE(new SuperstructureState(0.0, 230.0)),
 
-        INTAKING_CONE(new SuperstructureState(0.5, 194.0)),
+        INTAKING_CONE(new SuperstructureState(0.5, 194)),
         INTAKING_CONE_FOLLOW_THRU(new SuperstructureState(0.5, 177.0)),
 
-        INTAKING_CUBE(new SuperstructureState(0.5, 185.0)),
+        INTAKING_CUBE(new SuperstructureState(0.5, 185)),
         //INTAKING_CUBE_REVERSED(new SuperstructureState(0.5, 193.0)),
         //INTAKING_CUBE_FOLLOW_THRU(new SuperstructureState(0.5, 190.0)),
 
-        INTAKING_CHUTE_CONE(new SuperstructureState(0.5, 240.0));
+        INTAKING_CHUTE_CONE(new SuperstructureState(0.5, 260.0));
 
         
         private SuperstructureState state;
