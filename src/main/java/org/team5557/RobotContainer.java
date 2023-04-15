@@ -155,7 +155,27 @@ public class RobotContainer {
     .onFalse(IntakeAuto.stopIntaking());
 
 
+    SuperstructureState followThruConeSetpoint = SuperstructureState.Preset.INTAKING_CONE_FOLLOW_THRU.getState();
+    //INTAKING CONES WITH MANIPULATOR -> Josh hold left Bumper
+    new Trigger(() -> primary_controller.getLeftBumper()).whileTrue(
+        Commands.sequence(
+            new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CONE.getState())
+                .alongWith(ManipulatorAuto.startSuckingCone())
+                .until(manipulator::getConeDetected),
+ 
+            new SetSuperstructureSetpoint(followThruConeSetpoint)
+                .until(() -> state_supervisor.isAtDesiredState(followThruConeSetpoint)),
+ 
+            new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState())
+                .alongWith(ManipulatorAuto.holdCone())
+        )
+    )
+        .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState()))
+        .onFalse(ManipulatorAuto.holdCone());
 
+
+
+/* 
     SuperstructureState followThruConeSetpoint = SuperstructureState.Preset.INTAKING_CONE_FOLLOW_THRU.getState();
     //INTAKING CONES WITH MANIPULATOR -> Josh hold left Bumper
     new Trigger(() -> primary_controller.getLeftBumper()).whileTrue(
@@ -167,8 +187,8 @@ public class RobotContainer {
             //IF IT DOESN'T TURN ON YOU PROBABLY PLUGGED IT IN BACKWARDS
             //REMEMBER YOU CAN CHANGE THE DETECTION DISTANCE BY LOOSENING AND TIGHTENING THE SCREW ON THE BACK
 
-            //.until(manipulator::getConeDetected)
-            //.andThen(new SetSuperstructureSetpoint(followThruConeSetpoint))
+            .until(manipulator::getConeDetected)
+            .andThen(new SetSuperstructureSetpoint(followThruConeSetpoint))
             //.until(() -> state_supervisor.isAtDesiredState(followThruConeSetpoint))
             //.andThen(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState()).alongWith(ManipulatorAuto.holdCone()))
     )
@@ -176,7 +196,7 @@ public class RobotContainer {
         .onFalse(ManipulatorAuto.holdCone());
 
 
-
+*/
     //INTAKING SINGLE SUBSTATION -> danny hold A
     /*
     new Trigger(() -> danny_controller.getAButton()).whileTrue(

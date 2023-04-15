@@ -22,7 +22,7 @@ public class ManipulatorAuto {
         return 
             Commands.sequence(
                 startEjectingCone(),
-                Commands.waitSeconds(1.0),
+                Commands.waitSeconds(3.0),
                 stopManipulator()
             );
 
