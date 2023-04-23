@@ -14,10 +14,13 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardInput;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.team5557.Constants;
 import org.team5557.FieldConstants;
+import org.team5557.state.goal.ObjectiveTracker.GamePiece;
+import org.team5557.state.vision.util.DetectedObject;
 import org.team5557.state.vision.util.Limelight;
 import org.team5557.state.vision.util.PhotonCameraExtension;
 import org.team5557.state.vision.util.VisionUpdate;
 import org.team5557.state.vision.util.Limelight.CamMode;
+import org.team5557.state.vision.util.Limelight.LedMode;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -46,6 +49,10 @@ public class VisionManager {
 
     public VisionManager() {
         this.limelight =  new Limelight("driver");
+        limelight.setLedMode(LedMode.OFF);
+        limelight.setPipeline(0);
+        limelight.setCamMode(CamMode.VISION);
+        
 
         this.anakin = new PhotonCameraExtension("Arducam_OV9281_Anakin", kAnakinCameraToOrigin);
         this.obi_wan = new PhotonCameraExtension("Arducam_OV9281_Obi_Wan", kObiwanCameraToOrigin);
@@ -55,8 +62,6 @@ public class VisionManager {
                         obi_wan
                     )
                 );
-
-        limelight.setCamMode(CamMode.DRIVER);
 
         anakinAlert = new Alert("Camera Anakin disconnected", AlertType.WARNING);
         obiwanAlert = new Alert("Camera Obiwan disconnected", AlertType.WARNING);
@@ -72,10 +77,15 @@ public class VisionManager {
                 .withSize(4, 4)
                 .withPosition(4, 0)
                 .withProperties(Map.of("Show controls", false));
+            tab.addNumber("objectOffset", () -> getDetectedObject().angleOffset);
         }
 
         ShuffleboardTab driver = Shuffleboard.getTab(Constants.shuffleboard.driver_readout_key);
         driver.addBoolean("Vision Active", this::getVisionActivated);
+        driver.addString("Detected Object", () -> getDetectedObject().gamePiece.toString());
+        driver.addCamera("limeboi", "driver", "http://10.55.57.13:5800")
+            .withSize(4, 4)
+            .withProperties(Map.of("Show controls", false));
     }
 
     public void update() {
@@ -173,5 +183,19 @@ public class VisionManager {
 
     public boolean getTargetsVisible() {
         return targetsVisible;
+    }
+
+    public DetectedObject getDetectedObject() {
+        DetectedObject update = new DetectedObject();
+        if(!limelight.hasTarget())
+            update.gamePiece = GamePiece.NONE;
+        else if(limelight.getObjectClassID().equals("cone")) {
+            update.gamePiece = GamePiece.CONE;
+        } else {
+            update.gamePiece = GamePiece.CUBE;
+        }
+        update.angleOffset = limelight.getTargetPosition().getX();
+
+        return update;
     }
 }

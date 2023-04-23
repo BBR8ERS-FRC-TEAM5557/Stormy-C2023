@@ -6,6 +6,7 @@ import org.team5557.subsystems.manipulator.util.ManipulatorState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class ManipulatorAuto {
     
@@ -86,6 +87,7 @@ public class ManipulatorAuto {
         Commands.sequence(
             startSuckingCube(),
             waitForCube(),
+            new WaitCommand(0.1),
             holdCube()
         );
     }

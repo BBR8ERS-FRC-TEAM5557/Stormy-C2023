@@ -10,6 +10,7 @@ import org.team5557.state.goal.ObjectiveTracker.Direction;
 import org.team5557.state.goal.ObjectiveTracker.GamePiece;
 import org.team5557.state.goal.ObjectiveTracker.NodeLevel;
 import org.team5557.state.vision.VisionManager;
+import org.team5557.state.vision.util.DetectedObject;
 import org.team5557.subsystems.leds.LEDs.State;
 import org.team5557.subsystems.swerve.Swerve;
 
@@ -167,6 +168,14 @@ public class RobotStateSupervisor extends SubsystemBase {
 
     public void flipEnableVision() {
         vision_manager.setVisionActivated(!getVisionActivated());
+    }
+
+    //////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
+    //////////////////LIMELIGHT\\\\\\\\\\\\\\\\\\\
+    //////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
+
+    public DetectedObject getDetectedObject() {
+        return vision_manager.getDetectedObject();
     }
 
 

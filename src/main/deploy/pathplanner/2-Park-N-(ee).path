@@ -3,12 +3,12 @@
     {
       "anchorPoint": {
         "x": 1.826686621526455,
-        "y": 4.893980683021587
+        "y": 4.95
       },
       "prevControl": null,
       "nextControl": {
         "x": 2.444822906165995,
-        "y": 4.737961349851194
+        "y": 4.793980666829607
       },
       "holonomicAngle": 0.0,
       "isReversal": false,
@@ -17,7 +17,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "startSpitting"
+          "none"
         ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
@@ -151,12 +151,12 @@
     },
     {
       "anchorPoint": {
-        "x": 1.8,
-        "y": 3.8718214193562717
+        "x": 1.803911848980382,
+        "y": 4.42
       },
       "prevControl": {
-        "x": 2.479159503604137,
-        "y": 3.8718214193562717
+        "x": 2.4830713525845183,
+        "y": 4.42
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -173,20 +173,20 @@
     }
   ],
   "maxVelocity": 3.0,
-  "maxAcceleration": 2.5,
+  "maxAcceleration": 2.0,
   "isReversed": null,
   "markers": [
     {
       "position": 1.2194358132102279,
       "names": [
-        "event",
-        "startSuckingCone"
+        "prepCubeSuck",
+        "startSuckingCube"
       ]
     },
     {
       "position": 3.210511363636365,
       "names": [
-        "holdCone",
+        "holdCube",
         "holdItem"
       ]
     }

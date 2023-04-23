@@ -41,6 +41,7 @@ import org.team5557.subsystems.swerve.Swerve;
 import org.team5557.subsystems.swerve.Swerve.DriveMode;
 import org.team5557.subsystems.swerve.commands.AimDrive;
 import org.team5557.subsystems.swerve.commands.AutoBalance;
+import org.team5557.subsystems.swerve.commands.AutoPickup;
 import org.team5557.subsystems.swerve.commands.CoPilot;
 import org.team5557.subsystems.swerve.commands.TeleopDrive;
 import org.team5557.subsystems.swerve.util.RawControllers;
@@ -108,9 +109,18 @@ public class RobotContainer {
         new InstantCommand(() -> swerve.setPoseTeleop(), swerve));
 
     Command copilot = new CoPilot(this::getForwardInput, this::getStrafeInput);
-    new Trigger(primary_controller::getRightBumper).whileTrue(
-        copilot);
+    new Trigger(() -> primary_controller.getRightBumper() && !primary_controller.getLeftBumper() && primary_controller.getLeftTriggerAxis() < 0.3).whileTrue(
+        copilot
+    );
 
+    Command pointAtCone = new AutoPickup(this::getForwardInput, this::getStrafeInput, this::getThrottleInput, true);
+    new Trigger(() -> primary_controller.getRightBumper() && primary_controller.getLeftBumper() && primary_controller.getLeftTriggerAxis() < 0.3).whileTrue(
+        pointAtCone
+    );
+    Command pointAtCube = new AutoPickup(this::getForwardInput, this::getStrafeInput, this::getThrottleInput, false);
+    new Trigger(() -> primary_controller.getRightBumper() && !primary_controller.getLeftBumper() && primary_controller.getLeftTriggerAxis() > 0.3).whileTrue(
+        pointAtCube
+    );
 
 
     //MANUAL OPERATION FOR TESTING
@@ -139,17 +149,17 @@ public class RobotContainer {
 
     //INTAKING CUBES WITH MANIPULATOR -> Josh hold left Trigger
     new Trigger(() -> primary_controller.getLeftTriggerAxis() > 0.5).whileTrue(
-        new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CUBE.getState(), this::getElevatorJogger)
-            .alongWith(ManipulatorAuto.suckCubeStop())
+        new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CUBE.getState())
+            .alongWith(ManipulatorAuto.suckCubeStop().deadlineWith(new ManipulatorShiver(false)))
     )
-        .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CUBE.getState(), this::getElevatorJogger))
+        .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CUBE.getState()))
         .onFalse(ManipulatorAuto.holdCube());
     
 
     //INTAKING CUBES WITH INTAKE -> Josh hold right Trigger
     new Trigger(() -> primary_controller.getRightTriggerAxis() > 0.5).whileTrue(
         IntakeAuto.blockedCube()
-            .alongWith(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_NADA.getState(), this::getElevatorJogger))
+            .alongWith(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_NADA.getState()))
             .alongWith(ManipulatorAuto.stopManipulator())
     )
     .onFalse(IntakeAuto.stopIntaking());
@@ -168,35 +178,12 @@ public class RobotContainer {
  
             new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState())
                 .alongWith(ManipulatorAuto.holdCone())
-        )
+        ).deadlineWith(new ManipulatorShiver(true))
     )
         .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState()))
         .onFalse(ManipulatorAuto.holdCone());
 
 
-
-/* 
-    SuperstructureState followThruConeSetpoint = SuperstructureState.Preset.INTAKING_CONE_FOLLOW_THRU.getState();
-    //INTAKING CONES WITH MANIPULATOR -> Josh hold left Bumper
-    new Trigger(() -> primary_controller.getLeftBumper()).whileTrue(
-        new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CONE.getState())
-            .alongWith(ManipulatorAuto.startSuckingCone())
-            //UNCOMMENT THE LINES BELOW TO TEST THE FOLLOW THRU MOTION WHEN INTAKING A CONE
-            //YOU MUST PRESS THE Y BUTTON ON PRIMARY CONTROLLER TO SIMULATE THE ROBOT DETECTING A CONE
-            //IF YOU WIRE THE BEAM BREAK MAKE SURE TO PLUG IT INTO THE 3rd DIO PORT
-            //IF IT DOESN'T TURN ON YOU PROBABLY PLUGGED IT IN BACKWARDS
-            //REMEMBER YOU CAN CHANGE THE DETECTION DISTANCE BY LOOSENING AND TIGHTENING THE SCREW ON THE BACK
-
-            .until(manipulator::getConeDetected)
-            .andThen(new SetSuperstructureSetpoint(followThruConeSetpoint))
-            //.until(() -> state_supervisor.isAtDesiredState(followThruConeSetpoint))
-            //.andThen(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState()).alongWith(ManipulatorAuto.holdCone()))
-    )
-        .onFalse(new SetSuperstructureSetpoint(SuperstructureState.Preset.HOLDING_CONE.getState()))
-        .onFalse(ManipulatorAuto.holdCone());
-
-
-*/
     //INTAKING SINGLE SUBSTATION -> JOSH hold X
     new Trigger(() -> primary_controller.getXButton()).whileTrue(
         new SetSuperstructureSetpoint(SuperstructureState.Preset.INTAKING_CHUTE_CONE.getState(), this::getElevatorJogger)
@@ -304,6 +291,11 @@ public class RobotContainer {
 
   public double getRotationInput() {
     return -square(deadband(primary_controller.getRightX(), 0.1))
+        * SwerveSubsystemConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
+  }
+
+  public double getThrottleInput() {
+    return -square(deadband(primary_controller.getRightY(), 0.1))
         * SwerveSubsystemConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
   }
 

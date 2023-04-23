@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.8,
-        "y": 3.8718214193562717
+        "x": 5.3290218772820355,
+        "y": 2.18
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9384149296184876,
-        "y": 3.1088796769607425
+        "x": 6.333960148886973,
+        "y": 2.18
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -16,7 +16,9 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "startIntaking"
+        ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -24,19 +26,19 @@
     },
     {
       "anchorPoint": {
-        "x": 2.2372604282697717,
-        "y": 3.2137074174321962
+        "x": 6.677714985963826,
+        "y": 2.175122157129079
       },
       "prevControl": {
-        "x": 1.7920181916919378,
-        "y": 3.2137074174321962
+        "x": 6.382935893231813,
+        "y": 2.188197536768336
       },
       "nextControl": {
-        "x": 2.736565281791906,
-        "y": 3.2137074174321962
+        "x": 6.382935893231813,
+        "y": 2.188197536768336
       },
-      "holonomicAngle": 0.0,
-      "isReversal": false,
+      "holonomicAngle": 0,
+      "isReversal": true,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
@@ -49,15 +51,15 @@
     },
     {
       "anchorPoint": {
-        "x": 4.204921586438226,
-        "y": 3.215241380271172
+        "x": 3.55,
+        "y": 2.18
       },
       "prevControl": {
-        "x": 2.8554102114583353,
-        "y": 3.215241380271172
+        "x": 4.2355417029125375,
+        "y": 2.18
       },
       "nextControl": null,
-      "holonomicAngle": 0.0,
+      "holonomicAngle": 0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -70,5 +72,12 @@
       }
     }
   ],
-  "markers": []
+  "markers": [
+    {
+      "position": 1.3793479225852265,
+      "names": [
+        "stopIntaking"
+      ]
+    }
+  ]
 }

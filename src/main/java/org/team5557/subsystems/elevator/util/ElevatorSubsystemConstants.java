@@ -56,7 +56,7 @@ public class ElevatorSubsystemConstants {
         kElevatorConstants.kPositionIZone = 0; //
         kElevatorConstants.kPositionDeadband = 0.5;
 
-        kElevatorConstants.kCruiseVelocity = 75.0; // units / s
+        kElevatorConstants.kCruiseVelocity = 95.0; // units / s
         kElevatorConstants.kAcceleration = 100.0; // inches / s / s
         kElevatorConstants.profileConstraints = new TrapezoidProfile.Constraints(kElevatorConstants.kCruiseVelocity, kElevatorConstants.kAcceleration);
 
@@ -76,6 +76,6 @@ public class ElevatorSubsystemConstants {
         kElevatorConstants.kStatus5FrameRate = 200;
     }
 
-    public static MotionProfileConstraints motionConstraints = new MotionProfileConstraints(kElevatorConstants.kCruiseVelocity, -kElevatorConstants.kCruiseVelocity + 45.0, kElevatorConstants.kAcceleration);
+    public static MotionProfileConstraints motionConstraints = new MotionProfileConstraints(kElevatorConstants.kCruiseVelocity, -kElevatorConstants.kCruiseVelocity + 65.0, kElevatorConstants.kAcceleration);
     public static MotionProfileConstraints motionConstraintsDown = new MotionProfileConstraints(25.0, 25.0, 20.0);
 }

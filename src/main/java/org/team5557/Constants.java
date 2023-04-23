@@ -126,11 +126,12 @@ public final class Constants {
 
   public static final PathPlannerConstants pathplanner = new PathPlannerConstants();
   static {
+    pathplanner.auto_constraints = new PathConstraints(3.0, 2.0);
+
+
+
     pathplanner.fast_constraints = new PathConstraints(4.0, 3.0);
     pathplanner.medium_constraints = new PathConstraints(4.0, 3.0);
-
-    pathplanner.auto_constraints = new PathConstraints(3.0, 2.5);
-
     pathplanner.slow_constraints = new PathConstraints(2.0, 3.0);
     pathplanner.hellaslow_constraints = new PathConstraints(1.0, 1.0);
   }

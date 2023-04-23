@@ -14,8 +14,8 @@ public final class Limelight {
     private final NetworkTableEntry tx;
     private final NetworkTableEntry ty;
     private final NetworkTableEntry ta;
-    private final NetworkTableEntry ts;
     private final NetworkTableEntry tl;
+    private final NetworkTableEntry tclass;
 
     private final NetworkTableEntry tcornx;
     private final NetworkTableEntry tcorny;
@@ -53,8 +53,8 @@ public final class Limelight {
         tx = table.getEntry("tx");
         ty = table.getEntry("ty");
         ta = table.getEntry("ta");
-        ts = table.getEntry("ts");
         tl = table.getEntry("tl");
+        tclass = table.getEntry("tclass");
 
         tcornx = table.getEntry("tcornx");
         tcorny = table.getEntry("tcorny");
@@ -90,12 +90,8 @@ public final class Limelight {
         return new Translation2d(Math.toRadians(tx.getDouble(0)), Math.toRadians(ty.getDouble(0)));
     }
 
-    /**
-     * Gets the target's skew or rotation in degrees.
-     * @returns The target's skew from -90 to 0 in degrees.
-     */
-    public double getTargetSkew() {
-        return ts.getDouble(0);
+    public String getObjectClassID() {
+        return tclass.getString("");
     }
 
     /**

@@ -8,7 +8,7 @@ public class IntakeSubsystemConstants {
     public static final CANDeviceId motorID = new CANDeviceId(CANDeviceType.SPARK_MAX, 41);
     public static final int kSolenoidForward = 9;
     public static final int kSolenoidReverse = 8;
-    public static final int kProximitySwitch = 9;
+    public static final int kProximitySwitch = 6;
 
     public static final String kSubsystemID = "Intake";
 

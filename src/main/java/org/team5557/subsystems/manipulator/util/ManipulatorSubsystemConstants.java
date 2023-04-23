@@ -11,6 +11,6 @@ public class ManipulatorSubsystemConstants {
 
     public static final boolean motorsInverted = true;
 
-    public static final int kCubeProximitySwitch = 2;
-    public static final int kConeProximitySwitch = 3;
+    public static final int kCubeProximitySwitch = 8;
+    public static final int kConeProximitySwitch = 9;
 }

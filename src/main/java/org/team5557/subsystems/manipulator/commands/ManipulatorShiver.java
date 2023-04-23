@@ -2,6 +2,8 @@ package org.team5557.subsystems.manipulator.commands;
 
 import org.library.team254.util.LatchedBoolean;
 import org.team5557.RobotContainer;
+import org.team5557.state.goal.ObjectiveTracker.GamePiece;
+import org.team5557.state.vision.util.DetectedObject;
 import org.team5557.subsystems.intake.Intake;
 import org.team5557.subsystems.manipulator.Manipulator;
 
@@ -18,6 +20,11 @@ public class ManipulatorShiver extends CommandBase {
 
     Timer t = new Timer();
     LatchedBoolean gate = new LatchedBoolean();
+    boolean isCone;
+
+    public ManipulatorShiver(boolean isCone) {
+        this.isCone = isCone;
+    }
 
     @Override
     public void initialize() {
@@ -27,15 +34,32 @@ public class ManipulatorShiver extends CommandBase {
 
     @Override
     public void execute() {
-        if(gate.update(manipulator.getCubeDetected())) {
+        DetectedObject object = RobotContainer.state_supervisor.getDetectedObject();
+        if(object.gamePiece == GamePiece.CONE && isCone) {
+            controller.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
+        } else if(object.gamePiece == GamePiece.CUBE && !isCone) {
+            controller.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
+        }
+        if (gate.update(manipulator.getCubeDetected() || manipulator.getConeDetected())) {
             t.start();
             controller.setRumble(GenericHID.RumbleType.kBothRumble, kShiverHard);
         }
-
-        if(t.get() > kShiverTime) {
-            controller.setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
-            t.stop();
-            t.reset();
+        if (t.get() > 0.1) {
+            if (t.get() < 0.2) {
+                controller.setRumble(GenericHID.RumbleType.kBothRumble, kShiverHard);
+            } else if (t.get() < 0.4) {
+                controller.setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
+            } else if (t.get() < 0.6) {
+                controller.setRumble(GenericHID.RumbleType.kBothRumble, kShiverHard);
+            } else if (t.get() < 0.8) {
+                controller.setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
+            } else if (t.get() < 1.0) {
+                controller.setRumble(GenericHID.RumbleType.kBothRumble, kShiverHard);
+            } else {
+                controller.setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
+                t.stop();
+                t.reset();
+            }
         }
     }
 
@@ -43,5 +67,5 @@ public class ManipulatorShiver extends CommandBase {
     public void end(boolean interrupted) {
         controller.setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
     }
-    
+
 }

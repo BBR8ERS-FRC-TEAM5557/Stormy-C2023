@@ -4,8 +4,10 @@ import org.team5557.Constants;
 import org.team5557.subsystems.pneumatics.util.PneumaticsSubsystemConstants;
 
 import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Pneumatics extends SubsystemBase {
@@ -14,7 +16,10 @@ public class Pneumatics extends SubsystemBase {
     ShuffleboardTab tab = Shuffleboard.getTab(Constants.shuffleboard.driver_readout_key);
 
     public Pneumatics() {
-        tab.addNumber("Pressure", () -> ph.getPressure(0));
+        tab.addNumber("Pressure", () -> ph.getPressure(0))
+            .withWidget(BuiltInWidgets.kDial)
+            .withPosition(0, 0)
+            .withSize(1, 1);
 
         //ph.disableCompressor();
         ph.enableCompressorAnalog(PneumaticsSubsystemConstants.kMinPressure, PneumaticsSubsystemConstants.kMaxPressure);

@@ -29,7 +29,7 @@ public class LEDs extends SubsystemBase {
     private final CANdle mCandle = new CANdle(5);
     private double timestamp = 0.0;
 
-    private final boolean mUseSmartdash = true; // if we want to manual control lights using shuffleboard
+    private final boolean mUseSmartdash = false; // if we want to manual control lights using shuffleboard
 
     private LEDStatus mElevatorBeamStatus = new LEDStatus(8, 75);
 

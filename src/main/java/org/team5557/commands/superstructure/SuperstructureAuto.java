@@ -25,7 +25,7 @@ public class SuperstructureAuto {
         return Commands.sequence(
             new SetSuperstructureSetpoint(HIGH_CUBE).until(() -> RobotContainer.state_supervisor.isAtDesiredState(HIGH_CUBE)).withTimeout(5.0),
             ManipulatorAuto.ejectCube(),
-            new SetSuperstructureSetpoint(IDLE).until(() -> RobotContainer.state_supervisor.isElevatorBelowThreshould(0.0, 15.0))
+            new SetSuperstructureSetpoint(IDLE).until(() -> RobotContainer.state_supervisor.isElevatorBelowThreshould(0.0, 12.0))
         );
     }
 

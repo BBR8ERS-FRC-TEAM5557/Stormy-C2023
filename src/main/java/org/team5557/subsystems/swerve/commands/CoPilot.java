@@ -161,10 +161,10 @@ public class CoPilot extends CommandBase {
             this.regenerationTimestamp = this.currentTimestamp;
         }
 
-        if(m_periodicIO.active_trajectory != null && state.getVisionActivated()) {
+        if(m_periodicIO.active_trajectory != null && state.getVisionActivated() || true) {
             m_periodicIO.desired_state = (PathPlannerState) m_periodicIO.active_trajectory.sample(currentTimestamp - regenerationTimestamp);
             Pose2d currentPose = m_periodicIO.state.estimatedPose;
-            Rotation2d goalRotation = isBlue ? new Rotation2d() : Rotation2d.fromDegrees(180);
+            Rotation2d goalRotation = !isBlue ? new Rotation2d() : Rotation2d.fromDegrees(180);
 
             if(RobotContainer.state_supervisor.getNodeLevel() == NodeLevel.HYBRID) {
                 goalRotation = Rotation2d.fromDegrees(goalRotation.getDegrees() + 180.0);
